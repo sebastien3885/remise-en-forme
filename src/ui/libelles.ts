@@ -143,3 +143,13 @@ export const LIBELLE_MOTIF: Record<MotifAbandon, string> = {
   meteo: 'Météo',
   autre: 'Autre',
 }
+
+/** 148 532 → « 145 ko ». Pour dire le poids d'une photo sans faire un cours. */
+export function formaterPoids(octets: number): string {
+  if (octets < 1024) return String(octets) + ' o'
+
+  const ko = octets / 1024
+  if (ko < 1024) return String(Math.round(ko)) + ' ko'
+
+  return (ko / 1024).toFixed(1).replace('.', ',') + ' Mo'
+}

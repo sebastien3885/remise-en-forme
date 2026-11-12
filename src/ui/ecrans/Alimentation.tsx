@@ -18,6 +18,7 @@ import { Icone } from '../composants/Icone'
 import { PanneauMesure } from '../composants/PanneauMesure'
 import { PanneauRepas } from '../composants/PanneauRepas'
 import { useAlimentation, type VueAlimentation } from '../hooks/useAlimentation'
+import { useApercuPhoto } from '../hooks/useApercuPhoto'
 import { formaterDateLongue, LIBELLE_MOMENT } from '../libelles'
 
 const PRINCIPAUX: readonly MomentRepas[] = ['petit-dejeuner', 'dejeuner', 'diner']
@@ -116,6 +117,7 @@ export function Alimentation() {
                   <span className={repas ? 'journal__resume' : 'journal__vide discret'}>
                     {repas ? resumer(repas) : 'à noter'}
                   </span>
+                  <Vignette photo={repas?.photo} />
                 </button>
               </li>
             )
@@ -132,6 +134,7 @@ export function Alimentation() {
               >
                 <span className="journal__moment">Collation</span>
                 <span className="journal__resume">{resumer(collation)}</span>
+                <Vignette photo={collation.photo} />
               </button>
             </li>
           ))}
@@ -341,6 +344,20 @@ function resumer(repas: Repas): string {
   if (repas.bilanRapide.copieux) morceaux.push('copieux')
 
   return morceaux.length > 0 ? morceaux.join(', ') : 'noté'
+}
+
+/**
+ * La photo d'un repas, en timbre-poste au bout de sa ligne.
+ *
+ * Décorative au sens strict : le résumé dit déjà ce qu'il y avait, et
+ * `alt=""` évite de faire lire « photo du repas » après l'avoir entendu. Le
+ * repas s'ouvre d'un appui sur la ligne, photo en grand.
+ */
+function Vignette({ photo }: { photo?: Blob }) {
+  const apercu = useApercuPhoto(photo)
+  if (apercu === undefined) return null
+
+  return <img className="journal__vignette" src={apercu} alt="" />
 }
 
 function LigneEau({ vue }: { vue: VueAlimentation }) {

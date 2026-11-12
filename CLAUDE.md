@@ -161,3 +161,10 @@ Ces règles ne sont pas des suggestions d'interface : elles sont codées et test
 
 Les données restent sur l'appareil. Aucun suivi publicitaire, aucun outil
 d'analyse tiers, aucune clé d'API ni donnée personnelle dans le dépôt.
+
+**Une photo de repas entre sans ses métadonnées.** Elle est redessinée dans un
+canevas (`src/ui/photo.ts`), ce qui ne garde que les pixels : l'EXIF reste
+derrière, et avec lui les coordonnées GPS que les téléphones y glissent. La
+sauvegarde qu'on s'envoie par mail ne trimballe donc pas la position du
+restaurant. Toute autre façon d'enregistrer une photo devrait refaire ce
+nettoyage.

@@ -25,8 +25,9 @@ export interface Repas {
   /** Texte libre, peut rester vide si seul le bilan rapide est renseigné. */
   description: string
   /**
-   * Photo facultative, stockée telle quelle dans IndexedDB. L'export JSON de
-   * l'étape 5 devra l'encoder en base64 pour qu'une sauvegarde soit complète.
+   * Photo facultative, stockée telle quelle dans IndexedDB. Elle y arrive
+   * réduite et ré-encodée en JPEG (`src/ui/photo.ts`), donc sans EXIF ni
+   * position GPS ; la sauvegarde JSON l'encode en URL de données.
    */
   photo?: Blob
   bilanRapide: BilanRapideRepas

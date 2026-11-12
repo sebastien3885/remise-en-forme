@@ -16,6 +16,7 @@ import { maintenantIso } from '../../domaine/dates'
 import { nouvelId } from '../../domaine/identifiants'
 import { depots } from '../../stockage'
 import { LIBELLE_MOMENT } from '../libelles'
+import { PriseDePhoto } from './PriseDePhoto'
 
 const QUESTIONS: { champ: keyof BilanRapideRepas; libelle: string }[] = [
   { champ: 'legumes', libelle: 'Des légumes ou des fruits' },
@@ -50,7 +51,15 @@ export function PanneauRepas({
       },
   )
   const [description, setDescription] = useState(repas?.description ?? '')
+  const [photo, setPhoto] = useState<Blob | undefined>(repas?.photo)
   const [enCours, setEnCours] = useState(false)
+
+  // Le repli s'ouvre tout seul sur un repas qui a déjà une description ou une
+  // photo : sinon, corriger un repas donnerait à croire qu'on les a perdues.
+  // Calculé une fois, pour que refermer le volet à la main tienne.
+  const [replieOuvert] = useState(
+    () => photo !== undefined || (repas?.description ?? '').trim() !== '',
+  )
 
   async function enregistrer() {
     setEnCours(true)
@@ -61,7 +70,7 @@ export function PanneauRepas({
       description: description.trim(),
       bilanRapide: bilan,
       saisieLe: maintenantIso(),
-      ...(repas?.photo ? { photo: repas.photo } : {}),
+      ...(photo ? { photo } : {}),
     })
     onFini()
   }
@@ -103,8 +112,8 @@ export function PanneauRepas({
         </div>
       </fieldset>
 
-      <details className="repli">
-        <summary>Ajouter une description</summary>
+      <details className="repli" open={replieOuvert}>
+        <summary>Ajouter une description ou une photo</summary>
         <div className="repli__contenu">
           <label className="champ champ--large" htmlFor="description-repas">
             <span className="discret">Facultatif</span>
@@ -116,6 +125,8 @@ export function PanneauRepas({
               onChange={(evenement) => setDescription(evenement.target.value)}
             />
           </label>
+
+          <PriseDePhoto photo={photo} onChange={setPhoto} />
         </div>
       </details>
 
