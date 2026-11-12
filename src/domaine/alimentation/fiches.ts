@@ -45,6 +45,15 @@ const AFFICHE_ADULTES: SourceFiche = {
   url: 'https://www.mangerbouger.fr/content/show/1502/file/Affiche_recommandations_adultes.pdf',
 }
 
+/**
+ * L'Assurance Maladie. C'est la source publique qui décrit le **rythme** des
+ * repas : les repères du PNNS, eux, disent quoi manger, pas quand.
+ */
+const AMELI: SourceFiche = {
+  nom: 'Assurance Maladie — alimentation de l’adulte, des repas équilibrés au fil de la semaine',
+  url: 'https://www.ameli.fr/assure/sante/themes/alimentation/alimentation-adulte/alimentation-adulte-equilibre-repas',
+}
+
 const SANTE_PUBLIQUE_FRANCE: SourceFiche = {
   nom: 'Santé publique France — recommandations alimentation et activité physique',
   url: 'https://www.santepubliquefrance.fr/sites/default/files/rdd/document/42466_spf00000619.pdf',
@@ -66,6 +75,25 @@ export const FICHES: readonly Fiche[] = [
       'Une assiette où les légumes occupent la plus grande place, tous les jours',
     ],
     source: MANGER_BOUGER,
+  },
+
+  {
+    id: 'rythme',
+    titre: 'Le rythme des repas',
+    theme: 'Rythme des repas',
+    paragraphes: [
+      'L’Assurance Maladie décrit la journée autour de trois repas principaux, à des horaires les plus fixes possibles, week-end compris. C’est la régularité qui est recommandée, pas une heure précise : la source ne donne pas d’horaire à viser, et cette fiche n’en invente pas.',
+      'Le petit-déjeuner y est décrit comme de préférence copieux et complet, chaque matin. Le goûter ou la collation, en revanche, sont facultatifs : à prendre si on en ressent le besoin, en laissant au moins deux heures avant le repas suivant.',
+      'La durée compte autant que le contenu. Prendre le temps de déguster et de bien mâcher, et un repas assez long pour que la sensation de satiété ait le temps d’arriver : manger vite en faisant autre chose la laisse arriver trop tard.',
+      'Rien de tout cela n’est une règle à tenir tous les jours. Un repas décalé ou sauté ne se rattrape pas et ne se compte pas en faute : c’est le rythme habituel qui est en jeu, pas la journée d’hier.',
+    ],
+    defis: [
+      'Un petit-déjeuner complet chaque matin de la semaine',
+      'Les trois repas à peu près à la même heure, week-end compris',
+      'Aucune collation dans les deux heures avant un repas',
+      'Un repas par jour pris à table, sans écran',
+    ],
+    source: AMELI,
   },
 
   {

@@ -11,6 +11,7 @@ describe('fiches d’éducation alimentaire', () => {
     expect(themes.join(' | ')).toMatch(/protéines/)
     expect(themes.join(' | ')).toMatch(/boissons/)
     expect(themes.join(' | ')).toMatch(/étiquettes/)
+    expect(themes.join(' | ')).toMatch(/rythme des repas/)
   })
 
   it('porte une source publique sur chaque fiche', () => {
@@ -18,7 +19,11 @@ describe('fiches d’éducation alimentaire', () => {
     // doit pouvoir être remontée jusqu'à elles.
     for (const fiche of FICHES) {
       expect(fiche.source.url).toMatch(/^https:\/\//)
-      expect(fiche.source.url).toMatch(/mangerbouger\.fr|santepubliquefrance\.fr/)
+      // Trois sites publics français, et pas un quatrième : un blog de
+      // nutrition ferait un lien d'apparence sérieuse sans l'être.
+      expect(fiche.source.url).toMatch(
+        /mangerbouger\.fr|santepubliquefrance\.fr|ameli\.fr/,
+      )
       expect(fiche.source.nom.length).toBeGreaterThan(10)
     }
   })
