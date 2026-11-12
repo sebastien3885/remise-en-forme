@@ -1,0 +1,826 @@
+{
+  "format": "plan-remise-en-forme",
+  "version": 1,
+  "nom": "Reprise en douceur – semaines 1 à 4",
+  "description": "Programme de départ du cahier des charges : 3 marches rapides, 2 séances de renforcement sans matériel, 1 natation douce et 1 jour de repos complet par semaine. Les quatre semaines sont identiques : la progression est décidée chaque dimanche par le moteur, à partir du réalisé.",
+  "dateDebut": "2026-11-16",
+  "exercices": [],
+  "seances": [
+    {
+      "date": "2026-11-16",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-17",
+      "type": "renforcement",
+      "titre": "Renforcement sans matériel 15 min",
+      "notes": "5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "squat-sur-chaise",
+          "cibles": {
+            "series": 2,
+            "repetitions": 10,
+            "reposSecondes": 60
+          },
+          "consigne": "Genoux dans l’axe des pieds, descente contrôlée."
+        },
+        {
+          "exerciceId": "pompes-contre-mur",
+          "cibles": {
+            "series": 2,
+            "repetitions": 8,
+            "reposSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "gainage-avant-bras",
+          "cibles": {
+            "series": 3,
+            "maintienSecondes": 20,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "pont-fessier",
+          "cibles": {
+            "series": 2,
+            "repetitions": 12,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "mobilite-hanches",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-18",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-19",
+      "type": "repos",
+      "titre": "Repos complet",
+      "notes": "Jour de repos imposé : aucune séance.",
+      "exercices": []
+    },
+    {
+      "date": "2026-11-20",
+      "type": "renforcement",
+      "titre": "Renforcement sans matériel 15 min",
+      "notes": "5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "squat-sur-chaise",
+          "cibles": {
+            "series": 2,
+            "repetitions": 10,
+            "reposSecondes": 60
+          },
+          "consigne": "Genoux dans l’axe des pieds, descente contrôlée."
+        },
+        {
+          "exerciceId": "pompes-contre-mur",
+          "cibles": {
+            "series": 2,
+            "repetitions": 8,
+            "reposSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "gainage-avant-bras",
+          "cibles": {
+            "series": 3,
+            "maintienSecondes": 20,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "pont-fessier",
+          "cibles": {
+            "series": 2,
+            "repetitions": 12,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "mobilite-hanches",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-21",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-22",
+      "type": "natation",
+      "titre": "Natation douce 8 × 1 longueur",
+      "notes": "Optionnel les premières semaines. Jamais d’apnée, jamais seul dans le bassin.",
+      "exercices": [
+        {
+          "exerciceId": "nage-crawl",
+          "cibles": {
+            "longueurs": 8,
+            "reposSecondes": 40
+          },
+          "consigne": "Une longueur, puis 30 à 45 s de repos au bord avant la suivante."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-23",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "type": "renforcement",
+      "titre": "Renforcement sans matériel 15 min",
+      "notes": "5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "squat-sur-chaise",
+          "cibles": {
+            "series": 2,
+            "repetitions": 10,
+            "reposSecondes": 60
+          },
+          "consigne": "Genoux dans l’axe des pieds, descente contrôlée."
+        },
+        {
+          "exerciceId": "pompes-contre-mur",
+          "cibles": {
+            "series": 2,
+            "repetitions": 8,
+            "reposSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "gainage-avant-bras",
+          "cibles": {
+            "series": 3,
+            "maintienSecondes": 20,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "pont-fessier",
+          "cibles": {
+            "series": 2,
+            "repetitions": 12,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "mobilite-hanches",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-26",
+      "type": "repos",
+      "titre": "Repos complet",
+      "notes": "Jour de repos imposé : aucune séance.",
+      "exercices": []
+    },
+    {
+      "date": "2026-11-27",
+      "type": "renforcement",
+      "titre": "Renforcement sans matériel 15 min",
+      "notes": "5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "squat-sur-chaise",
+          "cibles": {
+            "series": 2,
+            "repetitions": 10,
+            "reposSecondes": 60
+          },
+          "consigne": "Genoux dans l’axe des pieds, descente contrôlée."
+        },
+        {
+          "exerciceId": "pompes-contre-mur",
+          "cibles": {
+            "series": 2,
+            "repetitions": 8,
+            "reposSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "gainage-avant-bras",
+          "cibles": {
+            "series": 3,
+            "maintienSecondes": 20,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "pont-fessier",
+          "cibles": {
+            "series": 2,
+            "repetitions": 12,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "mobilite-hanches",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-28",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-29",
+      "type": "natation",
+      "titre": "Natation douce 8 × 1 longueur",
+      "notes": "Optionnel les premières semaines. Jamais d’apnée, jamais seul dans le bassin.",
+      "exercices": [
+        {
+          "exerciceId": "nage-crawl",
+          "cibles": {
+            "longueurs": 8,
+            "reposSecondes": 40
+          },
+          "consigne": "Une longueur, puis 30 à 45 s de repos au bord avant la suivante."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-30",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-01",
+      "type": "renforcement",
+      "titre": "Renforcement sans matériel 15 min",
+      "notes": "5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "squat-sur-chaise",
+          "cibles": {
+            "series": 2,
+            "repetitions": 10,
+            "reposSecondes": 60
+          },
+          "consigne": "Genoux dans l’axe des pieds, descente contrôlée."
+        },
+        {
+          "exerciceId": "pompes-contre-mur",
+          "cibles": {
+            "series": 2,
+            "repetitions": 8,
+            "reposSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "gainage-avant-bras",
+          "cibles": {
+            "series": 3,
+            "maintienSecondes": 20,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "pont-fessier",
+          "cibles": {
+            "series": 2,
+            "repetitions": 12,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "mobilite-hanches",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-02",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-03",
+      "type": "repos",
+      "titre": "Repos complet",
+      "notes": "Jour de repos imposé : aucune séance.",
+      "exercices": []
+    },
+    {
+      "date": "2026-12-04",
+      "type": "renforcement",
+      "titre": "Renforcement sans matériel 15 min",
+      "notes": "5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "squat-sur-chaise",
+          "cibles": {
+            "series": 2,
+            "repetitions": 10,
+            "reposSecondes": 60
+          },
+          "consigne": "Genoux dans l’axe des pieds, descente contrôlée."
+        },
+        {
+          "exerciceId": "pompes-contre-mur",
+          "cibles": {
+            "series": 2,
+            "repetitions": 8,
+            "reposSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "gainage-avant-bras",
+          "cibles": {
+            "series": 3,
+            "maintienSecondes": 20,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "pont-fessier",
+          "cibles": {
+            "series": 2,
+            "repetitions": 12,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "mobilite-hanches",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-05",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-06",
+      "type": "natation",
+      "titre": "Natation douce 8 × 1 longueur",
+      "notes": "Optionnel les premières semaines. Jamais d’apnée, jamais seul dans le bassin.",
+      "exercices": [
+        {
+          "exerciceId": "nage-crawl",
+          "cibles": {
+            "longueurs": 8,
+            "reposSecondes": 40
+          },
+          "consigne": "Une longueur, puis 30 à 45 s de repos au bord avant la suivante."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-07",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-08",
+      "type": "renforcement",
+      "titre": "Renforcement sans matériel 15 min",
+      "notes": "5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "squat-sur-chaise",
+          "cibles": {
+            "series": 2,
+            "repetitions": 10,
+            "reposSecondes": 60
+          },
+          "consigne": "Genoux dans l’axe des pieds, descente contrôlée."
+        },
+        {
+          "exerciceId": "pompes-contre-mur",
+          "cibles": {
+            "series": 2,
+            "repetitions": 8,
+            "reposSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "gainage-avant-bras",
+          "cibles": {
+            "series": 3,
+            "maintienSecondes": 20,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "pont-fessier",
+          "cibles": {
+            "series": 2,
+            "repetitions": 12,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "mobilite-hanches",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-09",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-10",
+      "type": "repos",
+      "titre": "Repos complet",
+      "notes": "Jour de repos imposé : aucune séance.",
+      "exercices": []
+    },
+    {
+      "date": "2026-12-11",
+      "type": "renforcement",
+      "titre": "Renforcement sans matériel 15 min",
+      "notes": "5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "squat-sur-chaise",
+          "cibles": {
+            "series": 2,
+            "repetitions": 10,
+            "reposSecondes": 60
+          },
+          "consigne": "Genoux dans l’axe des pieds, descente contrôlée."
+        },
+        {
+          "exerciceId": "pompes-contre-mur",
+          "cibles": {
+            "series": 2,
+            "repetitions": 8,
+            "reposSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "gainage-avant-bras",
+          "cibles": {
+            "series": 3,
+            "maintienSecondes": 20,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "pont-fessier",
+          "cibles": {
+            "series": 2,
+            "repetitions": 12,
+            "reposSecondes": 45
+          }
+        },
+        {
+          "exerciceId": "mobilite-hanches",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-12",
+      "type": "marche",
+      "titre": "Marche rapide 30 min",
+      "notes": "Allure où la conversation reste possible. 5 min d’étirements à la fin.",
+      "exercices": [
+        {
+          "exerciceId": "marche-rapide",
+          "cibles": {
+            "dureeMinutes": 30
+          },
+          "consigne": "Ralentir dès que parler devient difficile."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        },
+        {
+          "exerciceId": "etirement-ischio-assis",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-12-13",
+      "type": "natation",
+      "titre": "Natation douce 8 × 1 longueur",
+      "notes": "Optionnel les premières semaines. Jamais d’apnée, jamais seul dans le bassin.",
+      "exercices": [
+        {
+          "exerciceId": "nage-crawl",
+          "cibles": {
+            "longueurs": 8,
+            "reposSecondes": 40
+          },
+          "consigne": "Une longueur, puis 30 à 45 s de repos au bord avant la suivante."
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": {
+            "maintienSecondes": 60
+          }
+        }
+      ]
+    }
+  ]
+}

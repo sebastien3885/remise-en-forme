@@ -1,0 +1,45 @@
+{
+  "format": "plan-remise-en-forme",
+  "version": 1,
+  "nom": "Semaine d'essai avec un exercice sur mesure",
+  "description": "Montre comment un plan ajoute son propre exercice à la bibliothèque, en le rattachant aux variantes déjà présentes.",
+  "dateDebut": "2026-11-16",
+  "exercices": [
+    {
+      "id": "marche-fractionnee",
+      "nom": "Marche fractionnée",
+      "categorie": "marche",
+      "description": "Alterner 2 min d'allure rapide et 2 min d'allure tranquille.",
+      "musclesTravailles": ["jambes", "endurance"],
+      "varianteFacileId": "marche-rapide",
+      "contreIndications": [],
+      "impactGenou": "faible",
+      "flexionMarquee": false,
+      "materielRequis": ["aucun"],
+      "consigneSecurite": "Revenir à l'allure tranquille dès que la respiration ne suit plus."
+    }
+  ],
+  "seances": [
+    {
+      "date": "2026-11-16",
+      "type": "marche",
+      "titre": "Marche fractionnée 24 min",
+      "exercices": [
+        {
+          "exerciceId": "marche-fractionnee",
+          "cibles": { "dureeMinutes": 24 }
+        },
+        {
+          "exerciceId": "etirement-mollets",
+          "cibles": { "maintienSecondes": 60 }
+        }
+      ]
+    },
+    {
+      "date": "2026-11-17",
+      "type": "repos",
+      "titre": "Repos complet",
+      "exercices": []
+    }
+  ]
+}
