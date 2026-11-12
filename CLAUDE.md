@@ -135,7 +135,18 @@ Ces règles ne sont pas des suggestions d'interface : elles sont codées et test
 - **Douleur signalée deux fois sur le même exercice** : proposer une variante plus
   douce et suggérer un avis médical.
 - **Aucune cible calorique restrictive générée automatiquement.** Toute valeur
-  chiffrée est saisie par l'utilisateur.
+  chiffrée est saisie par l'utilisateur. Le schéma de `src/config/reperes.json`
+  refuse un repère que le code ne sait pas évaluer, pour qu'aucune cible
+  chiffrée ne se glisse par la configuration.
+- **On ne juge que ce qui a été écrit.** Un repère alimentaire dont la donnée
+  manque est hors jeu, ni tenu ni manqué : compter un repas non saisi comme un
+  échec ferait du journal un registre de fautes.
+- **Le poids ne s'affiche qu'en moyenne glissante**, jamais en chiffre du jour,
+  et sans commentaire sur la valeur. L'option `masquerPoids` du profil retire
+  la section entière.
+- **Les fiches d'éducation alimentaire reformulent des sources publiques** et
+  portent leur lien. Rien n'y est inventé ni personnalisé, et elles n'ont pas
+  encore été relues par un professionnel de santé.
 - **Aucun avis médical.** L'application accompagne, elle ne diagnostique pas.
 
 ## Vie privée

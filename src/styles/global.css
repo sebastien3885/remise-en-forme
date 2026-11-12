@@ -794,6 +794,45 @@ a:focus-visible {
   font-size: 0.8rem;
 }
 
+.defi {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--rayon);
+  background: var(--accent-sourd);
+}
+
+.defi__libelle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.defi__note {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+}
+
+.fiche-lecture {
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--trait);
+}
+
+.fiche-lecture p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.fiche-lecture__source {
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.fiche-lecture__source a {
+  color: var(--accent);
+}
+
 .chips--colonne {
   flex-direction: column;
 }

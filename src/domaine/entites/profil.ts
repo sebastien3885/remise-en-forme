@@ -75,6 +75,18 @@ export interface ObjectifPersonnel {
   atteintLe?: DateIso
 }
 
+/**
+ * Le défi de la semaine, choisi dans la fiche d'éducation alimentaire
+ * (chapitre 6 : « un seul défi par semaine, choisi dans la fiche »).
+ */
+export interface DefiChoisi {
+  ficheId: Id
+  libelle: string
+  /** Lundi de la semaine pour laquelle il a été choisi. */
+  debutSemaine: DateIso
+  choisiLe: HorodatageIso
+}
+
 export interface Profil {
   id: typeof ID_PROFIL
   dateDebut: DateIso
@@ -91,5 +103,7 @@ export interface Profil {
   objectifVerresEau: number
   /** Masquer le poids si le suivi devient anxiogène (chapitre 6). */
   masquerPoids: boolean
+  /** Un seul à la fois : c'est tout l'intérêt (chapitre 6). */
+  defiEnCours?: DefiChoisi
   misAJourLe: HorodatageIso
 }

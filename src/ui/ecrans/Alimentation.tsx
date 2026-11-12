@@ -10,7 +10,7 @@
  */
 import { useState } from 'react'
 
-import { ajouterJours, aujourdhui } from '../../domaine/dates'
+import { ajouterJours, aujourdhui, maintenantIso } from '../../domaine/dates'
 import type { MomentRepas, Repas } from '../../domaine/entites'
 import { depots } from '../../stockage'
 import { Courbe } from '../composants/Courbe'
@@ -195,6 +195,8 @@ export function Alimentation() {
         </p>
       </section>
 
+      <FicheDeLaSemaine vue={vue} />
+
       {!vue.masquerPoids && (
         <section className="carte">
           <h2>Poids et tour de taille</h2>
@@ -251,6 +253,81 @@ export function Alimentation() {
         </section>
       )}
     </main>
+  )
+}
+
+/**
+ * La fiche de la semaine et son défi (chapitre 6).
+ *
+ * Un seul défi à la fois, et il se choisit dans la fiche : c'est tout
+ * l'intérêt du dispositif. Le suivi se fait à l'œil, dans le journal — rien
+ * n'est coché automatiquement, et l'application ne reproche rien.
+ */
+function FicheDeLaSemaine({ vue }: { vue: VueAlimentation }) {
+  const [lecture, setLecture] = useState(false)
+
+  async function choisir(libelle: string) {
+    await depots.profil.modifier({
+      defiEnCours: {
+        ficheId: vue.fiche.id,
+        libelle,
+        debutSemaine: vue.debutSemaine,
+        choisiLe: maintenantIso(),
+      },
+    })
+  }
+
+  return (
+    <section className="carte">
+      <p className="surtitre">Fiche de la semaine · 2 min</p>
+      <h2 style={{ marginTop: 8 }}>{vue.fiche.titre}</h2>
+
+      {vue.defi ? (
+        <div className="defi">
+          <p className="defi__libelle">{vue.defi.libelle}</p>
+          <p className="discret defi__note">
+            Votre défi de la semaine. Il se suit dans le journal, personne ne le coche à votre
+            place.
+          </p>
+        </div>
+      ) : (
+        <fieldset className="echelle" style={{ marginTop: 16 }}>
+          <legend>Un défi pour la semaine</legend>
+          <div className="chips chips--colonne">
+            {vue.fiche.defis.map((defi) => (
+              <button key={defi} type="button" onClick={() => void choisir(defi)}>
+                {defi}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
+
+      <button
+        className="lien-discret"
+        type="button"
+        style={{ marginTop: 14 }}
+        onClick={() => setLecture(!lecture)}
+      >
+        {lecture ? 'Replier la fiche' : 'Lire la fiche'}
+      </button>
+
+      {lecture && (
+        <div className="fiche-lecture">
+          {vue.fiche.paragraphes.map((paragraphe) => (
+            <p key={paragraphe.slice(0, 32)}>{paragraphe}</p>
+          ))}
+          <p className="discret fiche-lecture__source">
+            Repères publics reformulés depuis{' '}
+            <a href={vue.fiche.source.url} target="_blank" rel="noreferrer">
+              {vue.fiche.source.nom}
+            </a>
+            . Ce ne sont pas des conseils personnalisés : en cas de doute, un diététicien ou un
+            médecin tranche.
+          </p>
+        </div>
+      )}
+    </section>
   )
 }
 
