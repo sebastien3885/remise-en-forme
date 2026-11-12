@@ -1,0 +1,32 @@
+{
+  "version": 1,
+
+  "repasPrincipaux": ["petit-dejeuner", "dejeuner", "diner"],
+
+  "reperes": [
+    {
+      "id": "legumes",
+      "libelle": "Des légumes ou des fruits à chaque repas",
+      "actif": true
+    },
+    {
+      "id": "proteines",
+      "libelle": "Une source de protéines à chaque repas",
+      "actif": true
+    },
+    {
+      "id": "sansBoissonSucree",
+      "libelle": "Pas de boisson sucrée",
+      "actif": true
+    },
+    {
+      "id": "hydratation",
+      "libelle": "Objectif d'eau atteint",
+      "actif": true
+    }
+  ],
+
+  "regularite": {
+    "joursRenseignesParSemaine": 5
+  }
+}
