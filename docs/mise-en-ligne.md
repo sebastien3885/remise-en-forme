@@ -50,13 +50,39 @@ https://<votre-compte>.github.io/remise-en-forme/
 ## 4. Installer sur Android
 
 1. Ouvrir cette adresse dans **Chrome** sur le téléphone.
-2. Menu **⋮** → **Ajouter à l'écran d'accueil** (ou **Installer l'application**).
+2. Aller dans **Réglages** : la carte « Installer sur le téléphone » propose un
+   bouton **Installer sur cet appareil** dès que Chrome juge l'installation
+   possible. À défaut, le menu **⋮** de Chrome offre **Installer
+   l'application** ou **Ajouter à l'écran d'accueil** — c'est le même geste.
 3. Une icône apparaît sur l'écran d'accueil.
 
 L'application s'ouvre alors en plein écran, sans barre d'adresse, et
 **fonctionne sans réseau** : tout le code est mis en cache à la première
 ouverture. Un appui long sur l'icône propose deux raccourcis, « Séance du
 jour » et « Repas ».
+
+### Ce qui a été vérifié, et ce qui ne peut l'être que sur le téléphone
+
+Les conditions que Chrome exige pour proposer l'installation ont été
+contrôlées sur la version de production, servie en local :
+
+- le manifeste est servi et lu (nom, `display: standalone`, `start_url`,
+  langue, couleur de thème) ;
+- les icônes de 192 et 512 pixels répondent, dans les bonnes dimensions, plus
+  une icône `maskable` séparée pour le recadrage d'Android ;
+- le service worker s'enregistre, s'active et prend la main sur la page ;
+- son cache contient la page, le script, la feuille de style, le manifeste et
+  les icônes — de quoi démarrer sans réseau.
+
+Ce qui reste à faire sur un vrai téléphone, et que rien ici ne peut remplacer :
+
+- [ ] l'installation elle-même, depuis Chrome sur Android ;
+- [ ] l'icône sur l'écran d'accueil, et son recadrage ;
+- [ ] le bouton retour d'Android dans l'application installée ;
+- [ ] une ouverture en mode avion, pour voir l'application démarrer sans
+      réseau ;
+- [ ] l'export vers l'agenda (section 6) depuis le téléphone ;
+- [ ] une photo de repas prise avec l'appareil photo.
 
 ## 5. Sauvegarder
 
@@ -106,3 +132,9 @@ git push
 GitHub reconstruit et republie. Sur le téléphone, le service worker récupère
 la nouvelle version à l'ouverture suivante. **Vos données ne sont pas
 touchées** : elles vivent à côté du code, pas dedans.
+
+Une surprise à connaître : la **première ouverture après une mise en ligne
+montre encore la version précédente**. C'est le propre d'une application qui
+démarre depuis son cache — elle s'affiche d'abord, se met à jour derrière, et
+la fois suivante est à jour. Vérifié en servant deux versions de suite en
+local. En cas de doute, fermer l'application et la rouvrir.

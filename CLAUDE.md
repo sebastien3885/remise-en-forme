@@ -99,6 +99,12 @@ s'exportent vers l'agenda du téléphone (`src/domaine/calendrier/ics.ts`), qui
 sait notifier. Les jours de repos n'y vont pas — une alarme pour ne rien faire
 est du bruit — ni les séances faites, annulées ou remplacées.
 
+**Et un bouton ne s'affiche pas s'il ne peut rien faire.** Même règle, autre
+endroit : le bouton « Installer sur cet appareil » n'apparaît que si le
+navigateur a envoyé `beforeinstallprompt` (`src/ui/hooks/useInstallation.ts`).
+Ailleurs, l'écran explique le chemin par le menu du navigateur au lieu de
+montrer un bouton inerte.
+
 ## Langage visuel — « Grand geste »
 
 Direction retenue parmi six maquettes. Fond presque noir, **un seul accent**

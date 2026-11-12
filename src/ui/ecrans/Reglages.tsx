@@ -14,6 +14,7 @@ import { depots } from '../../stockage'
 import { AvertissementSante } from '../composants/AvertissementSante'
 import { GenerationProgramme } from '../composants/GenerationProgramme'
 import { ImportDePlan } from '../composants/ImportDePlan'
+import { Installation } from '../composants/Installation'
 import { PreferencesEtDonnees } from '../composants/PreferencesEtDonnees'
 import { Rappels } from '../composants/Rappels'
 import { Sauvegarde } from '../composants/Sauvegarde'
@@ -161,6 +162,8 @@ export function Reglages() {
       <ImportDePlan />
 
       <Rappels />
+
+      <Installation />
 
       <Sauvegarde />
 
