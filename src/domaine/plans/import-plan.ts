@@ -16,9 +16,8 @@
  * Erreurs et avertissements sont distincts : une erreur bloque l'import, un
  * avertissement s'affiche dans l'aperçu et laisse l'utilisateur décider.
  */
-import { z } from 'zod'
-
 import { joursEntre, lundiDeLaSemaine, maintenantIso, numeroDeSemaineProgramme } from '../dates'
+import { formaterProblemes, problemeDeJson, type ProblemeDeFormat } from '../erreurs-zod'
 import {
   LIBELLE_IMPACT_GENOU,
   type DateIso,
@@ -41,57 +40,12 @@ export type { ExerciceDuPlan, PlanImporte, SeanceDuPlan } from './schema-plan'
 
 // --------------------------------------------------------------- contrôle
 
-export interface ProblemePlan {
-  /** Où, dans le fichier : `seances[2].exercices[0].cibles`. */
-  chemin: string
-  message: string
-}
+/** Où, dans le fichier, et pourquoi. */
+export type ProblemePlan = ProblemeDeFormat
 
 export type ResultatAnalyse =
   | { valide: true; plan: PlanImporte }
   | { valide: false; erreurs: ProblemePlan[] }
-
-function cheminLisible(chemin: ReadonlyArray<PropertyKey>): string {
-  if (chemin.length === 0) return 'racine du fichier'
-  return chemin.reduce<string>((accumule, segment) => {
-    if (typeof segment === 'number') return accumule + '[' + String(segment) + ']'
-    return accumule === '' ? String(segment) : accumule + '.' + String(segment)
-  }, '')
-}
-
-function typeEnFrancais(attendu: string): string {
-  const traductions: Record<string, string> = {
-    string: 'du texte',
-    number: 'un nombre',
-    boolean: 'vrai ou faux',
-    array: 'une liste',
-    object: 'un objet',
-  }
-  return traductions[attendu] ?? attendu
-}
-
-function messageEnFrancais(probleme: z.core.$ZodIssue): string {
-  switch (probleme.code) {
-    case 'invalid_type':
-      return 'valeur attendue : ' + typeEnFrancais(probleme.expected)
-    case 'unrecognized_keys':
-      return (
-        'clé inconnue : ' +
-        probleme.keys.join(', ') +
-        ' (une faute de frappe passerait inaperçue, donc le fichier est refusé)'
-      )
-    case 'invalid_value': {
-      const attendues = probleme.values.map((valeur) => JSON.stringify(valeur)).join(', ')
-      return 'valeur non reconnue ; attendu : ' + attendues
-    }
-    case 'too_small':
-      return 'valeur trop petite ou liste trop courte (minimum ' + String(probleme.minimum) + ')'
-    case 'too_big':
-      return 'valeur trop grande (maximum ' + String(probleme.maximum) + ')'
-    default:
-      return probleme.message
-  }
-}
 
 /** Contrôle la forme du plan. N'inspecte pas encore sa cohérence d'ensemble. */
 export function analyserPlan(donnees: unknown): ResultatAnalyse {
@@ -99,13 +53,7 @@ export function analyserPlan(donnees: unknown): ResultatAnalyse {
   if (resultat.success) {
     return { valide: true, plan: resultat.data }
   }
-  return {
-    valide: false,
-    erreurs: resultat.error.issues.map((probleme) => ({
-      chemin: cheminLisible(probleme.path),
-      message: messageEnFrancais(probleme),
-    })),
-  }
+  return { valide: false, erreurs: formaterProblemes(resultat.error.issues, Infinity) }
 }
 
 /** Même contrôle, à partir du texte brut du fichier choisi. */
@@ -114,17 +62,7 @@ export function analyserTextePlan(texte: string): ResultatAnalyse {
   try {
     donnees = JSON.parse(texte)
   } catch (erreur) {
-    return {
-      valide: false,
-      erreurs: [
-        {
-          chemin: 'fichier',
-          message:
-            'le fichier n’est pas du JSON valide : ' +
-            (erreur instanceof Error ? erreur.message : String(erreur)),
-        },
-      ],
-    }
+    return { valide: false, erreurs: [problemeDeJson(erreur)] }
   }
   return analyserPlan(donnees)
 }

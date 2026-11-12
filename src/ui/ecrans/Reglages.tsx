@@ -15,6 +15,7 @@ import { AvertissementSante } from '../composants/AvertissementSante'
 import { GenerationProgramme } from '../composants/GenerationProgramme'
 import { ImportDePlan } from '../composants/ImportDePlan'
 import { PreferencesEtDonnees } from '../composants/PreferencesEtDonnees'
+import { Sauvegarde } from '../composants/Sauvegarde'
 
 export function Reglages() {
   const profil = useLiveQuery(() => depots.profil.lire())
@@ -163,11 +164,12 @@ export function Reglages() {
 
       <ImportDePlan />
 
+      <Sauvegarde />
+
       {profil && <PreferencesEtDonnees masquerPoids={profil.masquerPoids} />}
 
       <footer className="discret pied">
-        Les données restent sur cet appareil. L’export JSON de sauvegarde arrive à l’étape 5 :
-        d’ici là, effacer les données du navigateur les supprimerait.
+        Les données restent sur cet appareil. Aucun compte, aucun serveur, aucun suivi.
       </footer>
     </main>
   )

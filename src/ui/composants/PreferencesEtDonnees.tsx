@@ -70,8 +70,8 @@ export function PreferencesEtDonnees({ masquerPoids }: { masquerPoids: boolean }
         <div className="carte carte--alerte" style={{ marginTop: 16 }}>
           <p>
             Tout sera effacé : profil, bibliothèque, programme, séances réalisées, journal
-            alimentaire, poids. <strong>Cette action est définitive</strong> et il n’existe pas
-            encore d’export de sauvegarde.
+            alimentaire, poids. <strong>Cette action est définitive.</strong> Exportez vos
+            données d’abord si vous tenez à les garder.
           </p>
           <div className="rangee-boutons" style={{ marginTop: 14 }}>
             <button

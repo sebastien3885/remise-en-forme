@@ -44,50 +44,12 @@ export const CHAMPS_MESURES: readonly ChampMesure[] = [
   { champ: 'reposSecondes', libelle: 'Repos', unite: 's', pas: 15 },
 ]
 
-function pluriel(nombre: number, singulier: string): string {
-  return String(nombre) + ' ' + singulier + (nombre > 1 ? 's' : '')
-}
-
-/** Résumé court d'une mesure : « 2 × 10, repos 60 s ». */
-export function formaterMesures(mesures: Mesures): string {
-  const morceaux: string[] = []
-
-  if (mesures.dureeMinutes !== undefined) {
-    morceaux.push(String(mesures.dureeMinutes) + ' min')
-  }
-  if (mesures.distanceMetres !== undefined) {
-    morceaux.push(String(mesures.distanceMetres) + ' m')
-  }
-  if (mesures.longueurs !== undefined) {
-    morceaux.push(pluriel(mesures.longueurs, 'longueur'))
-  }
-
-  // Les séries ne s'affichent jamais seules : elles multiplient ce qui suit.
-  if (mesures.repetitions !== undefined) {
-    morceaux.push(
-      mesures.series !== undefined
-        ? String(mesures.series) + ' × ' + String(mesures.repetitions)
-        : String(mesures.repetitions) + ' rép.',
-    )
-  } else if (mesures.maintienSecondes !== undefined) {
-    morceaux.push(
-      mesures.series !== undefined
-        ? String(mesures.series) + ' × ' + String(mesures.maintienSecondes) + ' s'
-        : String(mesures.maintienSecondes) + ' s',
-    )
-  } else if (mesures.series !== undefined) {
-    morceaux.push(pluriel(mesures.series, 'série'))
-  }
-
-  if (mesures.maintienSecondes !== undefined && mesures.repetitions !== undefined) {
-    morceaux.push('tenue ' + String(mesures.maintienSecondes) + ' s')
-  }
-  if (mesures.reposSecondes !== undefined && mesures.reposSecondes > 0) {
-    morceaux.push('repos ' + String(mesures.reposSecondes) + ' s')
-  }
-
-  return morceaux.join(', ')
-}
+/**
+ * Résumé court d'une mesure : « 2 × 10, repos 60 s ». Vit dans le domaine,
+ * parce que l'export CSV s'en sert aussi ; réexporté ici pour que les écrans
+ * n'aient qu'un seul point d'entrée.
+ */
+export { formaterMesures } from '../domaine/mesures'
 
 /**
  * Le chiffre qu'on met en gros sur l'écran du jour. Formaté en UTC, comme les
