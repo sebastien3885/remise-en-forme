@@ -10,6 +10,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 
 import { aujourdhui, numeroDeSemaineProgramme, plageDeSemaine } from '../../domaine/dates'
 import type {
+  BilanHebdo,
   DateIso,
   Exercice,
   ExercicePrevu,
@@ -43,6 +44,8 @@ export interface EtatDuJour {
   semaine: EtatSemaine
   hydratation: Hydratation | undefined
   objectifVerres: number
+  /** Rappel du bilan (chapitre 8) : un bilan attend une décision. */
+  bilanEnAttente: BilanHebdo | undefined
 }
 
 export function useEtatDuJour(date: DateIso = aujourdhui()): EtatDuJour | undefined {
@@ -99,6 +102,9 @@ export function useEtatDuJour(date: DateIso = aujourdhui()): EtatDuJour | undefi
       },
       hydratation: await depots.hydratation.duJour(date),
       objectifVerres: profil?.objectifVerresEau ?? 8,
+      bilanEnAttente: (await depots.bilans.historique()).find(
+        (bilan) => bilan.decision === 'en-attente',
+      ),
     }
   }, [date])
 }

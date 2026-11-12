@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { amorcerSiNecessaire } from './stockage/amorcage'
 import { Aujourdhui } from './ui/ecrans/Aujourdhui'
 import { EcranAVenir } from './ui/ecrans/EcranAVenir'
+import { Progres } from './ui/ecrans/Progres'
 import { Reglages } from './ui/ecrans/Reglages'
 import { Semaine } from './ui/ecrans/Semaine'
 import { BarreOnglets } from './ui/navigation/BarreOnglets'
@@ -62,13 +63,7 @@ export function App() {
     <>
       {onglet === 'aujourdhui' && <Aujourdhui />}
       {onglet === 'semaine' && <Semaine />}
-      {onglet === 'progres' && (
-        <EcranAVenir
-          etape="Étape 3"
-          titre="Progrès"
-          contenu="Courbes, records, série en cours et bilans hebdomadaires. Le moteur de progression qui les alimente est déjà écrit et testé."
-        />
-      )}
+      {onglet === 'progres' && <Progres />}
       {onglet === 'alimentation' && (
         <EcranAVenir
           etape="Étape 4"

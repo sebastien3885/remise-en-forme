@@ -62,6 +62,12 @@ export function Aujourdhui() {
           </p>
         )}
       </div>
+
+      {etat.bilanEnAttente && (
+        <a className="rappel" href={lienOnglet('progres')}>
+          Le bilan de la semaine {etat.bilanEnAttente.semaine} attend votre décision
+        </a>
+      )}
     </header>
   )
 
