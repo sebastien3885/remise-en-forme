@@ -76,6 +76,18 @@ export function depotSeances(base: BaseForme = db) {
         return base.seancesRealisees.where('date').equals(date).toArray()
       },
 
+      /**
+       * Tout le réalisé, du plus ancien au plus récent.
+       *
+       * Les objectifs personnels n'ont pas de plage : « nager 4 longueurs »
+       * reste atteint même si c'était il y a trois mois, et même si c'était
+       * avant le programme en cours.
+       */
+      async toutes(): Promise<SeanceRealisee[]> {
+        const seances = await base.seancesRealisees.toArray()
+        return seances.sort((a, b) => a.date.localeCompare(b.date))
+      },
+
       /** Séances d'une plage de dates, bornes incluses : la base du bilan. */
       async parPlage(debut: DateIso, fin: DateIso): Promise<SeanceRealisee[]> {
         const seances = await base.seancesRealisees

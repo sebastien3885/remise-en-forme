@@ -62,6 +62,12 @@ restent conventionnels (`src`, `public`, `dist`).
 **Le réalisé est la source de vérité** (chapitre 4). Le moteur de progression se
 base sur les séances réalisées, jamais sur le programme théorique.
 
+**Un objectif se mesure sur une seule fois.** La jauge d'un objectif personnel
+lit le réalisé et ne somme jamais : trois marches de dix minutes ne valent pas
+« 30 minutes d'affilée », et deux séries de dix pompes ne valent pas vingt
+pompes d'affilée. Un objectif dont l'indicateur n'est pas une grandeur mesurée
+reste hors jeu — pas de jauge, et un mot qui le dit, jamais un 0 %.
+
 **Jamais d'écrasement** (chapitre 7). Une révision de programme crée une nouvelle
 version ; l'historique est conservé.
 

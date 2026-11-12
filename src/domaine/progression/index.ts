@@ -28,6 +28,13 @@ export {
 } from './regles'
 
 export {
+  avancementDesObjectifs,
+  avancementObjectif,
+  indicateurMesurable,
+  type AvancementObjectif,
+} from './objectifs'
+
+export {
   ajustementGlobal,
   appliquerAjustements,
   genererBilan,

@@ -983,6 +983,71 @@ a:focus-visible {
   font-size: 0.92rem;
 }
 
+/* ------------------------------------------- objectifs et jauges */
+
+/* La jauge est le chiffre qui compte : c'est à ce titre qu'elle porte
+   l'accent. L'état est toujours écrit à côté — « atteint le 12 novembre » —
+   pour que la couleur ne porte jamais seule l'information. */
+
+.objectifs {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.objectif + .objectif {
+  padding-top: 18px;
+  border-top: 1px solid var(--trait);
+}
+
+.objectif__entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.objectif__libelle {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.objectif__cible {
+  margin: 0;
+  flex: none;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.objectif__cible .chiffre {
+  font-size: 1.35rem;
+}
+
+.jauge {
+  height: 10px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: var(--fond-carte-haut);
+  overflow: hidden;
+}
+
+.jauge__remplissage {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.objectif--atteint .objectif__cible .chiffre {
+  color: var(--accent);
+}
+
+.objectif__etat {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+}
+
 .fiches {
   display: flex;
   flex-direction: column;

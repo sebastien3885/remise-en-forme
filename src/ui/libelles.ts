@@ -25,6 +25,19 @@ export const UNITE_DU_CHAMP: Record<ChampCharge, string> = {
   series: 'séries',
 }
 
+/**
+ * Nom en clair d'une grandeur mesurée, pour l'éditeur d'objectifs : on y
+ * choisit « Durée en minutes », pas `dureeMinutes`.
+ */
+export const LIBELLE_CHAMP_CHARGE: Record<ChampCharge, string> = {
+  dureeMinutes: 'Durée en minutes',
+  maintienSecondes: 'Maintien en secondes',
+  distanceMetres: 'Distance en mètres',
+  longueurs: 'Longueurs de piscine',
+  repetitions: 'Répétitions d’affilée',
+  series: 'Séries',
+}
+
 export interface ChampMesure {
   champ: keyof Mesures
   libelle: string

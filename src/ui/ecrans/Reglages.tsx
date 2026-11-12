@@ -103,21 +103,16 @@ export function Reglages() {
                 : ', flexions marquées signalées'}
             </dd>
 
+            {/* Les objectifs vivent dans l'onglet Progrès, avec leur jauge et
+                leur éditeur. En recopier la liste ici donnerait deux endroits
+                à tenir à jour, et un doute sur lequel fait foi. */}
             <dt>Objectifs</dt>
             <dd>
               {profil.objectifs.length === 0
-                ? 'aucun'
-                : profil.objectifs
-                    .map(
-                      (objectif) =>
-                        objectif.libelle +
-                        ' (' +
-                        String(objectif.cible) +
-                        ' ' +
-                        objectif.unite +
-                        ')',
-                    )
-                    .join(' · ')}
+                ? 'aucun · à définir dans l’onglet Progrès'
+                : String(profil.objectifs.length) +
+                  (profil.objectifs.length > 1 ? ' objectifs' : ' objectif') +
+                  ' · avancement et modification dans l’onglet Progrès'}
             </dd>
           </dl>
         ) : (

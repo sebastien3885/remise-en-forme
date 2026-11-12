@@ -17,6 +17,7 @@ import {
   refuserBilan,
 } from '../../stockage/bilan-hebdo'
 import { Courbe } from '../composants/Courbe'
+import { Objectifs } from '../composants/Objectifs'
 import { useHistorique } from '../hooks/useHistorique'
 import { useProgres, type VueProgres } from '../hooks/useProgres'
 import { formaterDateCourte, formaterDateLongue, UNITE_DU_CHAMP } from '../libelles'
@@ -233,6 +234,8 @@ export function Progres() {
           )}
         </section>
       )}
+
+      <Objectifs />
 
       <Historique />
     </main>
