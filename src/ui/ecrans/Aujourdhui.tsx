@@ -26,6 +26,8 @@ type Vue =
   | { mode: 'seance' }
   | { mode: 'saisie'; statut: StatutRealisation }
   | { mode: 'minuterie' }
+  /** Activité improvisée, notée après coup (chapitre 4). */
+  | { mode: 'libre' }
 
 export function Aujourdhui() {
   const date = aujourdhui()
@@ -77,6 +79,26 @@ export function Aujourdhui() {
             })),
           )}
           onFermer={() => setVue({ mode: 'seance' })}
+        />
+      </main>
+    )
+  }
+
+  // --- activité improvisée
+  if (vue.mode === 'libre') {
+    return (
+      <main className="page">
+        {entete}
+        <PanneauValidation
+          date={date}
+          exercices={[]}
+          type={realisee?.type ?? 'autre'}
+          titre={realisee?.titre ?? ''}
+          statut="faite"
+          libre
+          {...(realisee && realisee.seancePrevueId === undefined ? { realisee } : {})}
+          onFini={() => setVue({ mode: 'seance' })}
+          onAnnuler={() => setVue({ mode: 'seance' })}
         />
       </main>
     )
@@ -152,13 +174,20 @@ export function Aujourdhui() {
             <button
               className="bouton bouton--secondaire"
               type="button"
-              onClick={() => setVue({ mode: 'saisie', statut: realisee.statut })}
+              onClick={() =>
+                setVue(
+                  realisee.seancePrevueId === undefined
+                    ? { mode: 'libre' }
+                    : { mode: 'saisie', statut: realisee.statut },
+                )
+              }
             >
               Corriger
             </button>
           </div>
         </section>
         <LigneEau etat={etat} />
+        <BoutonSeanceLibre onOuvrir={() => setVue({ mode: 'libre' })} />
       </main>
     )
   }
@@ -198,6 +227,7 @@ export function Aujourdhui() {
           </p>
         </section>
         <LigneEau etat={etat} />
+        <BoutonSeanceLibre onOuvrir={() => setVue({ mode: 'libre' })} />
       </main>
     )
   }
@@ -214,6 +244,13 @@ export function Aujourdhui() {
             ici.
           </p>
           <div className="rangee-boutons" style={{ marginTop: 16 }}>
+            <button
+              className="bouton"
+              type="button"
+              onClick={() => setVue({ mode: 'libre' })}
+            >
+              Noter une séance
+            </button>
             <a className="bouton bouton--secondaire" href={lienOnglet('semaine')}>
               Voir la semaine
             </a>
@@ -288,7 +325,22 @@ export function Aujourdhui() {
           <span style={{ marginLeft: 8 }}>Minuteur</span>
         </button>
       </div>
+
+      <BoutonSeanceLibre onOuvrir={() => setVue({ mode: 'libre' })} />
     </main>
+  )
+}
+
+/**
+ * Noter une activité qui n'était pas au programme (chapitre 4). Discret : ce
+ * n'est pas l'action du jour, mais elle doit rester à portée partout.
+ */
+function BoutonSeanceLibre({ onOuvrir }: { onOuvrir: () => void }) {
+  return (
+    <button className="lien-discret" type="button" onClick={onOuvrir}>
+      <Icone nom="plus" taille={17} />
+      <span>Noter une séance non prévue</span>
+    </button>
   )
 }
 

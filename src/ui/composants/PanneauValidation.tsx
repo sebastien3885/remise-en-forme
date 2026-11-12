@@ -25,20 +25,35 @@ import type {
 } from '../../domaine/entites'
 import { validerSeance } from '../../stockage/valider-seance'
 import type { ExerciceDuJour } from '../hooks/useEtatDuJour'
-import { CHAMPS_MESURES, LIBELLE_MOTIF, LIBELLE_STATUT } from '../libelles'
+import {
+  CHAMPS_MESURES,
+  LIBELLE_MOTIF,
+  LIBELLE_STATUT,
+  LIBELLE_TYPE_SEANCE,
+  TYPES_PROPOSABLES,
+} from '../libelles'
 import { Echelle } from './Echelle'
 
 const SANS_DOULEUR = 'aucune'
 const AILLEURS = 'ailleurs'
 
+/** Exercice générique qui porte une activité notée après coup. */
+export const EXERCICE_LIBRE = 'activite-libre'
+
 export interface ProprietesPanneau {
   date: DateIso
-  prevue: SeancePrevue
+  /** Absente pour une activité improvisée (chapitre 4). */
+  prevue?: SeancePrevue
   exercices: ExerciceDuJour[]
   type: TypeSeance
   titre: string
   statut: StatutRealisation
   realisee?: SeanceRealisee
+  /**
+   * Mode improvisé : le type, le titre et la durée se saisissent dans le
+   * panneau, puisqu'aucune séance prévue ne les porte.
+   */
+  libre?: boolean
   onFini: () => void
   onAnnuler: () => void
 }
@@ -51,9 +66,15 @@ export function PanneauValidation({
   titre,
   statut,
   realisee,
+  libre = false,
   onFini,
   onAnnuler,
 }: ProprietesPanneau) {
+  const [typeLibre, setTypeLibre] = useState<TypeSeance>(realisee?.type ?? type)
+  const [titreLibre, setTitreLibre] = useState(realisee?.titre ?? titre)
+  const [dureeLibre, setDureeLibre] = useState(() =>
+    String(realisee?.exercices[0]?.reel.dureeMinutes ?? 30),
+  )
   const [motif, setMotif] = useState<MotifAbandon | undefined>(realisee?.motif)
   const [effort, setEffort] = useState<number | undefined>(realisee?.effort)
   const [energie, setEnergie] = useState<number | undefined>(realisee?.energie)
@@ -83,6 +104,8 @@ export function PanneauValidation({
 
   const seanceSautee = statut === 'sautee'
   const ressentiComplet = seanceSautee || (effort !== undefined && energie !== undefined)
+  // En mode improvisé, il faut aussi savoir de quoi il s'agit et combien de temps.
+  const identiteComplete = !libre || (titreLibre.trim() !== '' && Number(dureeLibre) > 0)
 
   function changerValeur(exerciceId: string, champ: keyof Mesures, texte: string) {
     setValeurs((precedentes) => {
@@ -101,21 +124,32 @@ export function PanneauValidation({
         ? []
         : [{ zone: zoneDouleur, intensite: intensiteDouleur }]
 
-    const exercicesRealises: ExerciceRealise[] = exercices.map((exercice, index) => ({
-      exerciceId: exercice.exerciceId,
-      ordre: index + 1,
-      // Une séance sautée n'a pas de valeurs réelles à déclarer.
-      reel: seanceSautee ? {} : (valeurs[exercice.exerciceId] ?? exercice.cibles),
-      ...(exerciceDouloureux === exercice.exerciceId && intensiteDouleur !== undefined
-        ? { douleur: intensiteDouleur }
-        : {}),
-    }))
+    const exercicesRealises: ExerciceRealise[] = libre
+      ? [
+          {
+            exerciceId: EXERCICE_LIBRE,
+            ordre: 1,
+            reel: { dureeMinutes: Number(dureeLibre) },
+            ...(intensiteDouleur !== undefined && zoneDouleur !== SANS_DOULEUR
+              ? { douleur: intensiteDouleur }
+              : {}),
+          },
+        ]
+      : exercices.map((exercice, index) => ({
+          exerciceId: exercice.exerciceId,
+          ordre: index + 1,
+          // Une séance sautée n'a pas de valeurs réelles à déclarer.
+          reel: seanceSautee ? {} : (valeurs[exercice.exerciceId] ?? exercice.cibles),
+          ...(exerciceDouloureux === exercice.exerciceId && intensiteDouleur !== undefined
+            ? { douleur: intensiteDouleur }
+            : {}),
+        }))
 
     await validerSeance({
       date,
-      prevue,
-      type,
-      titre,
+      ...(prevue ? { prevue } : {}),
+      type: libre ? typeLibre : type,
+      titre: libre ? titreLibre.trim() : titre,
       statut,
       exercices: exercicesRealises,
       douleurs,
@@ -130,9 +164,62 @@ export function PanneauValidation({
   return (
     <section className="carte panneau">
       <div className="panneau__entete">
-        <p className="surtitre">{LIBELLE_STATUT[statut]}</p>
-        <h2 style={{ margin: 0 }}>{titre}</h2>
+        <p className="surtitre">{libre ? 'Séance non prévue' : LIBELLE_STATUT[statut]}</p>
+        {!libre && <h2 style={{ margin: 0 }}>{titre}</h2>}
       </div>
+
+      {libre && (
+        <>
+          <fieldset className="echelle">
+            <legend>Quelle activité ?</legend>
+            <div className="chips">
+              {TYPES_PROPOSABLES.map((candidat) => (
+                <button
+                  key={candidat}
+                  type="button"
+                  aria-pressed={typeLibre === candidat}
+                  onClick={() => {
+                    setTypeLibre(candidat)
+                    // Le titre suit le type tant qu'on ne l'a pas écrit soi-même.
+                    if (titreLibre === '' || titreLibre === LIBELLE_TYPE_SEANCE[typeLibre]) {
+                      setTitreLibre(LIBELLE_TYPE_SEANCE[candidat])
+                    }
+                  }}
+                >
+                  {LIBELLE_TYPE_SEANCE[candidat]}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="champs" style={{ marginBottom: 20 }}>
+            <label className="champ champ--large" htmlFor="titre-libre">
+              <span>Nom de la séance</span>
+              <input
+                id="titre-libre"
+                type="text"
+                value={titreLibre}
+                placeholder="Balade au bord du canal"
+                onChange={(evenement) => setTitreLibre(evenement.target.value)}
+              />
+            </label>
+            <label className="champ" htmlFor="duree-libre">
+              <span>
+                Durée <span className="discret">(min)</span>
+              </span>
+              <input
+                id="duree-libre"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                step={5}
+                value={dureeLibre}
+                onChange={(evenement) => setDureeLibre(evenement.target.value)}
+              />
+            </label>
+          </div>
+        </>
+      )}
 
       {statut !== 'faite' && (
         <fieldset className="echelle">
@@ -310,13 +397,18 @@ export function PanneauValidation({
         type="button"
         className="bouton bouton--principal"
         style={{ marginTop: 18 }}
-        disabled={!ressentiComplet || enCours}
+        disabled={!ressentiComplet || !identiteComplete || enCours}
         onClick={() => void enregistrer()}
       >
         {enCours ? 'Enregistrement…' : 'Enregistrer'}
       </button>
 
-      {!ressentiComplet && (
+      {!identiteComplete && (
+        <p className="discret" style={{ marginTop: 10, textAlign: 'center' }}>
+          Donnez un nom et une durée à cette séance.
+        </p>
+      )}
+      {identiteComplete && !ressentiComplet && (
         <p className="discret" style={{ marginTop: 10, textAlign: 'center' }}>
           Indiquez l’effort et l’énergie pour enregistrer.
         </p>

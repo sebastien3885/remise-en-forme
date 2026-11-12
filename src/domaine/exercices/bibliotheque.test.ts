@@ -185,4 +185,14 @@ describe('couverture du programme de départ du chapitre 3', () => {
     expect(parId.get('nage-crawl')?.impactGenou).toBe('faible')
     expect(parId.get('velo-souple')?.impactGenou).toBe('faible')
   })
+
+  it('fournit un exercice générique pour les activités notées après coup', () => {
+    // C'est lui qui porte la durée d'une balade ou d'un vélo improvisé : sans
+    // exercice, une séance improvisée n'aurait nulle part où ranger sa mesure.
+    const libre = parId.get('activite-libre')
+
+    expect(libre?.categorie).toBe('autre')
+    expect(libre?.impactGenou).toBe('faible')
+    expect(libre?.materielRequis).toEqual(['aucun'])
+  })
 })

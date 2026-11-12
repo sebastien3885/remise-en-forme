@@ -364,6 +364,33 @@ a:focus-visible {
   padding: 0 4px;
 }
 
+/* Une action secondaire qui ne doit pas peser : un lien, pas un bouton, mais
+   avec la cible tactile d'un bouton. */
+.lien-discret {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--cible-tactile);
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--texte-discret);
+  font: inherit;
+  font-size: 0.93rem;
+  cursor: pointer;
+  border-radius: var(--rayon);
+}
+
+.lien-discret:hover {
+  color: var(--texte);
+}
+
+.lien-discret:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* ------------------------------------------------- écran du jour */
 
 .entete-jour {

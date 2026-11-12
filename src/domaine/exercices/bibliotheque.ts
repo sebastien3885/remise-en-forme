@@ -390,6 +390,20 @@ const DEFINITIONS: DefinitionExercice[] = [
     consigneSecurite: 'Exclue par défaut pour le genou.',
   },
 
+  // --------------------------------------------------------- activité libre
+  {
+    id: 'activite-libre',
+    nom: 'Activité libre',
+    categorie: 'autre',
+    description:
+      'Toute activité notée après coup : une balade, du jardinage, une sortie à vélo improvisée.',
+    musclesTravailles: [],
+    contreIndications: [],
+    impactGenou: 'faible',
+    flexionMarquee: false,
+    materielRequis: ['aucun'],
+  },
+
   // --------------------------------------------------------------- mobilité
   {
     id: 'etirement-mollets',

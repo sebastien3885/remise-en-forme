@@ -6,7 +6,7 @@
  * ici pour que l'écran Aujourd'hui et l'écran Semaine disent exactement la
  * même chose de la même donnée.
  */
-import type { Mesures, MotifAbandon, StatutRealisation } from '../domaine/entites'
+import type { Mesures, MotifAbandon, StatutRealisation, TypeSeance } from '../domaine/entites'
 
 export interface ChampMesure {
   champ: keyof Mesures
@@ -129,6 +129,26 @@ export const LIBELLE_STATUT: Record<StatutRealisation, string> = {
   partielle: 'Faite en partie',
   sautee: 'Sautée',
 }
+
+export const LIBELLE_TYPE_SEANCE: Record<TypeSeance, string> = {
+  marche: 'Marche',
+  velo: 'Vélo',
+  natation: 'Natation',
+  renforcement: 'Renforcement',
+  mobilite: 'Mobilité',
+  autre: 'Autre',
+  repos: 'Repos',
+}
+
+/** Les types qu'on propose pour une activité improvisée. Le repos n'en est pas une. */
+export const TYPES_PROPOSABLES: readonly TypeSeance[] = [
+  'marche',
+  'velo',
+  'natation',
+  'renforcement',
+  'mobilite',
+  'autre',
+]
 
 export const LIBELLE_MOTIF: Record<MotifAbandon, string> = {
   fatigue: 'Fatigue',
