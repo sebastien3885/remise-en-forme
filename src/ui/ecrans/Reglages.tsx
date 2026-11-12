@@ -14,6 +14,7 @@ import { depots } from '../../stockage'
 import { AvertissementSante } from '../composants/AvertissementSante'
 import { GenerationProgramme } from '../composants/GenerationProgramme'
 import { ImportDePlan } from '../composants/ImportDePlan'
+import { PreferencesEtDonnees } from '../composants/PreferencesEtDonnees'
 
 export function Reglages() {
   const profil = useLiveQuery(() => depots.profil.lire())
@@ -161,6 +162,8 @@ export function Reglages() {
       </section>
 
       <ImportDePlan />
+
+      {profil && <PreferencesEtDonnees masquerPoids={profil.masquerPoids} />}
 
       <footer className="discret pied">
         Les données restent sur cet appareil. L’export JSON de sauvegarde arrive à l’étape 5 :

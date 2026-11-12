@@ -833,6 +833,43 @@ a:focus-visible {
   color: var(--accent);
 }
 
+/* Interrupteur. L'état est porté par `aria-checked`, pas par la couleur. */
+.bascule {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 32px;
+  padding: 3px;
+  border: 1px solid var(--trait);
+  border-radius: 999px;
+  background: var(--fond-carte-haut);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.bascule--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  justify-content: flex-end;
+}
+
+.bascule__curseur {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--texte);
+}
+
+.bascule--active .bascule__curseur {
+  background: var(--accent-texte);
+}
+
+.bascule:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .chips--colonne {
   flex-direction: column;
 }
