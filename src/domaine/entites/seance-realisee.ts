@@ -53,10 +53,16 @@ export interface SeanceRealisee {
   /** Motif optionnel quand la séance est sautée ou partielle. */
   motif?: MotifAbandon
   exercices: ExerciceRealise[]
-  /** Ressenti de l'effort, 1 à 10 (chapitre 4). */
-  effort: EchelleDix
-  /** État général : énergie du moment, 1 à 10. */
-  energie: EchelleDix
+  /**
+   * Ressenti de l'effort, 1 à 10 (chapitre 4).
+   *
+   * Absent pour une séance **sautée** : elle n'a pas eu lieu, elle n'a donc
+   * pas d'effort à déclarer. Mettre un chiffre par défaut reviendrait à
+   * fabriquer une donnée que le moteur de progression finirait par lire.
+   */
+  effort?: EchelleDix
+  /** État général : énergie du moment, 1 à 10. Absent si la séance est sautée. */
+  energie?: EchelleDix
   /** Douleurs signalées pour la séance entière. */
   douleurs: Douleur[]
   /** Sommeil de la nuit précédente, en heures. */

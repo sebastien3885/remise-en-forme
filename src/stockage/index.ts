@@ -7,12 +7,14 @@
  */
 import { db, type BaseForme } from './db'
 import { depotExercices } from './depots/depot-exercices'
+import { depotHydratation } from './depots/depot-hydratation'
 import { depotProfil } from './depots/depot-profil'
 import { depotProgrammes } from './depots/depot-programmes'
 import { depotSeances } from './depots/depot-seances'
 
 export { BaseForme, NOM_BASE, db } from './db'
 export { depotExercices, type DepotExercices } from './depots/depot-exercices'
+export { depotHydratation, type DepotHydratation } from './depots/depot-hydratation'
 export { depotProfil, type DepotProfil } from './depots/depot-profil'
 export { depotProgrammes, type DepotProgrammes } from './depots/depot-programmes'
 export { depotSeances, type DepotSeances } from './depots/depot-seances'
@@ -24,6 +26,7 @@ export function creerDepots(base: BaseForme = db) {
     exercices: depotExercices(base),
     programmes: depotProgrammes(base),
     seances: depotSeances(base),
+    hydratation: depotHydratation(base),
   }
 }
 

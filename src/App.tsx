@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { amorcerSiNecessaire } from './stockage/amorcage'
+import { Aujourdhui } from './ui/ecrans/Aujourdhui'
 import { EcranAVenir } from './ui/ecrans/EcranAVenir'
 import { Reglages } from './ui/ecrans/Reglages'
 import { BarreOnglets } from './ui/navigation/BarreOnglets'
@@ -58,13 +59,7 @@ export function App() {
 
   return (
     <>
-      {onglet === 'aujourdhui' && (
-        <EcranAVenir
-          etape="Étape 2 · en cours"
-          titre="Aujourd’hui"
-          contenu="La séance du jour, sa minuterie et la validation en un geste arrivent dans un instant. Le programme se génère depuis les réglages."
-        />
-      )}
+      {onglet === 'aujourdhui' && <Aujourdhui />}
       {onglet === 'semaine' && (
         <EcranAVenir
           etape="Étape 2 · en cours"

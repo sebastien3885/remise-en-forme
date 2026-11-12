@@ -55,6 +55,11 @@ function moyenne(valeurs: readonly number[]): number | null {
   return somme / valeurs.length
 }
 
+/** Écarte les valeurs non renseignées plutôt que de les compter comme zéro. */
+function renseignes(valeurs: readonly (number | undefined)[]): number[] {
+  return valeurs.filter((valeur): valeur is number => valeur !== undefined)
+}
+
 export function statistiquesDeLaSemaine(entree: EntreeStatistiques): StatistiquesSemaine {
   const config = entree.config ?? CONFIG_PROGRESSION
 
@@ -111,8 +116,8 @@ export function statistiquesDeLaSemaine(entree: EntreeStatistiques): Statistique
     seancesSautees: sautees.length,
     seancesImprovisees: improvisees.length,
     tauxRealisation,
-    effortMoyen: moyenne(effectuees.map((seance) => seance.effort)),
-    energieMoyenne: moyenne(effectuees.map((seance) => seance.energie)),
+    effortMoyen: moyenne(renseignes(effectuees.map((seance) => seance.effort))),
+    energieMoyenne: moyenne(renseignes(effectuees.map((seance) => seance.energie))),
     douleurMaximale,
     douleursParExercice,
     motifs,
