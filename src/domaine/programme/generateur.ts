@@ -1,20 +1,23 @@
 /**
- * Génération du programme initial de 12 semaines (chapitre 3).
+ * Construction des séances et génération du programme initial (chapitre 3).
  *
  * Le cahier des charges donne le programme de départ : 3 marches rapides,
- * 2 séances de renforcement sans matériel, 1 natation douce et de la mobilité
- * après chaque séance, avec au moins un jour de repos complet par semaine.
+ * 2 séances de renforcement sans matériel, 1 natation douce, de la mobilité
+ * après chaque séance, et au moins un jour de repos complet par semaine.
+ *
+ * `construireSeance` est la brique commune : elle sert à la génération des
+ * douze semaines, à l'ajout d'une séance à la main et au remplacement d'une
+ * séance par une autre. Une seule définition du contenu, donc une marche
+ * ajoutée à la main ressemble exactement à une marche du programme.
  *
  * Trois décisions que le cahier des charges ne tranche pas :
  *
  * 1. **Les douze semaines sont identiques.** Le chapitre 3 ne décrit que les
  *    semaines 1 à 4, et le chapitre 5 confie la progression au moteur, à
  *    partir du réalisé. Inventer ici une montée en charge reviendrait à
- *    décider à l'avance ce que le moteur doit déduire de la réalité. Le
- *    programme pose donc un socle, et le bilan du dimanche le fait évoluer.
- * 2. **Trois étirements d'une minute** plutôt qu'un bloc de cinq minutes :
- *    sur cinq minutes d'étirements, seules les tenues se prescrivent, le
- *    reste est du déplacement entre deux postures.
+ *    décider à l'avance ce que le moteur doit déduire de la réalité.
+ * 2. **Trois tenues d'une minute** plutôt qu'un bloc de cinq minutes : sur
+ *    cinq minutes d'étirements, seules les tenues se prescrivent.
  * 3. **On s'entraîne en dessous du maximum.** Quand le questionnaire indique
  *    un nombre de pompes ou de squats possibles, les séries sont calées à
  *    60 % de ce maximum : c'est une reprise, pas un test.
@@ -24,7 +27,16 @@
  * dans les avertissements.
  */
 import { ajouterJours, lundiDeLaSemaine, maintenantIso, numeroDeSemaineProgramme } from '../dates'
-import type { Exercice, Id, Mesures, Profil, Programme, SeancePrevue } from '../entites'
+import type {
+  DateIso,
+  Exercice,
+  HorodatageIso,
+  Id,
+  Mesures,
+  Profil,
+  Programme,
+  SeancePrevue,
+} from '../entites'
 import { variantePlusDouce } from '../exercices/variantes'
 import { nouvelId as nouvelIdParDefaut, type FabriqueId } from '../identifiants'
 import { contexteDepuisProfil, exerciceAutorise } from '../profil/precautions'
@@ -34,10 +46,19 @@ export const SEMAINES_DU_PROGRAMME = 12
 
 const JOURS_PAR_SEMAINE = 7
 
-/** Ce qu'on fait chaque jour de la semaine, du lundi au dimanche. */
-type Gabarit = 'marche' | 'renforcement' | 'natation' | 'repos'
+/** Les contenus de séance que l'application sait construire. */
+export const GABARITS = [
+  'marche',
+  'velo',
+  'natation',
+  'renforcement',
+  'mobilite',
+  'repos',
+] as const
+export type GabaritSeance = (typeof GABARITS)[number]
 
-const SEMAINE_TYPE: readonly Gabarit[] = [
+/** Ce qu'on fait chaque jour de la semaine, du lundi au dimanche. */
+const SEMAINE_TYPE: readonly GabaritSeance[] = [
   'marche', // lundi
   'renforcement', // mardi
   'marche', // mercredi
@@ -77,13 +98,19 @@ interface ExerciceVoulu {
   cibles: Mesures
 }
 
-function exercicesVoulus(gabarit: Gabarit, profil: Profil): ExerciceVoulu[] {
+function exercicesVoulus(gabarit: GabaritSeance, profil: Profil): ExerciceVoulu[] {
   const mobilite = MOBILITE.map((id) => ({ id, cibles: { maintienSecondes: 60 } }))
 
   switch (gabarit) {
     case 'marche':
       return [
         { id: 'marche-rapide', cibles: { dureeMinutes: dureeDeMarche(profil) } },
+        ...mobilite,
+      ]
+
+    case 'velo':
+      return [
+        { id: 'velo-souple', cibles: { dureeMinutes: dureeDeMarche(profil) } },
         ...mobilite,
       ]
 
@@ -120,16 +147,132 @@ function exercicesVoulus(gabarit: Gabarit, profil: Profil): ExerciceVoulu[] {
         { id: 'etirement-mollets', cibles: { maintienSecondes: 60 } },
       ]
 
+    case 'mobilite':
+      return mobilite
+
     case 'repos':
       return []
   }
 }
 
-const TITRES: Record<Exclude<Gabarit, 'repos'>, (profil: Profil) => string> = {
+const TITRES: Record<Exclude<GabaritSeance, 'repos'>, (profil: Profil) => string> = {
   marche: (profil) => 'Marche rapide ' + String(dureeDeMarche(profil)) + ' min',
+  velo: (profil) => 'Vélo ' + String(dureeDeMarche(profil)) + ' min',
   renforcement: () => 'Renforcement sans matériel',
   natation: () => 'Natation douce, 8 × 1 longueur',
+  mobilite: () => 'Mobilité et étirements',
 }
+
+/** Titre d'une séance d'un gabarit donné, sans la construire. */
+export function titreDuGabarit(gabarit: GabaritSeance, profil: Profil): string {
+  return gabarit === 'repos' ? 'Repos complet' : TITRES[gabarit](profil)
+}
+
+// ----------------------------------------------- construction d'une séance
+
+export interface OptionsConstruction {
+  gabarit: GabaritSeance
+  profil: Profil
+  bibliotheque: readonly Exercice[]
+  date: DateIso
+  programmeId: Id
+  id: Id
+  creeLe: HorodatageIso
+  /** Date de début du programme, pour numéroter la semaine. */
+  dateDebutProgramme: DateIso
+}
+
+export interface SeanceConstruite {
+  /** Absente quand les précautions ne laissent aucun exercice de ce gabarit. */
+  seance: SeancePrevue | undefined
+  avertissements: string[]
+}
+
+/**
+ * Construit une séance d'un gabarit donné, en appliquant les précautions du
+ * profil : un exercice écarté descend vers sa variante plus douce, et à
+ * défaut sort de la séance.
+ */
+export function construireSeance(options: OptionsConstruction): SeanceConstruite {
+  const { gabarit, profil, bibliotheque, date, programmeId, id, creeLe } = options
+  const avertissements: string[] = []
+
+  const semaine = numeroDeSemaineProgramme(options.dateDebutProgramme, date)
+
+  if (gabarit === 'repos') {
+    return {
+      seance: {
+        id,
+        programmeId,
+        date,
+        semaine,
+        type: 'repos',
+        titre: 'Repos complet',
+        exercices: [],
+        statut: 'a-faire',
+        creeLe,
+      },
+      avertissements,
+    }
+  }
+
+  const contexte = contexteDepuisProfil(profil)
+  const parId = new Map(bibliotheque.map((exercice) => [exercice.id, exercice]))
+
+  const retenus = exercicesVoulus(gabarit, profil).flatMap((voulu) => {
+    const exercice = parId.get(voulu.id)
+
+    if (!exercice) {
+      avertissements.push(
+        'L’exercice « ' + voulu.id + ' » est absent de la bibliothèque : séances allégées.',
+      )
+      return []
+    }
+
+    if (exerciceAutorise(exercice, contexte)) {
+      return [{ exercice, cibles: voulu.cibles }]
+    }
+
+    const plusDouce = variantePlusDouce(exercice, bibliotheque, contexte)
+    avertissements.push(
+      plusDouce
+        ? '« ' +
+            exercice.nom +
+            ' » est écarté par vos précautions : remplacé par « ' +
+            plusDouce.nom +
+            ' ».'
+        : '« ' +
+            exercice.nom +
+            ' » est écarté par vos précautions et n’a pas de variante plus douce : retiré des séances.',
+    )
+    return plusDouce ? [{ exercice: plusDouce, cibles: voulu.cibles }] : []
+  })
+
+  if (retenus.length === 0) {
+    return { seance: undefined, avertissements }
+  }
+
+  return {
+    seance: {
+      id,
+      programmeId,
+      date,
+      semaine,
+      type: gabarit,
+      titre: TITRES[gabarit](profil),
+      exercices: retenus.map((retenu, index) => ({
+        exerciceId: retenu.exercice.id,
+        ordre: index + 1,
+        cibles: retenu.cibles,
+      })),
+      statut: 'a-faire',
+      creeLe,
+    },
+    avertissements,
+  }
+}
+
+// ------------------------------------------------- programme de 12 semaines
 
 export interface OptionsGeneration {
   profil: Profil
@@ -154,52 +297,16 @@ export function genererProgrammeInitial(options: OptionsGeneration): ProgrammeGe
   const creeLe = maintenantIso(maintenant)
   const fabrique = options.nouvelId ?? nouvelIdParDefaut
 
-  const contexte = contexteDepuisProfil(profil)
-  const parId = new Map(bibliotheque.map((exercice) => [exercice.id, exercice]))
-  const avertissements: string[] = []
-  const dejaSignales = new Set<Id>()
-
-  /** Résout un exercice voulu : lui-même, sa variante plus douce, ou rien. */
-  function resoudre(voulu: ExerciceVoulu): Exercice | undefined {
-    const exercice = parId.get(voulu.id)
-    if (!exercice) {
-      if (!dejaSignales.has(voulu.id)) {
-        dejaSignales.add(voulu.id)
-        avertissements.push(
-          'L’exercice « ' + voulu.id + ' » est absent de la bibliothèque : séances allégées.',
-        )
-      }
-      return undefined
-    }
-
-    if (exerciceAutorise(exercice, contexte)) return exercice
-
-    const plusDouce = variantePlusDouce(exercice, bibliotheque, contexte)
-    if (!dejaSignales.has(voulu.id)) {
-      dejaSignales.add(voulu.id)
-      avertissements.push(
-        plusDouce
-          ? '« ' +
-            exercice.nom +
-            ' » est écarté par vos précautions : remplacé par « ' +
-            plusDouce.nom +
-            ' ».'
-          : '« ' +
-            exercice.nom +
-            ' » est écarté par vos précautions et n’a pas de variante plus douce : retiré des séances.',
-      )
-    }
-    return plusDouce
-  }
-
-  // La piscine n'est pas toujours là : le dimanche redevient un jour libre.
-  const aLaPiscine = profil.materiel.includes('piscine')
-
   // L'identifiant du programme est tiré d'abord : les séances le portent
   // directement, sans repasse.
   const programmeId = fabrique()
   const premierLundi = lundiDeLaSemaine(profil.dateDebut)
+
+  // La piscine n'est pas toujours là : le dimanche redevient un jour libre.
+  const aLaPiscine = profil.materiel.includes('piscine')
+
   const seances: SeancePrevue[] = []
+  const avertissements: string[] = []
 
   for (let semaine = 0; semaine < nombreSemaines; semaine += 1) {
     for (let jour = 0; jour < JOURS_PAR_SEMAINE; jour += 1) {
@@ -209,48 +316,25 @@ export function genererProgrammeInitial(options: OptionsGeneration): ProgrammeGe
       if (date < profil.dateDebut) continue
 
       const gabaritDuJour = SEMAINE_TYPE[jour] ?? 'repos'
-      const gabarit: Gabarit =
+      const gabarit: GabaritSeance =
         gabaritDuJour === 'natation' && !aLaPiscine ? 'repos' : gabaritDuJour
 
-      if (gabarit === 'repos') {
-        seances.push({
-          id: fabrique(),
-          programmeId,
-          date,
-          semaine: numeroDeSemaineProgramme(profil.dateDebut, date),
-          type: 'repos',
-          titre: 'Repos complet',
-          exercices: [],
-          statut: 'a-faire',
-          creeLe,
-        })
-        continue
-      }
-
-      const retenus = exercicesVoulus(gabarit, profil).flatMap((voulu) => {
-        const exercice = resoudre(voulu)
-        return exercice ? [{ exercice, cibles: voulu.cibles }] : []
+      const construite = construireSeance({
+        gabarit,
+        profil,
+        bibliotheque,
+        date,
+        programmeId,
+        id: fabrique(),
+        creeLe,
+        dateDebutProgramme: profil.dateDebut,
       })
+
+      avertissements.push(...construite.avertissements)
 
       // Une séance vidée par les précautions devient un jour libre plutôt
       // qu'une case vide : l'utilisateur voit un calendrier honnête.
-      if (retenus.length === 0) continue
-
-      seances.push({
-        id: fabrique(),
-        programmeId,
-        date,
-        semaine: numeroDeSemaineProgramme(profil.dateDebut, date),
-        type: gabarit,
-        titre: TITRES[gabarit](profil),
-        exercices: retenus.map((retenu, index) => ({
-          exerciceId: retenu.exercice.id,
-          ordre: index + 1,
-          cibles: retenu.cibles,
-        })),
-        statut: 'a-faire',
-        creeLe,
-      })
+      if (construite.seance) seances.push(construite.seance)
     }
   }
 
@@ -269,5 +353,6 @@ export function genererProgrammeInitial(options: OptionsGeneration): ProgrammeGe
     creeLe,
   }
 
-  return { programme, seances, avertissements }
+  // Le même exercice écarté chaque jour ne produit qu'un avertissement.
+  return { programme, seances, avertissements: [...new Set(avertissements)] }
 }

@@ -14,8 +14,13 @@
  * contourner.
  */
 import { CONFIG_PROGRESSION, type ConfigProgression } from '../config/progression'
-import { numeroDeSemaineProgramme, plageDeSemaine } from '../domaine/dates'
+import { maintenantIso, numeroDeSemaineProgramme, plageDeSemaine } from '../domaine/dates'
 import type { DateIso, Id, SeancePrevue } from '../domaine/entites'
+import { nouvelId as nouvelIdParDefaut, type FabriqueId } from '../domaine/identifiants'
+import {
+  construireSeance,
+  type GabaritSeance,
+} from '../domaine/programme/generateur'
 import { joursDeReposSuffisants } from '../domaine/progression/moteur'
 import { db, type BaseForme } from './db'
 import { creerDepots, type Depots } from './index'
@@ -117,4 +122,197 @@ export async function deplacerSeance(
 
   await depots.seances.prevues.enregistrer(deplacee)
   return { deplace: true, seances: [deplacee], echange: false }
+}
+
+// ------------------------------------------------- planification libre
+
+export interface OptionsCreation extends OptionsDeplacement {
+  maintenant?: Date
+  nouvelId?: FabriqueId
+}
+
+export type ResultatCreation =
+  | { cree: true; seance: SeancePrevue; avertissements: string[] }
+  | { cree: false; raison: string }
+
+/**
+ * Pose une séance sur un jour donné (chapitre 3, « planification libre »).
+ *
+ * Le contenu vient du même constructeur que les douze semaines : une marche
+ * ajoutée à la main est exactement une marche du programme, précautions
+ * comprises.
+ */
+export async function ajouterSeance(
+  date: DateIso,
+  gabarit: GabaritSeance,
+  options: OptionsCreation = {},
+): Promise<ResultatCreation> {
+  const base = options.base ?? db
+  const depots = options.depots ?? creerDepots(base)
+  const config = options.config ?? CONFIG_PROGRESSION
+  const maintenant = options.maintenant ?? new Date()
+  const fabrique = options.nouvelId ?? nouvelIdParDefaut
+
+  const profil = await depots.profil.lire()
+  if (!profil) return { cree: false, raison: 'Aucun profil enregistré.' }
+
+  const programme = await depots.programmes.actif()
+  if (!programme) {
+    return {
+      cree: false,
+      raison: 'Aucun programme en cours : générez-en un avant d’y ajouter des séances.',
+    }
+  }
+
+  const occupe = (await depots.seances.prevues.parDate(date)).some(
+    (seance) => seance.statut !== 'annulee' && seance.statut !== 'remplacee',
+  )
+  if (occupe) {
+    return {
+      cree: false,
+      raison: 'Ce jour porte déjà une séance : déplacez-la ou remplacez-la.',
+    }
+  }
+
+  const construite = construireSeance({
+    gabarit,
+    profil,
+    bibliotheque: await depots.exercices.tous(),
+    date,
+    programmeId: programme.id,
+    id: fabrique(),
+    creeLe: maintenantIso(maintenant),
+    dateDebutProgramme: programme.dateDebut,
+  })
+
+  if (!construite.seance) {
+    return {
+      cree: false,
+      raison:
+        construite.avertissements[0] ??
+        'Vos précautions ne laissent aucun exercice pour ce type de séance.',
+    }
+  }
+
+  const { debut, fin } = plageDeSemaine(date)
+  const semaine = (await depots.seances.prevues.parPlage(debut, fin)).concat(construite.seance)
+  if (!joursDeReposSuffisants(semaine, config)) {
+    return {
+      cree: false,
+      raison:
+        'La semaine n’aurait plus aucun jour de repos complet. Le chapitre 3 en impose un : retirez une autre séance d’abord.',
+    }
+  }
+
+  await depots.seances.prevues.enregistrer(construite.seance)
+  return { cree: true, seance: construite.seance, avertissements: construite.avertissements }
+}
+
+/**
+ * Retire une séance du calendrier sans l'effacer : elle passe en `annulee` et
+ * sort du dénominateur du taux de réalisation. Une séance déjà saisie n'est
+ * pas annulable — elle a eu lieu.
+ */
+export async function annulerSeance(
+  seanceId: Id,
+  options: OptionsDeplacement = {},
+): Promise<{ annulee: true } | { annulee: false; raison: string }> {
+  const base = options.base ?? db
+  const depots = options.depots ?? creerDepots(base)
+
+  const seance = await depots.seances.prevues.parId(seanceId)
+  if (!seance) return { annulee: false, raison: 'Séance introuvable.' }
+
+  if (await depots.seances.realisees.pourSeancePrevue(seance.id)) {
+    return {
+      annulee: false,
+      raison: 'Cette séance a déjà été saisie : elle a eu lieu, elle ne s’annule pas.',
+    }
+  }
+
+  await depots.seances.prevues.enregistrer({ ...seance, statut: 'annulee' })
+  return { annulee: true }
+}
+
+export type ResultatRemplacement =
+  | { remplace: true; seance: SeancePrevue; avertissements: string[] }
+  | { remplace: false; raison: string }
+
+/**
+ * Remplace une séance par une séance d'un autre type, le même jour
+ * (chapitre 3 : « la remplacer par une équivalente »).
+ *
+ * L'ancienne n'est pas effacée : elle passe en `remplacee` et pointe vers la
+ * nouvelle, si bien que l'historique raconte ce qui s'est passé.
+ */
+export async function remplacerSeance(
+  seanceId: Id,
+  gabarit: GabaritSeance,
+  options: OptionsCreation = {},
+): Promise<ResultatRemplacement> {
+  const base = options.base ?? db
+  const depots = options.depots ?? creerDepots(base)
+  const maintenant = options.maintenant ?? new Date()
+  const fabrique = options.nouvelId ?? nouvelIdParDefaut
+
+  const ancienne = await depots.seances.prevues.parId(seanceId)
+  if (!ancienne) return { remplace: false, raison: 'Séance introuvable.' }
+
+  if (await depots.seances.realisees.pourSeancePrevue(ancienne.id)) {
+    return {
+      remplace: false,
+      raison: 'Cette séance a déjà été saisie : elle ne peut plus être remplacée.',
+    }
+  }
+
+  const profil = await depots.profil.lire()
+  if (!profil) return { remplace: false, raison: 'Aucun profil enregistré.' }
+
+  const programme = await depots.programmes.parId(ancienne.programmeId)
+
+  const construite = construireSeance({
+    gabarit,
+    profil,
+    bibliotheque: await depots.exercices.tous(),
+    date: ancienne.date,
+    programmeId: ancienne.programmeId,
+    id: fabrique(),
+    creeLe: maintenantIso(maintenant),
+    dateDebutProgramme: programme?.dateDebut ?? ancienne.date,
+  })
+
+  if (!construite.seance) {
+    return {
+      remplace: false,
+      raison:
+        construite.avertissements[0] ??
+        'Vos précautions ne laissent aucun exercice pour ce type de séance.',
+    }
+  }
+
+  // Remplacer le jour de repos par un entraînement ferait disparaître le seul
+  // jour libre de la semaine : c'est le seul remplacement qu'on refuse.
+  const { debut, fin } = plageDeSemaine(ancienne.date)
+  const semaine = (await depots.seances.prevues.parPlage(debut, fin))
+    .filter((candidate) => candidate.id !== ancienne.id)
+    .concat(construite.seance)
+
+  if (!joursDeReposSuffisants(semaine, options.config ?? CONFIG_PROGRESSION)) {
+    return {
+      remplace: false,
+      raison:
+        'La semaine n’aurait plus aucun jour de repos complet. Le chapitre 3 en impose un : libérez un autre jour d’abord.',
+    }
+  }
+
+  await depots.seances.prevues.enregistrerPlusieurs([
+    { ...ancienne, statut: 'remplacee', remplaceeParId: construite.seance.id },
+    construite.seance,
+  ])
+
+  return {
+    remplace: true,
+    seance: construite.seance,
+    avertissements: construite.avertissements,
+  }
 }
