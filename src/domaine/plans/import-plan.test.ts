@@ -797,3 +797,87 @@ describe('aperçu et bibliothèque existante', () => {
     expect(apercu.exercicesNouveaux).toEqual(['Tout neuf'])
   })
 })
+
+describe('avertissements sur les exercices pris dans la bibliothèque', () => {
+  function planQuiProgramme(exerciceId: string) {
+    return planValide({
+      seances: [
+        {
+          date: '2026-11-16',
+          type: 'natation',
+          titre: 'Séance',
+          exercices: [{ exerciceId, cibles: { longueurs: 6 } }],
+        },
+      ],
+    })
+  }
+
+  function messages(exerciceId: string): string {
+    const apercu = apercuDuPlan(planQuiProgramme(exerciceId), { bibliotheque, precautions })
+    return apercu.avertissements.map((avertissement) => avertissement.message).join(' | ')
+  }
+
+  it('signale la brasse même quand le plan ne la définit pas', () => {
+    // Le cas réel : un plan préparé sur le PC référence la bibliothèque au
+    // lieu de redéfinir les exercices. Sans ce contrôle, le mouvement que le
+    // chapitre 10 demande de signaler passait sans un mot.
+    expect(messages('nage-brasse')).toMatch(/flexion marquée/)
+    expect(messages('nage-brasse')).toMatch(/Brasse/)
+  })
+
+  it('n’empêche pas l’import pour autant', () => {
+    const apercu = apercuDuPlan(planQuiProgramme('nage-brasse'), { bibliotheque, precautions })
+
+    expect(apercu.applicable).toBe(true)
+    expect(apercu.erreurs).toEqual([])
+  })
+
+  it('signale un exercice à fort impact programmé depuis la bibliothèque', () => {
+    expect(messages('course-a-pied')).toMatch(/fort impact/)
+  })
+
+  it('signale un impact modéré programmé depuis la bibliothèque', () => {
+    expect(messages('marche-avec-denivele')).toMatch(/[Ii]mpact modéré/)
+  })
+
+  it('reste muet sur un exercice à faible impact', () => {
+    expect(messages('marche-rapide')).toBe('')
+  })
+
+  it('désigne les séances plutôt que les exercices quand le plan ne le définit pas', () => {
+    const apercu = apercuDuPlan(planQuiProgramme('nage-brasse'), { bibliotheque, precautions })
+
+    expect(apercu.avertissements[0]?.chemin).toBe('seances')
+  })
+
+  it('n’avertit qu’une fois quand l’exercice est à la fois défini et programmé', () => {
+    const plan = planValide({
+      exercices: [
+        {
+          id: 'nage-brasse',
+          nom: 'Brasse',
+          categorie: 'natation',
+          impactGenou: 'modere',
+          flexionMarquee: true,
+          materielRequis: ['piscine'],
+        },
+      ],
+      seances: [
+        {
+          date: '2026-11-16',
+          type: 'natation',
+          titre: 'Séance',
+          exercices: [{ exerciceId: 'nage-brasse', cibles: { longueurs: 6 } }],
+        },
+      ],
+    })
+
+    const apercu = apercuDuPlan(plan, { bibliotheque, precautions })
+    const signalements = apercu.avertissements.filter((avertissement) =>
+      /flexion marquée/.test(avertissement.message),
+    )
+
+    expect(signalements).toHaveLength(1)
+    expect(signalements[0]?.chemin).toBe('exercices')
+  })
+})

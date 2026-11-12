@@ -299,42 +299,73 @@ export function apercuDuPlan(plan: PlanImporte, contexte: ContexteApercu): Aperc
   }
 
   // --- avertissements : précautions et fort impact
+  //
+  // Les exercices à examiner ne sont pas seulement ceux que le fichier
+  // apporte : ce sont aussi ceux qu'il **programme depuis la bibliothèque**.
+  // Oublier les seconds laisse passer sans un mot un plan qui programme de la
+  // brasse — précisément le mouvement que le chapitre 10 demande de signaler
+  // pour le genou.
+  const horodatageNeutre = maintenantIso(new Date(0))
+  const aExaminer = new Map<Id, Exercice>()
+
   for (const [id, definition] of exercicesDuPlan) {
-    if (definition.impactGenou === 'eleve') {
+    aExaminer.set(id, convertirExercice(definition, id, horodatageNeutre))
+  }
+  for (const seance of plan.seances) {
+    for (const reference of seance.exercices) {
+      if (aExaminer.has(reference.exerciceId)) continue
+      const deLaBibliotheque = bibliothequeParId.get(reference.exerciceId)
+      if (deLaBibliotheque) aExaminer.set(reference.exerciceId, deLaBibliotheque)
+    }
+  }
+
+  const triesParId = [...aExaminer.entries()].sort(([a], [b]) => a.localeCompare(b))
+
+  for (const [id, exercice] of triesParId) {
+    const vientDuPlan = exercicesDuPlan.has(id)
+
+    if (exercice.impactGenou === 'eleve') {
       avertissements.push({
-        chemin: 'exercices',
+        chemin: vientDuPlan ? 'exercices' : 'seances',
         message:
           '« ' +
-          definition.nom +
-          ' » est déclaré à fort impact pour le genou : il sera écarté des propositions tant que les précautions du profil ne sont pas levées',
+          exercice.nom +
+          ' » est à fort impact pour le genou : il sera écarté des propositions tant que les précautions du profil ne sont pas levées',
       })
     }
 
     if (contexte.precautions) {
-      const verdict = evaluerExercice(
-        convertirExercice(definition, id, maintenantIso(new Date(0))),
-        contexte.precautions,
-      )
+      const verdict = evaluerExercice(exercice, contexte.precautions)
+
       for (const exclusion of verdict.exclusions) {
-        if (exclusion.raison === 'impact-genou' && definition.impactGenou === 'eleve') continue
+        if (exclusion.raison === 'impact-genou' && exercice.impactGenou === 'eleve') continue
         avertissements.push({
-          chemin: 'exercices',
-          message: '« ' + definition.nom + ' » sera écarté : ' + exclusion.explication,
+          chemin: vientDuPlan ? 'exercices' : 'seances',
+          message: '« ' + exercice.nom + ' » sera écarté : ' + exclusion.explication,
+        })
+      }
+
+      // Un exercice autorisé mais signalé — la brasse, l'étirement des
+      // quadriceps — doit quand même se voir dans l'aperçu.
+      for (const signalement of verdict.signalements) {
+        avertissements.push({
+          chemin: vientDuPlan ? 'exercices' : 'seances',
+          message: '« ' + exercice.nom + ' » : ' + signalement,
         })
       }
     }
 
-    const existant = bibliothequeParId.get(id)
-    if (existant && existant.impactGenou !== definition.impactGenou) {
+    const existant = vientDuPlan ? bibliothequeParId.get(id) : undefined
+    if (existant && existant.impactGenou !== exercice.impactGenou) {
       avertissements.push({
         chemin: 'exercices',
         message:
           '« ' +
-          definition.nom +
+          exercice.nom +
           ' » change d’impact genou : ' +
           LIBELLE_IMPACT_GENOU[existant.impactGenou] +
           ' → ' +
-          LIBELLE_IMPACT_GENOU[definition.impactGenou],
+          LIBELLE_IMPACT_GENOU[exercice.impactGenou],
       })
     }
   }
