@@ -30,11 +30,25 @@ npm run lint        # ESLint
 ## Organisation du code
 
 ```
-src/config/      règles de progression en JSON + leur schéma
+src/config/      progression.json (les règles du chapitre 5) + son schéma zod
 src/domaine/     métier pur : ni React, ni Dexie, ni DOM. Testable seul.
+  entites/       les neuf entités du chapitre 7
+  exercices/     bibliothèque et choix de variantes
+  plans/         format d'import, contrôle, aperçu, conversion
+  profil/        profil par défaut et précautions du chapitre 10
+  progression/   le moteur : statistiques, règles, propositions
 src/stockage/    la seule couche qui connaît IndexedDB (Dexie + dépôts)
 src/ui/          écrans, composants, navigation, hooks
 ```
+
+**Les règles de progression se règlent dans `src/config/progression.json`**, pas
+dans le code. Le fichier est contrôlé au chargement, et il ne peut pas franchir
+les garde-fous du chapitre 10 : une augmentation au-delà de 10 % ou un minimum
+de zéro jour de repos font échouer le démarrage.
+
+**Le moteur ne lit et n'écrit rien.** `genererBilan` reçoit des séances et rend
+un bilan ; `proposerSemaineSuivante` reçoit une semaine et en rend une autre.
+Aucun accès à la base, aucun état.
 
 **Règle d'architecture.** `src/domaine/` n'importe jamais rien de `src/stockage/`
 ni de `src/ui/`. Le moteur de progression est un module pur : il reçoit des

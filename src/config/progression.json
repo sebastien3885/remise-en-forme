@@ -1,0 +1,52 @@
+{
+  "version": 1,
+
+  "poidsSeancePartielle": 0.5,
+
+  "reduire": {
+    "tauxRealisationSous": 0.5,
+    "effortMoyenAPartirDe": 8,
+    "facteur": 0.8
+  },
+
+  "maintenir": {
+    "tauxRealisationAPartirDe": 0.5
+  },
+
+  "augmenter": {
+    "tauxRealisationAPartirDe": 0.8,
+    "effortMoyenJusqua": 6,
+    "facteur": 1.1
+  },
+
+  "semaineAllegee": {
+    "apresSemainesDeProgression": 4,
+    "facteur": 0.7
+  },
+
+  "douleurRepetee": {
+    "signalementsAvantRemplacement": 2,
+    "intensiteMinimale": 1,
+    "fenetreSemaines": 2,
+    "bloqueAugmentation": true,
+    "suggereAvisMedical": true
+  },
+
+  "palierAtteint": {
+    "semainesSansProgression": 3,
+    "ecartRelatifTolere": 0.02
+  },
+
+  "ressentiCharge": {
+    "tropDurBloqueAugmentation": true
+  },
+
+  "leviers": ["duree", "intensite"],
+
+  "plafonds": {
+    "augmentationMaximale": 1.1,
+    "reductionMaximale": 0.5,
+    "joursDeReposParSemaineMinimum": 1,
+    "autoriserLePlusPetitPas": true
+  }
+}

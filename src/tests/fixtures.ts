@@ -7,6 +7,7 @@
  */
 import { ID_PROFIL } from '../domaine/entites'
 import type {
+  BilanHebdo,
   Exercice,
   Hydratation,
   MesureCorporelle,
@@ -15,6 +16,7 @@ import type {
   Repas,
   SeancePrevue,
   SeanceRealisee,
+  StatistiquesSemaine,
 } from '../domaine/entites'
 
 const HORODATAGE = '2026-11-12T08:00:00.000Z'
@@ -114,6 +116,58 @@ export function uneSeanceRealisee(modifications: Partial<SeanceRealisee> = {}): 
     saisieLe: HORODATAGE,
     ...modifications,
   }
+}
+
+export function desStatistiques(
+  modifications: Partial<StatistiquesSemaine> = {},
+): StatistiquesSemaine {
+  return {
+    semaine: 1,
+    debut: '2026-11-16',
+    fin: '2026-11-22',
+    seancesPrevues: 3,
+    seancesFaites: 3,
+    seancesPartielles: 0,
+    seancesSautees: 0,
+    seancesImprovisees: 0,
+    tauxRealisation: 1,
+    effortMoyen: 5,
+    energieMoyenne: 7,
+    douleurMaximale: 0,
+    douleursParExercice: {},
+    motifs: {},
+    ...modifications,
+  }
+}
+
+export function unBilan(modifications: Partial<BilanHebdo> = {}): BilanHebdo {
+  return {
+    id: 'bilan-1',
+    programmeId: 'programme-1',
+    semaine: 1,
+    debut: '2026-11-16',
+    fin: '2026-11-22',
+    statistiques: desStatistiques(),
+    ressentiCharge: null,
+    reglesAppliquees: [],
+    ajustements: [],
+    decision: 'en-attente',
+    genereLe: HORODATAGE,
+    ...modifications,
+  }
+}
+
+/** Bilan d'une semaine où la charge a augmenté, et qui a été accepté. */
+export function unBilanDeProgression(modifications: Partial<BilanHebdo> = {}): BilanHebdo {
+  const explication = '+10 % car 3 séances sur 3 réalisées, effort 5/10.'
+  return unBilan({
+    reglesAppliquees: [
+      { cle: 'augmenter', libelle: 'Augmenter la charge', explication },
+    ],
+    ajustements: [{ regle: 'augmenter', levier: 'duree', facteur: 1.1, explication }],
+    decision: 'accepte',
+    ...modifications,
+  })
 }
 
 export function unRepas(modifications: Partial<Repas> = {}): Repas {
