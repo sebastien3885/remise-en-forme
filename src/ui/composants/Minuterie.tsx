@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { formaterChrono, type Phase } from '../../domaine/minuterie/sequence'
+import { useEcranAllume } from '../hooks/useEcranAllume'
 import { Icone } from './Icone'
 
 function vibrer(motif: number[]): void {
@@ -35,6 +36,11 @@ export function Minuterie({ phases, onFermer }: ProprietesMinuterie) {
   const phase = phases[index]
   const terminee = index >= phases.length
   const minutee = phase?.secondes !== undefined
+
+  // L'écran reste allumé tant que le décompte tourne, et pas une seconde de
+  // plus : une séance de gainage ne doit pas s'interrompre parce que
+  // l'écran s'éteint.
+  useEcranAllume(enMarche && finPrevue !== null)
 
   const allerA = useCallback(
     (suivant: number, lancer: boolean) => {
