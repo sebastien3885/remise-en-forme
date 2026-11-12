@@ -5,7 +5,11 @@ import { joursDeLaSemaine, lundiDeLaSemaine } from '../dates'
 import type { Profil, SeancePrevue } from '../entites'
 import { bibliothequeInitiale } from '../exercices/bibliotheque'
 import { profilParDefaut } from '../profil/profil-par-defaut'
-import { SEMAINES_DU_PROGRAMME, genererProgrammeInitial } from './generateur'
+import {
+  SEMAINES_DU_PROGRAMME,
+  construireSeance,
+  genererProgrammeInitial,
+} from './generateur'
 
 const bibliotheque = bibliothequeInitiale(new Date('2026-11-12T08:00:00.000Z'))
 const MAINTENANT = new Date('2026-11-12T09:00:00.000Z')
@@ -290,11 +294,11 @@ describe('matériel et précautions', () => {
     expect(avertissements).toHaveLength(1)
   })
 
-  it('retire l’exercice et le dit quand aucune variante plus douce n’existe', () => {
+  it('ne pose pas de marche quand ni l’exercice ni sa variante ne sont disponibles', () => {
     const profil = profilParDefaut({ dateDebut: '2026-11-16' })
     profil.precautions = {
       ...profil.precautions,
-      exercicesExclusIds: ['etirement-mollets', 'marche-tranquille', 'marche-rapide'],
+      exercicesExclusIds: ['marche-rapide', 'marche-tranquille'],
     }
 
     const { seances, avertissements } = genererProgrammeInitial({
@@ -303,10 +307,88 @@ describe('matériel et précautions', () => {
       maintenant: MAINTENANT,
       nouvelId: identifiants(),
     })
+
+    expect(seances.some((seance) => seance.type === 'marche')).toBe(false)
+    expect(avertissements.join(' ')).toMatch(/pas de variante plus douce/)
+    // Le renforcement et la natation, eux, tiennent toujours.
+    expect(seances.some((seance) => seance.type === 'renforcement')).toBe(true)
+  })
+
+  it('retire un étirement écarté sans sacrifier la séance', () => {
+    const profil = profilParDefaut({ dateDebut: '2026-11-16' })
+    profil.precautions = {
+      ...profil.precautions,
+      exercicesExclusIds: ['etirement-mollets'],
+    }
+
+    const { seances } = genererProgrammeInitial({
+      profil,
+      bibliotheque,
+      maintenant: MAINTENANT,
+      nouvelId: identifiants(),
+    })
     const marche = seances.find((seance) => seance.type === 'marche')
 
     expect(marche?.exercices.map((e) => e.exerciceId)).not.toContain('etirement-mollets')
-    expect(avertissements.join(' ')).toMatch(/pas de variante plus douce/)
+    expect(marche?.exercices[0]?.exerciceId).toBe('marche-rapide')
+  })
+
+  it('refuse une séance dont l’exercice principal est écarté', () => {
+    // Piège repéré à l'écran : sans vélo déclaré, une séance « Vélo 30 min »
+    // se réduisait à trois étirements. L'étiquette mentait.
+    const profil = profilParDefaut({ dateDebut: '2026-11-16' })
+    profil.materiel = ['tapis']
+
+    const construite = construireSeance({
+      gabarit: 'velo',
+      profil,
+      bibliotheque,
+      date: '2026-11-16',
+      programmeId: 'programme-1',
+      id: 'seance-1',
+      creeLe: '2026-11-12T09:00:00.000Z',
+      dateDebutProgramme: '2026-11-16',
+    })
+
+    expect(construite.seance).toBeUndefined()
+    expect(construite.avertissements.join(' ')).toMatch(/n’est disponible avec votre matériel/)
+  })
+
+  it('garde une séance dont seuls les étirements ont sauté', () => {
+    const profil = profilParDefaut({ dateDebut: '2026-11-16' })
+    profil.precautions = {
+      ...profil.precautions,
+      exercicesExclusIds: ['etirement-mollets', 'etirement-ischio-assis', 'mobilite-hanches'],
+    }
+
+    const construite = construireSeance({
+      gabarit: 'marche',
+      profil,
+      bibliotheque,
+      date: '2026-11-16',
+      programmeId: 'programme-1',
+      id: 'seance-1',
+      creeLe: '2026-11-12T09:00:00.000Z',
+      dateDebutProgramme: '2026-11-16',
+    })
+
+    expect(construite.seance?.exercices.map((e) => e.exerciceId)).toEqual(['marche-rapide'])
+  })
+
+  it('construit une séance de mobilité, où les étirements sont le sujet', () => {
+    const construite = construireSeance({
+      gabarit: 'mobilite',
+      profil: profilParDefaut({ dateDebut: '2026-11-16' }),
+      bibliotheque,
+      date: '2026-11-16',
+      programmeId: 'programme-1',
+      id: 'seance-1',
+      creeLe: '2026-11-12T09:00:00.000Z',
+      dateDebutProgramme: '2026-11-16',
+    })
+
+    expect(construite.seance?.titre).toBe('Mobilité et étirements')
+    expect(construite.seance?.exercices).toHaveLength(3)
   })
 
   it('ne pose aucune séance de natation sans tapis ni piscine, mais garde la marche', () => {

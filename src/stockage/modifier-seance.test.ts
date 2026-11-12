@@ -240,15 +240,34 @@ describe('ajouterSeance', () => {
     expect(await depots.seances.prevues.parDate(JOURS[0]!)).toHaveLength(1)
   })
 
-  it('sait poser une séance de vélo ou de mobilité', async () => {
-    const velo = await ajouterSeance(JOURS[0]!, 'velo', { base, depots })
-    const mobilite = await ajouterSeance(JOURS[1]!, 'mobilite', { base, depots })
+  it('sait poser une séance de mobilité', async () => {
+    const resultat = await ajouterSeance(JOURS[1]!, 'mobilite', { base, depots })
 
-    expect(velo.cree).toBe(true)
-    expect(mobilite.cree).toBe(true)
-    if (!velo.cree || !mobilite.cree) return
-    expect(velo.seance.type).toBe('velo')
-    expect(mobilite.seance.titre).toBe('Mobilité et étirements')
+    expect(resultat.cree).toBe(true)
+    if (!resultat.cree) return
+    expect(resultat.seance.titre).toBe('Mobilité et étirements')
+    expect(resultat.seance.exercices).toHaveLength(3)
+  })
+
+  it('refuse le vélo sans vélo déclaré, et l’accepte une fois déclaré', async () => {
+    // Sans la vérification de l'exercice principal, on obtiendrait une séance
+    // intitulée « Vélo 30 min » ne contenant que des étirements.
+    const sansVelo = await ajouterSeance(JOURS[0]!, 'velo', { base, depots })
+
+    expect(sansVelo.cree).toBe(false)
+    if (sansVelo.cree) return
+    expect(sansVelo.raison).toMatch(/n’est disponible avec votre matériel/)
+
+    const profil = await depots.profil.lire()
+    await depots.profil.enregistrer(
+      { ...profil!, materiel: ['tapis', 'piscine', 'velo'] },
+      MAINTENANT,
+    )
+
+    const avecVelo = await ajouterSeance(JOURS[0]!, 'velo', { base, depots })
+    expect(avecVelo.cree).toBe(true)
+    if (!avecVelo.cree) return
+    expect(avecVelo.seance.exercices[0]?.exerciceId).toBe('velo-souple')
   })
 
   it('refuse un jour déjà occupé', async () => {

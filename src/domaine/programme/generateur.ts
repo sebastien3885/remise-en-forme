@@ -96,10 +96,20 @@ function repetitions(maximumPossible: number | undefined, pardefaut: number): nu
 interface ExerciceVoulu {
   id: Id
   cibles: Mesures
+  /**
+   * Vrai pour les étirements ajoutés en fin de séance. Ils ne définissent pas
+   * la séance : si tout le reste est écarté, une « marche » qui ne contient
+   * que des étirements serait un mensonge sur l'étiquette.
+   */
+  complement?: boolean
 }
 
 function exercicesVoulus(gabarit: GabaritSeance, profil: Profil): ExerciceVoulu[] {
-  const mobilite = MOBILITE.map((id) => ({ id, cibles: { maintienSecondes: 60 } }))
+  const mobilite = MOBILITE.map((id) => ({
+    id,
+    cibles: { maintienSecondes: 60 },
+    complement: true,
+  }))
 
   switch (gabarit) {
     case 'marche':
@@ -144,11 +154,12 @@ function exercicesVoulus(gabarit: GabaritSeance, profil: Profil): ExerciceVoulu[
       // « 8 × 1 longueur, 30 à 45 s de repos » du chapitre 3.
       return [
         { id: 'nage-crawl', cibles: { longueurs: 8, reposSecondes: 40 } },
-        { id: 'etirement-mollets', cibles: { maintienSecondes: 60 } },
+        { id: 'etirement-mollets', cibles: { maintienSecondes: 60 }, complement: true },
       ]
 
     case 'mobilite':
-      return mobilite
+      // Ici les étirements sont la séance, pas son complément.
+      return MOBILITE.map((id) => ({ id, cibles: { maintienSecondes: 60 } }))
 
     case 'repos':
       return []
@@ -186,6 +197,11 @@ export interface SeanceConstruite {
   /** Absente quand les précautions ne laissent aucun exercice de ce gabarit. */
   seance: SeancePrevue | undefined
   avertissements: string[]
+  /**
+   * Renseignée quand la séance est refusée : c'est la phrase à montrer, là où
+   * les avertissements racontent le détail exercice par exercice.
+   */
+  raisonDuRefus?: string
 }
 
 /**
@@ -230,7 +246,7 @@ export function construireSeance(options: OptionsConstruction): SeanceConstruite
     }
 
     if (exerciceAutorise(exercice, contexte)) {
-      return [{ exercice, cibles: voulu.cibles }]
+      return [{ exercice, cibles: voulu.cibles, complement: voulu.complement === true }]
     }
 
     const plusDouce = variantePlusDouce(exercice, bibliotheque, contexte)
@@ -245,11 +261,21 @@ export function construireSeance(options: OptionsConstruction): SeanceConstruite
             exercice.nom +
             ' » est écarté par vos précautions et n’a pas de variante plus douce : retiré des séances.',
     )
-    return plusDouce ? [{ exercice: plusDouce, cibles: voulu.cibles }] : []
+    return plusDouce
+      ? [{ exercice: plusDouce, cibles: voulu.cibles, complement: voulu.complement === true }]
+      : []
   })
 
-  if (retenus.length === 0) {
-    return { seance: undefined, avertissements }
+  // Une séance sans son exercice principal n'est pas une séance allégée :
+  // c'est une étiquette qui ment. Une « marche » réduite à trois étirements
+  // parce que le matériel manque doit être refusée, pas affichée.
+  if (!retenus.some((retenu) => !retenu.complement)) {
+    const raisonDuRefus =
+      'Aucun exercice de type « ' +
+      TITRES[gabarit](profil) +
+      ' » n’est disponible avec votre matériel et vos précautions.'
+    avertissements.push(raisonDuRefus)
+    return { seance: undefined, avertissements, raisonDuRefus }
   }
 
   return {

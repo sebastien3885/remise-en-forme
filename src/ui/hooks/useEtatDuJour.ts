@@ -37,6 +37,8 @@ export interface EtatDuJour {
   programme: Programme | undefined
   prevue: SeancePrevue | undefined
   realisee: SeanceRealisee | undefined
+  /** Activités notées en plus de la séance du jour. */
+  improvisees: SeanceRealisee[]
   exercices: ExerciceDuJour[]
   semaine: EtatSemaine
   hydratation: Hydratation | undefined
@@ -55,11 +57,14 @@ export function useEtatDuJour(date: DateIso = aujourdhui()): EtatDuJour | undefi
       (seance) => seance.statut !== 'annulee' && seance.statut !== 'remplacee',
     )
 
+    // Une activité improvisée ne remplace jamais la séance du jour : les deux
+    // ont eu lieu, et l'écran doit montrer les deux.
     const realiseesDuJour = await depots.seances.realisees.parDate(date)
+    const nonLiees = realiseesDuJour.filter((seance) => seance.seancePrevueId === undefined)
     const realisee = prevue
-      ? (realiseesDuJour.find((seance) => seance.seancePrevueId === prevue.id) ??
-        realiseesDuJour.find((seance) => seance.seancePrevueId === undefined))
-      : realiseesDuJour[0]
+      ? realiseesDuJour.find((seance) => seance.seancePrevueId === prevue.id)
+      : nonLiees[0]
+    const improvisees = prevue ? nonLiees : nonLiees.slice(1)
 
     const exercices: ExerciceDuJour[] = prevue
       ? await Promise.all(
@@ -83,6 +88,7 @@ export function useEtatDuJour(date: DateIso = aujourdhui()): EtatDuJour | undefi
       programme,
       prevue,
       realisee,
+      improvisees,
       exercices,
       semaine: {
         numero: programme ? numeroDeSemaineProgramme(programme.dateDebut, date) : 0,

@@ -12,7 +12,7 @@
 import { useState } from 'react'
 
 import { aujourdhui } from '../../domaine/dates'
-import type { StatutRealisation } from '../../domaine/entites'
+import type { SeanceRealisee, StatutRealisation } from '../../domaine/entites'
 import { sequenceDeSeance } from '../../domaine/minuterie/sequence'
 import { depots } from '../../stockage'
 import { Icone } from '../composants/Icone'
@@ -187,6 +187,7 @@ export function Aujourdhui() {
           </div>
         </section>
         <LigneEau etat={etat} />
+        <ListeImprovisees seances={etat.improvisees} />
         <BoutonSeanceLibre onOuvrir={() => setVue({ mode: 'libre' })} />
       </main>
     )
@@ -227,6 +228,7 @@ export function Aujourdhui() {
           </p>
         </section>
         <LigneEau etat={etat} />
+        <ListeImprovisees seances={etat.improvisees} />
         <BoutonSeanceLibre onOuvrir={() => setVue({ mode: 'libre' })} />
       </main>
     )
@@ -257,6 +259,7 @@ export function Aujourdhui() {
           </div>
         </section>
         <LigneEau etat={etat} />
+        <ListeImprovisees seances={etat.improvisees} />
       </main>
     )
   }
@@ -292,6 +295,7 @@ export function Aujourdhui() {
       </ul>
 
       <LigneEau etat={etat} />
+      <ListeImprovisees seances={etat.improvisees} />
 
       <button
         type="button"
@@ -328,6 +332,30 @@ export function Aujourdhui() {
 
       <BoutonSeanceLibre onOuvrir={() => setVue({ mode: 'libre' })} />
     </main>
+  )
+}
+
+/**
+ * Les activités notées en plus de la séance du jour. Elles ne la remplacent
+ * pas : les deux ont eu lieu.
+ */
+function ListeImprovisees({ seances }: { seances: SeanceRealisee[] }) {
+  if (seances.length === 0) return null
+
+  return (
+    <ul className="liste-nue">
+      {seances.map((seance) => (
+        <li key={seance.id} className="ligne">
+          <span className="ligne__texte">
+            <span className="discret">Noté en plus · </span>
+            {seance.titre}
+            {seance.exercices[0]?.reel.dureeMinutes !== undefined && (
+              <span className="discret"> · {seance.exercices[0].reel.dureeMinutes} min</span>
+            )}
+          </span>
+        </li>
+      ))}
+    </ul>
   )
 }
 

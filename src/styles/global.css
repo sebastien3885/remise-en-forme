@@ -603,6 +603,25 @@ a:focus-visible {
   margin-top: 14px;
 }
 
+.jour__choix {
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+.jour__note {
+  margin-top: 14px;
+  font-size: 0.85rem;
+}
+
+.jour__improvisee {
+  margin: 12px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--texte-discret);
+}
+
 .etat {
   flex: 0 0 auto;
   border-radius: 999px;

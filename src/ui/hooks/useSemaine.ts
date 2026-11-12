@@ -33,6 +33,8 @@ export interface JourDeLaSemaine {
   date: DateIso
   prevue: SeancePrevue | undefined
   realisee: SeanceRealisee | undefined
+  /** Activités notées en plus de la séance prévue. */
+  improvisees: SeanceRealisee[]
   comparaison: LigneComparaison[]
 }
 
@@ -65,11 +67,14 @@ export function useSemaine(reference: DateIso): VueSemaine | undefined {
           seance.date === date && seance.statut !== 'annulee' && seance.statut !== 'remplacee',
       )
 
+      // Une activité improvisée ne remplace jamais la séance prévue : les
+      // deux ont eu lieu, et la semaine doit montrer les deux.
       const duJour = realisees.filter((seance) => seance.date === date)
+      const nonLiees = duJour.filter((seance) => seance.seancePrevueId === undefined)
       const realisee = prevue
-        ? (duJour.find((seance) => seance.seancePrevueId === prevue.id) ??
-          duJour.find((seance) => seance.seancePrevueId === undefined))
-        : duJour[0]
+        ? duJour.find((seance) => seance.seancePrevueId === prevue.id)
+        : nonLiees[0]
+      const improvisees = prevue ? nonLiees : nonLiees.slice(1)
 
       const comparaison: LigneComparaison[] = (prevue?.exercices ?? [])
         .slice()
@@ -94,6 +99,7 @@ export function useSemaine(reference: DateIso): VueSemaine | undefined {
         date,
         prevue,
         realisee,
+        improvisees,
         comparaison,
       }
     })

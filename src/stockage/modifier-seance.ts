@@ -189,7 +189,7 @@ export async function ajouterSeance(
     return {
       cree: false,
       raison:
-        construite.avertissements[0] ??
+        construite.raisonDuRefus ??
         'Vos précautions ne laissent aucun exercice pour ce type de séance.',
     }
   }
@@ -285,7 +285,7 @@ export async function remplacerSeance(
     return {
       remplace: false,
       raison:
-        construite.avertissements[0] ??
+        construite.raisonDuRefus ??
         'Vos précautions ne laissent aucun exercice pour ce type de séance.',
     }
   }
