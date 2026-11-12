@@ -4,6 +4,7 @@ import { amorcerSiNecessaire } from './stockage/amorcage'
 import { Aujourdhui } from './ui/ecrans/Aujourdhui'
 import { EcranAVenir } from './ui/ecrans/EcranAVenir'
 import { Reglages } from './ui/ecrans/Reglages'
+import { Semaine } from './ui/ecrans/Semaine'
 import { BarreOnglets } from './ui/navigation/BarreOnglets'
 import { useOnglet } from './ui/navigation/useOnglet'
 
@@ -60,13 +61,7 @@ export function App() {
   return (
     <>
       {onglet === 'aujourdhui' && <Aujourdhui />}
-      {onglet === 'semaine' && (
-        <EcranAVenir
-          etape="Étape 2 · en cours"
-          titre="Semaine"
-          contenu="Le calendrier de la semaine, le prévu et le réalisé côte à côte, et le déplacement des séances."
-        />
-      )}
+      {onglet === 'semaine' && <Semaine />}
       {onglet === 'progres' && (
         <EcranAVenir
           etape="Étape 3"

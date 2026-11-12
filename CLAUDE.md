@@ -64,6 +64,16 @@ base sur les séances réalisées, jamais sur le programme théorique.
 **Jamais d'écrasement** (chapitre 7). Une révision de programme crée une nouvelle
 version ; l'historique est conservé.
 
+**La navigation passe par le fragment d'URL** (`#/semaine`), sans bibliothèque de
+routage : c'est ce qui rend le bouton retour d'Android utile dans l'application
+installée. Les cinq onglets sont déclarés une fois dans
+`src/ui/navigation/onglets.ts`.
+
+**Une séance déjà saisie ne se déplace pas.** Son réalisé porte la date du jour
+où elle a eu lieu, et c'est lui qui fait foi : déplacer le prévu détacherait les
+deux. Déposer une séance sur un jour occupé **échange** les deux, ce qui préserve
+tout seul le jour de repos hebdomadaire.
+
 ## Langage visuel — « Grand geste »
 
 Direction retenue parmi six maquettes. Fond presque noir, **un seul accent**

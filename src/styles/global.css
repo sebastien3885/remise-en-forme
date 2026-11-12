@@ -506,6 +506,149 @@ a:focus-visible {
   font-size: 0.93rem;
 }
 
+/* ------------------------------------------------ écran semaine */
+
+.navigation-semaine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.navigation-semaine h1 {
+  font-size: 1.5rem;
+  text-align: center;
+  flex: 1 1 auto;
+}
+
+.jour {
+  background: var(--fond-carte);
+  border-radius: var(--rayon-grand);
+  padding: 16px;
+}
+
+/* Le jour courant se repère au trait ET à la mention « aujourd'hui ». */
+.jour--aujourdhui {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.jour__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.jour__date {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texte-discret);
+}
+
+.jour__marqueur {
+  color: var(--accent);
+}
+
+.jour__titre {
+  margin: 10px 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.jour__vide {
+  margin: 10px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.jour__ressenti {
+  margin-top: 10px;
+  font-size: 0.88rem;
+}
+
+.jour__actions {
+  margin-top: 14px;
+}
+
+.etat {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.etat--faite {
+  background: var(--accent);
+  color: var(--accent-texte);
+}
+
+.etat--partielle {
+  background: var(--attention);
+  color: #241a05;
+}
+
+.etat--sautee {
+  background: var(--fond-carte-haut);
+  color: var(--texte-discret);
+}
+
+/* Le prévu et le réalisé, côte à côte (critère de l'étape 2). */
+.comparaison {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.comparaison th,
+.comparaison td {
+  text-align: left;
+  padding: 7px 6px;
+  border-bottom: 1px solid var(--trait);
+  vertical-align: top;
+}
+
+.comparaison thead th {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--texte-discret);
+  border-bottom-color: var(--fond-carte-haut);
+}
+
+.comparaison tbody th {
+  font-weight: 500;
+  width: 44%;
+}
+
+.comparaison td {
+  width: 28%;
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-discret);
+}
+
+.comparaison tr:last-child th,
+.comparaison tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Un écart entre le prévu et le réalisé mérite l'œil : la valeur elle-même
+   porte l'information, la couleur ne fait que la souligner. */
+.comparaison--ecart td:last-child {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* ---------------------------------------------------- minuterie */
 
 .minuterie {
