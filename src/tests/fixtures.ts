@@ -43,7 +43,7 @@ export function unProfil(modifications: Partial<Profil> = {}): Profil {
     materiel: ['aucun'],
     antecedents: [],
     precautions: {
-      impactGenouMaximal: 'faible',
+      impactGenouMaximal: 'modere',
       exclureFlexionMarquee: false,
       exercicesExclusIds: [],
     },
