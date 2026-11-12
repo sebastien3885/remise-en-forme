@@ -61,9 +61,9 @@ body {
 }
 
 body {
-  /* Marges de sécurité des téléphones à encoche. */
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
-    env(safe-area-inset-left);
+  /* Marges de sécurité des téléphones à encoche. Pas en bas : c'est la barre
+     d'onglets, fixée au bas de la fenêtre, qui porte la sienne. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -72,7 +72,8 @@ body {
 .page {
   max-width: 640px;
   margin: 0 auto;
-  padding: 30px var(--marge) 32px;
+  /* Le bas dégage la barre d'onglets, qui flotte au-dessus du contenu. */
+  padding: 30px var(--marge) calc(104px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: var(--marge);
@@ -361,4 +362,41 @@ a:focus-visible {
 .pied {
   font-size: 0.9rem;
   padding: 0 4px;
+}
+
+/* ------------------------------------------------ barre d'onglets */
+
+.barre-onglets {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  background: #10151b;
+  border-top: 1px solid var(--trait);
+  padding: 8px 6px calc(10px + env(safe-area-inset-bottom));
+}
+
+.barre-onglets a {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--cible-tactile);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 10px;
+  color: var(--texte-discret);
+  text-decoration: none;
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+/* L'onglet courant ne se signale pas par la seule couleur : il est aussi
+   marqué `aria-current`, et son libellé est plus gras. */
+.barre-onglets a[aria-current='page'] {
+  color: var(--accent);
+  font-weight: 600;
 }

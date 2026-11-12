@@ -75,19 +75,21 @@ export function ImportDePlan() {
         <code>docs/format-plan.md</code>.
       </p>
 
-      <label className="bouton bouton--principal bouton--fichier" style={{ marginTop: 16 }}>
-        Choisir un fichier
-        <input
-          type="file"
-          accept="application/json,.json"
-          onChange={(evenement) => {
-            const fichier = evenement.target.files?.[0]
-            if (fichier) void choisirFichier(fichier)
-            // Permet de rechoisir le même fichier après une correction.
-            evenement.target.value = ''
-          }}
-        />
-      </label>
+      <div className="rangee-boutons" style={{ marginTop: 16 }}>
+        <label className="bouton bouton--fichier">
+          Choisir un fichier
+          <input
+            type="file"
+            accept="application/json,.json"
+            onChange={(evenement) => {
+              const fichier = evenement.target.files?.[0]
+              if (fichier) void choisirFichier(fichier)
+              // Permet de rechoisir le même fichier après une correction.
+              evenement.target.value = ''
+            }}
+          />
+        </label>
+      </div>
 
       {etat.phase === 'lecture' && (
         <p className="discret" style={{ marginTop: 14 }}>

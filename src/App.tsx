@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react'
 
 import { amorcerSiNecessaire } from './stockage/amorcage'
+import { EcranAVenir } from './ui/ecrans/EcranAVenir'
 import { Reglages } from './ui/ecrans/Reglages'
+import { BarreOnglets } from './ui/navigation/BarreOnglets'
+import { useOnglet } from './ui/navigation/useOnglet'
 
 type Demarrage = { phase: 'en-cours' } | { phase: 'pret' } | { phase: 'echec'; message: string }
 
 export function App() {
   const [demarrage, setDemarrage] = useState<Demarrage>({ phase: 'en-cours' })
+  const onglet = useOnglet()
 
   useEffect(() => {
     let abandonne = false
@@ -52,5 +56,39 @@ export function App() {
     )
   }
 
-  return <Reglages />
+  return (
+    <>
+      {onglet === 'aujourdhui' && (
+        <EcranAVenir
+          etape="Étape 2 · en cours"
+          titre="Aujourd’hui"
+          contenu="La séance du jour, sa minuterie et la validation en un geste arrivent dans un instant. Le programme se génère depuis les réglages."
+        />
+      )}
+      {onglet === 'semaine' && (
+        <EcranAVenir
+          etape="Étape 2 · en cours"
+          titre="Semaine"
+          contenu="Le calendrier de la semaine, le prévu et le réalisé côte à côte, et le déplacement des séances."
+        />
+      )}
+      {onglet === 'progres' && (
+        <EcranAVenir
+          etape="Étape 3"
+          titre="Progrès"
+          contenu="Courbes, records, série en cours et bilans hebdomadaires. Le moteur de progression qui les alimente est déjà écrit et testé."
+        />
+      )}
+      {onglet === 'alimentation' && (
+        <EcranAVenir
+          etape="Étape 4"
+          titre="Repas"
+          contenu="Journal des repas, hydratation, poids et tour de taille, et le score de régularité de la semaine."
+        />
+      )}
+      {onglet === 'reglages' && <Reglages />}
+
+      <BarreOnglets courant={onglet} />
+    </>
+  )
 }

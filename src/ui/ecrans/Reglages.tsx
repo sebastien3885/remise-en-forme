@@ -12,6 +12,7 @@ import { LIBELLE_IMPACT_GENOU, LIBELLE_MATERIEL } from '../../domaine/entites'
 import { contexteDepuisProfil, exercicesEcartes } from '../../domaine/profil/precautions'
 import { depots } from '../../stockage'
 import { AvertissementSante } from '../composants/AvertissementSante'
+import { GenerationProgramme } from '../composants/GenerationProgramme'
 import { ImportDePlan } from '../composants/ImportDePlan'
 
 export function Reglages() {
@@ -144,9 +145,12 @@ export function Reglages() {
           </dl>
         ) : (
           <p className="discret">
-            Aucun programme pour l’instant. Importez un plan pour en poser un.
+            Aucun programme pour l’instant. Générez les douze semaines du cahier des charges,
+            ou importez un plan préparé sur l’ordinateur.
           </p>
         )}
+
+        <GenerationProgramme aDejaUnProgramme={programme !== undefined} />
       </section>
 
       <ImportDePlan />
