@@ -713,6 +713,89 @@ a:focus-visible {
   color: var(--texte);
 }
 
+/* ------------------------------------------------------- courbes */
+
+.courbe {
+  margin: 0;
+}
+
+.courbe__entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.courbe__titre {
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+/* La valeur garde la couleur du texte : c'est la barre qui porte la série. */
+.courbe__valeur {
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.courbe__cadre {
+  position: relative;
+  height: 64px;
+  margin-top: 12px;
+}
+
+.courbe__barres {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.courbe__barre {
+  flex: 1 1 0;
+  min-width: 4px;
+  background: var(--accent);
+  border-radius: 4px 4px 0 0;
+}
+
+.courbe__reference {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--texte-discret);
+}
+
+.courbe__pied {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+}
+
+.serie {
+  text-align: center;
+  padding: 26px 18px;
+}
+
+.serie .chiffre--geant {
+  margin: 0;
+  color: var(--accent);
+}
+
+.serie .discret {
+  margin: 8px 0 0;
+  font-size: 0.92rem;
+}
+
+.fiches {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.fiche__record {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+}
+
 /* ------------------------------------------- règles d'un bilan */
 
 /* Chaque règle déclenchée porte son explication en clair : c'est l'exigence

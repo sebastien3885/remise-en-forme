@@ -6,7 +6,23 @@
  * ici pour que l'écran Aujourd'hui et l'écran Semaine disent exactement la
  * même chose de la même donnée.
  */
-import type { Mesures, MotifAbandon, StatutRealisation, TypeSeance } from '../domaine/entites'
+import type {
+  ChampCharge,
+  Mesures,
+  MotifAbandon,
+  StatutRealisation,
+  TypeSeance,
+} from '../domaine/entites'
+
+/** Unité à afficher derrière une charge mesurée. */
+export const UNITE_DU_CHAMP: Record<ChampCharge, string> = {
+  dureeMinutes: 'min',
+  maintienSecondes: 's',
+  distanceMetres: 'm',
+  longueurs: 'longueurs',
+  repetitions: 'répétitions',
+  series: 'séries',
+}
 
 export interface ChampMesure {
   champ: keyof Mesures

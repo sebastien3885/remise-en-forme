@@ -10,13 +10,16 @@ import { useState } from 'react'
 
 import { ajouterJours, aujourdhui } from '../../domaine/dates'
 import { RESSENTIS_CHARGE, type RessentiCharge } from '../../domaine/entites'
+import type { RecordExercice } from '../../domaine/progression/historique'
 import {
   accepterBilan,
   genererEtEnregistrerBilan,
   refuserBilan,
 } from '../../stockage/bilan-hebdo'
+import { Courbe } from '../composants/Courbe'
+import { useHistorique } from '../hooks/useHistorique'
 import { useProgres, type VueProgres } from '../hooks/useProgres'
-import { formaterDateCourte } from '../libelles'
+import { formaterDateCourte, formaterDateLongue, UNITE_DU_CHAMP } from '../libelles'
 
 const LIBELLE_RESSENTI: Record<RessentiCharge, string> = {
   'trop-facile': 'Trop facile',
@@ -230,7 +233,87 @@ export function Progres() {
           )}
         </section>
       )}
+
+      <Historique />
     </main>
+  )
+}
+
+/**
+ * Série en cours, récapitulatif hebdomadaire et fiche par exercice
+ * (chapitre 4, « Consultation »).
+ */
+function Historique() {
+  const vue = useHistorique()
+  if (!vue || !vue.programme) return null
+
+  const pointsDeTaux = vue.semaines.map((semaine) => ({
+    semaine: semaine.semaine,
+    valeur: Math.round(semaine.tauxRealisation * 100),
+  }))
+
+  return (
+    <>
+      <section className="carte serie">
+        <p className="chiffre chiffre--geant">{vue.serie}</p>
+        <p className="discret">
+          {vue.serie === 0
+            ? 'Aucune semaine tenue d’affilée pour l’instant. Une semaine compte dès 80 % des séances faites.'
+            : vue.serie === 1
+              ? 'semaine tenue. Une semaine compte dès 80 % des séances faites.'
+              : 'semaines tenues d’affilée, à 80 % des séances ou plus.'}
+        </p>
+      </section>
+
+      {pointsDeTaux.length > 0 && (
+        <section className="carte">
+          <h2>Récapitulatif</h2>
+          <Courbe
+            titre="Séances réalisées"
+            unite="%"
+            points={pointsDeTaux}
+            reference={{ valeur: 80, libelle: 'objectif 80 %' }}
+          />
+        </section>
+      )}
+
+      {vue.records.length > 0 && (
+        <section className="carte">
+          <h2>Par exercice</h2>
+          <div className="fiches">
+            {vue.records.slice(0, 4).map((record) => (
+              <FicheExercice key={record.exerciceId} record={record} />
+            ))}
+          </div>
+
+          {vue.records.length > 4 && (
+            <details className="repli">
+              <summary>Voir les {vue.records.length - 4} autres exercices</summary>
+              <div className="repli__contenu fiches">
+                {vue.records.slice(4).map((record) => (
+                  <FicheExercice key={record.exerciceId} record={record} />
+                ))}
+              </div>
+            </details>
+          )}
+        </section>
+      )}
+    </>
+  )
+}
+
+function FicheExercice({ record }: { record: RecordExercice }) {
+  const unite = UNITE_DU_CHAMP[record.champ]
+
+  return (
+    <article className="fiche">
+      <Courbe titre={record.nom} unite={unite} points={record.points} />
+      <p className="fiche__record discret">
+        Record : <strong className="chiffre">{record.meilleur}</strong> {unite} le{' '}
+        {formaterDateLongue(record.dateDuMeilleur)} · {record.nombreDeSeances} séance
+        {record.nombreDeSeances > 1 ? 's' : ''}
+      </p>
+    </article>
   )
 }
 

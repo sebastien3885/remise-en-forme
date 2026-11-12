@@ -20,10 +20,17 @@ export function Reglages() {
   const nombreExercices = useLiveQuery(() => depots.exercices.compter())
   const programme = useLiveQuery(() => depots.programmes.actif())
 
+  // Les séances traversent les versions de programme : une révision en crée
+  // une nouvelle et laisse les séances passées à l'ancienne. On compte donc
+  // ce qui est visible au calendrier, pas ce qui appartient à la version
+  // active.
   const nombreSeances = useLiveQuery(async () => {
     const actif = await depots.programmes.actif()
     if (!actif) return 0
-    return (await depots.seances.prevues.parProgramme(actif.id)).length
+    const toutes = await depots.seances.prevues.parPlage(actif.dateDebut, actif.dateFin)
+    return toutes.filter(
+      (seance) => seance.statut !== 'annulee' && seance.statut !== 'remplacee',
+    ).length
   })
 
   const ecartes = useLiveQuery(async () => {
@@ -43,11 +50,11 @@ export function Reglages() {
   return (
     <main className="page">
       <header className="page__entete">
-        <p className="surtitre">Étape 1 · socle</p>
+        <p className="surtitre">Réglages</p>
         <h1>Remise en forme</h1>
         <p className="discret">
-          Stockage local, bibliothèque, profil et import de plans. Les écrans Aujourd’hui,
-          Semaine, Progrès et Alimentation arrivent ensuite.
+          Profil, bibliothèque d’exercices, programme et import de plans. Les données restent
+          sur cet appareil.
         </p>
       </header>
 
@@ -60,7 +67,7 @@ export function Reglages() {
         </div>
         <div>
           <p className="chiffre">{nombreSeances ?? 0}</p>
-          <p className="etiquette">séances prévues</p>
+          <p className="etiquette">séances au calendrier</p>
         </div>
         <div>
           <p className="chiffre">{programme ? programme.version : '—'}</p>
