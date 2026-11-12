@@ -713,6 +713,97 @@ a:focus-visible {
   color: var(--texte);
 }
 
+/* --------------------------------------------- journal alimentaire */
+
+.journal {
+  gap: 8px;
+}
+
+.journal__ligne {
+  width: 100%;
+  min-height: var(--cible-tactile);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: var(--rayon);
+  background: var(--fond-carte-haut);
+  color: var(--texte);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.journal__ligne:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.journal__moment {
+  flex: 0 0 auto;
+  font-weight: 500;
+}
+
+.journal__resume,
+.journal__vide {
+  flex: 1 1 auto;
+  text-align: right;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+/* L'état d'un repère est dit en toutes lettres à côté de la pastille : la
+   couleur ne porte jamais seule l'information. */
+.reperes {
+  gap: 4px;
+}
+
+.reperes li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+
+.repere__marque {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--trait);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-texte);
+}
+
+.repere__marque--tenu {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.repere__libelle {
+  flex: 1 1 auto;
+  font-size: 0.95rem;
+}
+
+.repere__etat {
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+}
+
+.chips--colonne {
+  flex-direction: column;
+}
+
+.chips--colonne button {
+  width: 100%;
+  text-align: left;
+  padding: 0 16px;
+}
+
 /* ------------------------------------------------------- courbes */
 
 .courbe {

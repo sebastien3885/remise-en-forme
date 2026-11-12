@@ -9,6 +9,7 @@
 import type {
   ChampCharge,
   Mesures,
+  MomentRepas,
   MotifAbandon,
   StatutRealisation,
   TypeSeance,
@@ -165,6 +166,13 @@ export const TYPES_PROPOSABLES: readonly TypeSeance[] = [
   'mobilite',
   'autre',
 ]
+
+export const LIBELLE_MOMENT: Record<MomentRepas, string> = {
+  'petit-dejeuner': 'Petit-déjeuner',
+  dejeuner: 'Déjeuner',
+  diner: 'Dîner',
+  collation: 'Collation',
+}
 
 export const LIBELLE_MOTIF: Record<MotifAbandon, string> = {
   fatigue: 'Fatigue',

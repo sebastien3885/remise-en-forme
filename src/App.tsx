@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
 import { amorcerSiNecessaire } from './stockage/amorcage'
+import { Alimentation } from './ui/ecrans/Alimentation'
 import { Aujourdhui } from './ui/ecrans/Aujourdhui'
-import { EcranAVenir } from './ui/ecrans/EcranAVenir'
 import { Progres } from './ui/ecrans/Progres'
 import { Reglages } from './ui/ecrans/Reglages'
 import { Semaine } from './ui/ecrans/Semaine'
@@ -64,13 +64,7 @@ export function App() {
       {onglet === 'aujourdhui' && <Aujourdhui />}
       {onglet === 'semaine' && <Semaine />}
       {onglet === 'progres' && <Progres />}
-      {onglet === 'alimentation' && (
-        <EcranAVenir
-          etape="Étape 4"
-          titre="Repas"
-          contenu="Journal des repas, hydratation, poids et tour de taille, et le score de régularité de la semaine."
-        />
-      )}
+      {onglet === 'alimentation' && <Alimentation />}
       {onglet === 'reglages' && <Reglages />}
 
       <BarreOnglets courant={onglet} />
