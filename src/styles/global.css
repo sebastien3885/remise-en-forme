@@ -506,6 +506,48 @@ a:focus-visible {
   font-size: 0.93rem;
 }
 
+/* ---------------------------------------------------- minuterie */
+
+.minuterie {
+  text-align: center;
+}
+
+.minuterie__entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.minuterie__compteur {
+  color: var(--texte-discret);
+}
+
+.minuterie__chrono {
+  margin: 22px 0 26px;
+  font-size: 4.4rem;
+  line-height: 1;
+}
+
+/* Une phase de repos ne se signale pas par la seule couleur : le surtitre
+   dit « Repos » et le libellé de la phase aussi. */
+.minuterie--repos {
+  background: var(--accent-sourd);
+}
+
+.minuterie--repos .surtitre {
+  color: var(--accent);
+}
+
+.minuterie__libre {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--texte-discret);
+}
+
+.minuterie--finie {
+  text-align: left;
+}
+
 /* ------------------------------------------------------- replis */
 
 .repli {

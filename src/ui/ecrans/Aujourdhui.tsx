@@ -4,22 +4,33 @@
  * Une seule chose compte ici : la séance du jour et le geste qui la valide.
  * Tout le reste — l'état de la semaine, l'eau — tient sur une ligne, et le
  * bouton de validation est la plus grosse chose à l'écran.
+ *
+ * L'écran a trois vues : la séance, sa saisie, et la minuterie. Elles se
+ * remplacent au lieu de s'empiler en fenêtre modale : sur un téléphone, une
+ * modale plein écran est une vue, autant l'assumer.
  */
 import { useState } from 'react'
 
 import { aujourdhui } from '../../domaine/dates'
 import type { StatutRealisation } from '../../domaine/entites'
+import { sequenceDeSeance } from '../../domaine/minuterie/sequence'
 import { depots } from '../../stockage'
 import { Icone } from '../composants/Icone'
+import { Minuterie } from '../composants/Minuterie'
 import { PanneauValidation } from '../composants/PanneauValidation'
-import { useEtatDuJour } from '../hooks/useEtatDuJour'
+import { useEtatDuJour, type EtatDuJour } from '../hooks/useEtatDuJour'
 import { chiffreMarquant, formaterDateLongue, formaterMesures, LIBELLE_STATUT } from '../libelles'
 import { lienOnglet } from '../navigation/onglets'
+
+type Vue =
+  | { mode: 'seance' }
+  | { mode: 'saisie'; statut: StatutRealisation }
+  | { mode: 'minuterie' }
 
 export function Aujourdhui() {
   const date = aujourdhui()
   const etat = useEtatDuJour(date)
-  const [saisie, setSaisie] = useState<StatutRealisation | undefined>(undefined)
+  const [vue, setVue] = useState<Vue>({ mode: 'seance' })
 
   if (!etat) {
     return (
@@ -52,8 +63,47 @@ export function Aujourdhui() {
     </header>
   )
 
+  // --- minuterie
+  if (vue.mode === 'minuterie' && prevue) {
+    return (
+      <main className="page">
+        {entete}
+        <Minuterie
+          phases={sequenceDeSeance(
+            exercices.map((exercice) => ({
+              exerciceId: exercice.exerciceId,
+              nom: exercice.exercice?.nom ?? exercice.exerciceId,
+              cibles: exercice.cibles,
+            })),
+          )}
+          onFermer={() => setVue({ mode: 'seance' })}
+        />
+      </main>
+    )
+  }
+
+  // --- saisie en cours
+  if (vue.mode === 'saisie' && prevue) {
+    return (
+      <main className="page">
+        {entete}
+        <PanneauValidation
+          date={date}
+          prevue={prevue}
+          exercices={exercices}
+          type={prevue.type}
+          titre={prevue.titre}
+          statut={vue.statut}
+          {...(realisee ? { realisee } : {})}
+          onFini={() => setVue({ mode: 'seance' })}
+          onAnnuler={() => setVue({ mode: 'seance' })}
+        />
+      </main>
+    )
+  }
+
   // --- la séance a été saisie : on montre ce qui a été enregistré
-  if (realisee && saisie === undefined) {
+  if (realisee) {
     return (
       <main className="page">
         {entete}
@@ -72,6 +122,12 @@ export function Aujourdhui() {
               <>
                 <dt>Énergie</dt>
                 <dd>{realisee.energie}/10</dd>
+              </>
+            )}
+            {realisee.motif && (
+              <>
+                <dt>Motif</dt>
+                <dd>{realisee.motif}</dd>
               </>
             )}
             {realisee.douleurs.length > 0 && (
@@ -96,33 +152,13 @@ export function Aujourdhui() {
             <button
               className="bouton bouton--secondaire"
               type="button"
-              onClick={() => setSaisie(realisee.statut)}
+              onClick={() => setVue({ mode: 'saisie', statut: realisee.statut })}
             >
               Corriger
             </button>
           </div>
         </section>
         <LigneEau etat={etat} />
-      </main>
-    )
-  }
-
-  // --- saisie en cours
-  if (saisie !== undefined && prevue) {
-    return (
-      <main className="page">
-        {entete}
-        <PanneauValidation
-          date={date}
-          prevue={prevue}
-          exercices={exercices}
-          type={prevue.type}
-          titre={prevue.titre}
-          statut={saisie}
-          {...(realisee ? { realisee } : {})}
-          onFini={() => setSaisie(undefined)}
-          onAnnuler={() => setSaisie(undefined)}
-        />
       </main>
     )
   }
@@ -223,7 +259,7 @@ export function Aujourdhui() {
       <button
         type="button"
         className="bouton bouton--principal"
-        onClick={() => setSaisie('faite')}
+        onClick={() => setVue({ mode: 'saisie', statut: 'faite' })}
       >
         C’est fait
       </button>
@@ -232,16 +268,24 @@ export function Aujourdhui() {
         <button
           className="bouton bouton--secondaire"
           type="button"
-          onClick={() => setSaisie('partielle')}
+          onClick={() => setVue({ mode: 'saisie', statut: 'partielle' })}
         >
           En partie
         </button>
         <button
           className="bouton bouton--secondaire"
           type="button"
-          onClick={() => setSaisie('sautee')}
+          onClick={() => setVue({ mode: 'saisie', statut: 'sautee' })}
         >
           Sautée
+        </button>
+        <button
+          className="bouton bouton--secondaire"
+          type="button"
+          onClick={() => setVue({ mode: 'minuterie' })}
+        >
+          <Icone nom="chrono" taille={18} />
+          <span style={{ marginLeft: 8 }}>Minuteur</span>
         </button>
       </div>
     </main>
@@ -249,8 +293,7 @@ export function Aujourdhui() {
 }
 
 /** Compteur de verres d'eau (chapitre 6), sur une ligne. */
-function LigneEau({ etat }: { etat: ReturnType<typeof useEtatDuJour> }) {
-  if (!etat) return null
+function LigneEau({ etat }: { etat: EtatDuJour }) {
   const bus = etat.hydratation?.verres ?? 0
   const objectif = etat.hydratation?.objectif ?? etat.objectifVerres
 
