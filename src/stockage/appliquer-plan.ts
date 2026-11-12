@@ -18,6 +18,7 @@ import {
 } from '../domaine/plans'
 import { contexteDepuisProfil } from '../domaine/profil/precautions'
 import { db, type BaseForme } from './db'
+import { installerProgramme } from './installer-programme'
 import { creerDepots, type Depots } from './index'
 
 export interface ResultatImport {
@@ -82,30 +83,14 @@ export async function appliquerPlan(
     ...(options.maintenant ? { maintenant: options.maintenant } : {}),
   })
 
-  await base.transaction(
-    'rw',
-    [base.exercices, base.programmes, base.seancesPrevues],
-    async () => {
-      if (elements.exercices.length > 0) {
-        await base.exercices.bulkPut(elements.exercices)
-      }
-
-      if (elements.nouveauProgramme) {
-        // Désactive l'ancien programme sans le supprimer : ses séances et son
-        // historique restent consultables (chapitre 7).
-        const anciens = await base.programmes.toArray()
-        const aDesactiver = anciens
-          .filter((ancien) => ancien.actif && ancien.id !== elements.programme.id)
-          .map((ancien) => ({ ...ancien, actif: false }))
-        if (aDesactiver.length > 0) {
-          await base.programmes.bulkPut(aDesactiver)
-        }
-      }
-
-      await base.programmes.put(elements.programme)
-      await base.seancesPrevues.bulkPut(elements.seances)
-    },
-  )
+  await installerProgramme(base, {
+    programme: elements.programme,
+    seances: elements.seances,
+    exercices: elements.exercices,
+    // En remplacement, l'ancien programme est désactivé sans être supprimé :
+    // ses séances et son historique restent consultables (chapitre 7).
+    desactiverLesAutres: elements.nouveauProgramme,
+  })
 
   return {
     apercu,
