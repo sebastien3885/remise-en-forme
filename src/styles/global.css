@@ -1,0 +1,68 @@
+/*
+ * Bases d'interface du chapitre 8 : lisible en plein soleil, gros boutons
+ * utilisables a une main, mode sombre. Le theme complet arrive a l'etape 5.
+ */
+:root {
+  /* Couleurs */
+  --fond: #0f1115;
+  --fond-carte: #181b22;
+  --trait: #2a2f3a;
+  --texte: #f3f5f8;
+  --texte-discret: #a3acbb;
+  --accent: #4ade80;
+  --accent-texte: #07120b;
+  --alerte: #f87171;
+
+  /* Rythme */
+  --marge: 16px;
+  --rayon: 14px;
+  /* Cible tactile minimale : un doigt, une main (chapitre 8) */
+  --cible-tactile: 48px;
+
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Contraste eleve plutot que gris sur gris : lisibilite en exterieur */
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--fond);
+  color: var(--texte);
+}
+
+body {
+  /* Marges de securite des telephones a encoche */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+  -webkit-text-size-adjust: 100%;
+}
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--marge);
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin: 0 0 var(--marge);
+}
+
+.discret {
+  color: var(--texte-discret);
+}
+
+button {
+  min-height: var(--cible-tactile);
+  font: inherit;
+  cursor: pointer;
+}
