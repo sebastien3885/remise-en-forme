@@ -40,7 +40,7 @@ import type {
 import { variantePlusDifficile, variantePlusDouce } from '../exercices/variantes'
 import type { ContexteExercices } from '../profil/precautions'
 import type { SerieChargeExercice } from './bilan'
-import { facteurPlafonne } from './charge'
+import { facteurEnMots, facteurPlafonne } from './charge'
 
 /** Les leviers que le moteur sait manœuvrer (la fréquence reste manuelle). */
 export type LevierActif = ConfigProgression['leviers'][number]
@@ -71,10 +71,19 @@ function pourcent(taux: number): string {
   return String(Math.round(taux * 100)) + ' %'
 }
 
+/**
+ * Variation d'un facteur dans une explication : « +10 % », « -20 % », ou
+ * « charge maintenue ».
+ *
+ * Le chiffre et son signe viennent de `facteurEnMots`, que l'écran du bilan
+ * emploie aussi pour nommer les choix de modification : les deux textes se
+ * retrouvent côte à côte dans la même carte, et ils doivent écrire -20 % de
+ * la même façon. Seul le cas « rien ne bouge » se dit autrement ici, parce
+ * qu'il s'inscrit dans une phrase et non sur un bouton.
+ */
 function variationEnTexte(facteur: number): string {
-  const ecart = Math.round((facteur - 1) * 100)
-  if (ecart === 0) return 'charge maintenue'
-  return (ecart > 0 ? '+' : '-') + String(Math.abs(ecart)) + ' %'
+  if (Math.round((facteur - 1) * 100) === 0) return 'charge maintenue'
+  return facteurEnMots(facteur)
 }
 
 function texteSeances(statistiques: StatistiquesSemaine): string {

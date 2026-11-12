@@ -1082,6 +1082,22 @@ a:focus-visible {
   color: var(--texte-discret);
 }
 
+/* --------------------------------- modifier un bilan à la main */
+
+/* Le panneau se détache de la carte qui le porte : on y prend une décision,
+   il ne fait pas partie du compte rendu. */
+.modification {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--fond-carte-haut);
+}
+
+.modification .echelle {
+  margin: 0;
+}
+
 /* ---------------------------------------------------- minuterie */
 
 .minuterie {

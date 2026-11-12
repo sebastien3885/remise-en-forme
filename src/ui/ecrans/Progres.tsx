@@ -18,6 +18,7 @@ import {
 } from '../../stockage/bilan-hebdo'
 import { Courbe } from '../composants/Courbe'
 import { Objectifs } from '../composants/Objectifs'
+import { PanneauModification } from '../composants/PanneauModification'
 import { useHistorique } from '../hooks/useHistorique'
 import { useProgres, type VueProgres } from '../hooks/useProgres'
 import { formaterDateCourte, formaterDateLongue, UNITE_DU_CHAMP } from '../libelles'
@@ -41,6 +42,7 @@ export function Progres() {
   const [ressenti, setRessenti] = useState<RessentiCharge | null>(null)
   const [message, setMessage] = useState<string | undefined>(undefined)
   const [enCours, setEnCours] = useState(false)
+  const [modification, setModification] = useState(false)
 
   if (!vue) {
     return (
@@ -220,6 +222,33 @@ export function Progres() {
                   Refuser
                 </button>
               </div>
+
+              {/* La troisième voie du chapitre 5 est un lien, pas un bouton :
+                  à trois boutons, l'un passe à la ligne sur un téléphone et
+                  devient le plus gros de l'écran — ce serait « Refuser » qui
+                  aurait l'air de l'action principale. */}
+              <button
+                className="lien-discret"
+                type="button"
+                style={{ marginTop: 14 }}
+                disabled={enCours}
+                aria-expanded={modification}
+                onClick={() => setModification(!modification)}
+              >
+                {modification ? 'Fermer' : 'Modifier avant d’appliquer'}
+              </button>
+
+              {modification && (
+                <PanneauModification
+                  bilan={bilan}
+                  onDecide={(phrase) => {
+                    setMessage(phrase)
+                    setModification(false)
+                  }}
+                  onAnnuler={() => setModification(false)}
+                />
+              )}
+
               <p className="discret" style={{ marginTop: 12, fontSize: '0.9rem' }}>
                 Accepter crée une version du programme et corrige les séances à venir.
                 L’ancienne version est conservée.
@@ -229,7 +258,9 @@ export function Progres() {
             <p className="discret" style={{ marginTop: 18, fontSize: '0.92rem' }}>
               {bilan.decision === 'accepte'
                 ? 'Ajustements appliqués aux séances à venir.'
-                : 'Ajustements refusés : le programme n’a pas bougé.'}
+                : bilan.decision === 'modifie'
+                  ? 'Version retenue à la main, appliquée aux séances à venir.'
+                  : 'Ajustements refusés : le programme n’a pas bougé.'}
             </p>
           )}
         </section>

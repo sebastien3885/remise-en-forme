@@ -17,11 +17,24 @@
  *   venir sont reprises, ajustées, dans la nouvelle version ; les anciennes
  *   passent en `remplacee` et pointent vers leur remplaçante.
  */
+import { CONFIG_PROGRESSION } from '../config/progression'
 import { maintenantIso, numeroDeSemaineProgramme, plageDeSemaine } from '../domaine/dates'
-import type { BilanHebdo, DateIso, Id, RessentiCharge, SeancePrevue } from '../domaine/entites'
+import type {
+  Ajustement,
+  BilanHebdo,
+  DateIso,
+  Id,
+  RessentiCharge,
+  SeancePrevue,
+} from '../domaine/entites'
 import { nouvelId as nouvelIdParDefaut, type FabriqueId } from '../domaine/identifiants'
 import { contexteDepuisProfil } from '../domaine/profil/precautions'
-import { appliquerAjustements, genererBilan } from '../domaine/progression/moteur'
+import { facteurEnMots } from '../domaine/progression/charge'
+import {
+  ajustementGlobal,
+  appliquerAjustements,
+  genererBilan,
+} from '../domaine/progression/moteur'
 import { db, type BaseForme } from './db'
 import { creerDepots, type Depots } from './index'
 
@@ -111,14 +124,134 @@ export async function accepterBilan(
 ): Promise<ResultatDecision> {
   const base = options.base ?? db
   const depots = options.depots ?? creerDepots(base)
-  const maintenant = options.maintenant ?? new Date()
-  const fabrique = options.nouvelId ?? nouvelIdParDefaut
 
   const bilan = await depots.bilans.parId(bilanId)
   if (!bilan) return { applique: false, raison: 'Bilan introuvable.' }
   if (bilan.decision !== 'en-attente') {
     return { applique: false, raison: 'Ce bilan a déjà été décidé.' }
   }
+
+  return appliquerAuProgramme(bilan, bilan.ajustements, 'accepte', {
+    base,
+    depots,
+    maintenant: options.maintenant ?? new Date(),
+    fabrique: options.nouvelId ?? nouvelIdParDefaut,
+  })
+}
+
+/** Ce que l'utilisateur retient d'un bilan qu'il ne prend pas tel quel. */
+export interface ChoixModification {
+  /**
+   * Facteur retenu pour l'ajustement global : `1` pour ne rien changer,
+   * `1.05` pour la moitié d'un +10 %. Absent, le facteur proposé est gardé.
+   *
+   * Le **levier** n'est pas modifiable : un seul bouge par semaine
+   * (chapitre 10), et c'est le moteur qui l'a choisi.
+   */
+  facteur?: number
+  /** Exercices dont on refuse le remplacement proposé. */
+  remplacementsRefusesIds?: readonly Id[]
+}
+
+/**
+ * La troisième voie du chapitre 5 : ni accepter tel quel, ni refuser en bloc.
+ *
+ * **Modifier ne peut que demander moins.** Le plafond de +10 % est calculé par
+ * le moteur ; si cette fonction acceptait un facteur plus ambitieux que le
+ * proposé, l'interface franchirait le garde-fou du chapitre 10 par la porte de
+ * derrière. Un facteur trop grand est donc refusé, pas rogné en silence : un
+ * appel qui demande l'impossible est un appel à corriger.
+ *
+ * **Une modification qui ne change rien est un refus.** Garder le facteur à 1
+ * et refuser tous les remplacements, c'est laisser le programme intact :
+ * autant l'écrire ainsi plutôt que de créer une version identique à la
+ * précédente.
+ */
+export async function modifierBilan(
+  bilanId: Id,
+  choix: ChoixModification = {},
+  options: OptionsBilan = {},
+): Promise<ResultatDecision> {
+  const base = options.base ?? db
+  const depots = options.depots ?? creerDepots(base)
+
+  const bilan = await depots.bilans.parId(bilanId)
+  if (!bilan) return { applique: false, raison: 'Bilan introuvable.' }
+  if (bilan.decision !== 'en-attente') {
+    return { applique: false, raison: 'Ce bilan a déjà été décidé.' }
+  }
+
+  const propose = ajustementGlobal(bilan)?.facteur ?? 1
+  const plafond = Math.max(propose, 1)
+  const plancher = CONFIG_PROGRESSION.plafonds.reductionMaximale
+  const facteur = choix.facteur ?? propose
+
+  if (!Number.isFinite(facteur)) {
+    return { applique: false, raison: 'Le facteur retenu n’est pas un nombre.' }
+  }
+  if (facteur > plafond) {
+    return {
+      applique: false,
+      raison:
+        'Modifier ne peut pas demander plus que le bilan ne propose : ' +
+        facteurEnMots(plafond) +
+        ' au maximum.',
+    }
+  }
+  if (facteur < plancher) {
+    return {
+      applique: false,
+      raison: 'Une réduction ne descend pas sous ' + facteurEnMots(plancher) + '.',
+    }
+  }
+
+  const refuses = new Set(choix.remplacementsRefusesIds ?? [])
+
+  const retenus = bilan.ajustements
+    .filter(
+      (ajustement) =>
+        ajustement.exerciceId === undefined || !refuses.has(ajustement.exerciceId),
+    )
+    .map((ajustement) =>
+      ajustement.exerciceId === undefined ? { ...ajustement, facteur } : ajustement,
+    )
+
+  const rienNeChange =
+    facteur === 1 &&
+    retenus.every((ajustement) => ajustement.remplacementParId === undefined)
+
+  if (rienNeChange) return refuserBilan(bilanId, options)
+
+  return appliquerAuProgramme(bilan, retenus, 'modifie', {
+    base,
+    depots,
+    maintenant: options.maintenant ?? new Date(),
+    fabrique: options.nouvelId ?? nouvelIdParDefaut,
+  })
+}
+
+interface ContexteDecision {
+  base: BaseForme
+  depots: Depots
+  maintenant: Date
+  fabrique: FabriqueId
+}
+
+/**
+ * Crée la version de programme qui porte les ajustements retenus, et range la
+ * décision sur le bilan.
+ *
+ * Accepter et modifier passent tous les deux par ici : la seule différence est
+ * la liste d'ajustements et le mot écrit sur la décision. Deux chemins
+ * séparés auraient fini par ne plus traiter l'historique de la même façon.
+ */
+async function appliquerAuProgramme(
+  bilan: BilanHebdo,
+  retenus: readonly Ajustement[],
+  decision: 'accepte' | 'modifie',
+  contexte: ContexteDecision,
+): Promise<ResultatDecision> {
+  const { base, depots, maintenant, fabrique } = contexte
 
   const programme = await depots.programmes.actif()
   if (!programme) return { applique: false, raison: 'Aucun programme en cours.' }
@@ -133,11 +266,18 @@ export async function accepterBilan(
   const creeLe = maintenantIso(maintenant)
   const nouveauProgrammeId = fabrique()
 
-  const ajustees = appliquerAjustements(aVenir, bilan, {
-    programmeId: nouveauProgrammeId,
-    maintenant,
-    nouvelId: fabrique,
-  })
+  // Le moteur reçoit un bilan dont les ajustements sont ceux retenus. Le bilan
+  // enregistré, lui, garde la proposition d'origine : on applique le choix de
+  // l'utilisateur sans réécrire ce que le moteur avait dit.
+  const ajustees = appliquerAjustements(
+    aVenir,
+    { ...bilan, ajustements: [...retenus] },
+    {
+      programmeId: nouveauProgrammeId,
+      maintenant,
+      nouvelId: fabrique,
+    },
+  )
 
   // Chaque ancienne séance pointe vers celle qui la remplace : l'historique
   // raconte la révision plutôt que de l'effacer.
@@ -150,12 +290,21 @@ export async function accepterBilan(
   const explication =
     bilan.reglesAppliquees[0]?.explication ?? 'Ajustements du bilan hebdomadaire acceptés.'
 
+  // Une version modifiée dit laquelle elle est : le motif de révision est ce
+  // qu'on relit trois mois plus tard dans les réglages, et « +10 % car trois
+  // séances sur trois » serait faux si l'utilisateur n'a retenu que +5 %.
+  const retenu = retenus.find((ajustement) => ajustement.exerciceId === undefined)
+  const mention =
+    decision === 'modifie'
+      ? ' · retenu à la main : ' + facteurEnMots(retenu?.facteur ?? 1)
+      : ''
+
   const nouveauProgramme = {
     id: nouveauProgrammeId,
     version: await depots.programmes.prochaineVersion(),
     dateDebut: programme.dateDebut,
     dateFin: programme.dateFin,
-    motifRevision: 'Semaine ' + String(bilan.semaine) + ' · ' + explication,
+    motifRevision: 'Semaine ' + String(bilan.semaine) + ' · ' + explication + mention,
     bilanDeclencheurId: bilan.id,
     versionPrecedenteId: programme.id,
     actif: true,
@@ -164,7 +313,8 @@ export async function accepterBilan(
 
   const bilanDecide: BilanHebdo = {
     ...bilan,
-    decision: 'accepte',
+    decision,
+    ...(decision === 'modifie' ? { ajustementsRetenus: [...retenus] } : {}),
     programmeGenereId: nouveauProgrammeId,
     decideLe: creeLe,
   }

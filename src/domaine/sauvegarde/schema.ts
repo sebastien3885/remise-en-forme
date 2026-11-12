@@ -210,6 +210,17 @@ const statistiques = z.strictObject({
   motifs: z.record(z.string(), z.number()),
 })
 
+/** Un ajustement proposé par le moteur, ou retenu par l'utilisateur. */
+const ajustement = z.strictObject({
+  regle: z.enum(CLES_REGLE),
+  levier: z.enum(LEVIERS),
+  facteur: z.number(),
+  exerciceId: identifiant.optional(),
+  remplacementParId: identifiant.optional(),
+  avisMedicalSuggere: z.boolean().optional(),
+  explication: z.string(),
+})
+
 const bilan = z.strictObject({
   id: identifiant,
   programmeId: identifiant,
@@ -225,17 +236,8 @@ const bilan = z.strictObject({
       explication: z.string(),
     }),
   ),
-  ajustements: z.array(
-    z.strictObject({
-      regle: z.enum(CLES_REGLE),
-      levier: z.enum(LEVIERS),
-      facteur: z.number(),
-      exerciceId: identifiant.optional(),
-      remplacementParId: identifiant.optional(),
-      avisMedicalSuggere: z.boolean().optional(),
-      explication: z.string(),
-    }),
-  ),
+  ajustements: z.array(ajustement),
+  ajustementsRetenus: z.array(ajustement).optional(),
   decision: z.enum(DECISIONS_BILAN),
   programmeGenereId: identifiant.optional(),
   genereLe: horodatage,

@@ -69,7 +69,9 @@ pompes d'affilée. Un objectif dont l'indicateur n'est pas une grandeur mesurée
 reste hors jeu — pas de jauge, et un mot qui le dit, jamais un 0 %.
 
 **Jamais d'écrasement** (chapitre 7). Une révision de programme crée une nouvelle
-version ; l'historique est conservé.
+version ; l'historique est conservé. Un bilan modifié garde côte à côte ce que
+le moteur proposait (`ajustements`) et ce qui a été retenu
+(`ajustementsRetenus`).
 
 **La navigation passe par le fragment d'URL** (`#/semaine`), sans bibliothèque de
 routage : c'est ce qui rend le bouton retour d'Android utile dans l'application
@@ -140,6 +142,11 @@ Ces règles ne sont pas des suggestions d'interface : elles sont codées et test
 
 - **Plafond de progression :** jamais plus de +10 % de charge d'une semaine à
   l'autre, quelle que soit la règle qui s'applique.
+- **Modifier un bilan ne peut qu'en demander moins.** La troisième voie du
+  chapitre 5 laisse retenir une part de ce que le moteur propose — la moitié, ou
+  rien — mais jamais davantage : l'écran n'offre pas de facteur plus ambitieux
+  et `modifierBilan` refuse celui qui dépasse, au lieu de le rogner en silence.
+  Sinon le plafond de +10 % se franchirait par l'interface.
 - **Un seul levier à la fois :** durée, ou intensité, ou fréquence. Pas deux.
 - **Au moins un jour de repos complet par semaine**, imposé par l'application.
 - **Genou** (antécédent articulaire déclaré) : chaque exercice

@@ -76,6 +76,34 @@ export function levierDe(mesures: Mesures): Levier | undefined {
   return charge ? LEVIER_PAR_CHAMP[charge.champ] : undefined
 }
 
+/**
+ * Variation d'un facteur, en mots : « +10 % », « −20 % », « aucun changement ».
+ *
+ * Vit dans le domaine parce que deux couches s'en servent : l'écran du bilan
+ * pour nommer les choix, et la couche de stockage pour expliquer un refus. Une
+ * seconde implémentation et le message d'erreur finirait par annoncer un
+ * pourcentage que le bouton ne dit pas.
+ */
+export function facteurEnMots(facteur: number): string {
+  const variation = Math.round((facteur - 1) * 100)
+  if (variation === 0) return 'aucun changement'
+  return (variation > 0 ? '+' : '-') + String(Math.abs(variation)) + ' %'
+}
+
+/**
+ * Les facteurs qu'on peut retenir à la place de celui que le moteur propose :
+ * le proposé, la moitié du chemin, et aucun changement.
+ *
+ * **Jamais au-delà du proposé.** Le plafond de +10 % du chapitre 10 est
+ * calculé par le moteur ; si l'interface laissait choisir davantage, elle le
+ * franchirait par la porte de derrière.
+ */
+export function facteursRetenables(propose: number): number[] {
+  if (propose === 1) return [1]
+  const moitie = Math.round((1 + (propose - 1) / 2) * 100) / 100
+  return [...new Set([propose, moitie, 1])]
+}
+
 /** Ramène un facteur entre le plancher et le plafond de la configuration. */
 export function facteurPlafonne(facteur: number, config: ConfigProgression): number {
   const { augmentationMaximale, reductionMaximale } = config.plafonds

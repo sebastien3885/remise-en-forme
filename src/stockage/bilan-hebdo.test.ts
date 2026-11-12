@@ -3,7 +3,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { bibliothequeInitiale } from '../domaine/exercices/bibliotheque'
 import { profilParDefaut } from '../domaine/profil/profil-par-defaut'
 import { baseDeTest } from '../tests/base-de-test'
-import { accepterBilan, genererEtEnregistrerBilan, refuserBilan } from './bilan-hebdo'
+import { unBilan } from '../tests/fixtures'
+import {
+  accepterBilan,
+  genererEtEnregistrerBilan,
+  modifierBilan,
+  refuserBilan,
+} from './bilan-hebdo'
 import type { BaseForme } from './db'
 import { genererEtInstallerProgramme } from './generer-programme'
 import { creerDepots, type Depots } from './index'
@@ -272,5 +278,164 @@ describe('refuser un bilan', () => {
     const actif = await depots.programmes.actif()
     const semaine2 = await depots.seances.prevues.parSemaine(actif!.id, 2)
     expect(semaine2.find((s) => s.type === 'marche')?.exercices[0]?.cibles.dureeMinutes).toBe(30)
+  })
+})
+
+describe('modifier un bilan', () => {
+  async function bilanDAugmentation() {
+    await realiserLaSemaine(5)
+    const resultat = await genererEtEnregistrerBilan(DIMANCHE, 'juste-bien', {
+      base,
+      depots,
+      maintenant: MAINTENANT,
+    })
+    if (!resultat.genere) throw new Error('bilan attendu')
+    return resultat.bilan
+  }
+
+  it('applique un facteur plus doux que celui proposé', async () => {
+    const bilan = await bilanDAugmentation()
+
+    const resultat = await modifierBilan(
+      bilan.id,
+      { facteur: 1.05 },
+      { base, depots, maintenant: MAINTENANT },
+    )
+
+    expect(resultat.applique).toBe(true)
+    if (!resultat.applique) return
+    expect(resultat.versionCreee).toBe(2)
+    expect(resultat.bilan.decision).toBe('modifie')
+
+    const actif = await depots.programmes.actif()
+    const semaine2 = await depots.seances.prevues.parSemaine(actif!.id, 2)
+    // 30 min a 1,05 font 31, et non les 33 du +10 % proposé.
+    expect(semaine2.find((s) => s.type === 'marche')?.exercices[0]?.cibles.dureeMinutes).toBe(31)
+  })
+
+  it('garde la proposition du moteur à côté de ce qui a été retenu', async () => {
+    const bilan = await bilanDAugmentation()
+    await modifierBilan(bilan.id, { facteur: 1.05 }, { base, depots, maintenant: MAINTENANT })
+
+    const range = await depots.bilans.parId(bilan.id)
+
+    // Jamais d'écrasement : le bilan porte les deux.
+    expect(range?.ajustements[0]?.facteur).toBe(1.1)
+    expect(range?.ajustementsRetenus?.[0]?.facteur).toBe(1.05)
+  })
+
+  it('dit dans le motif de révision que la charge a été retenue à la main', async () => {
+    const bilan = await bilanDAugmentation()
+    await modifierBilan(bilan.id, { facteur: 1.05 }, { base, depots, maintenant: MAINTENANT })
+
+    expect((await depots.programmes.actif())?.motifRevision).toMatch(/retenu à la main/)
+  })
+
+  it('refuse un facteur plus ambitieux que celui proposé', async () => {
+    // Garde-fou du chapitre 10 : le plafond de +10 % ne se franchit pas par
+    // l'interface.
+    const bilan = await bilanDAugmentation()
+
+    const resultat = await modifierBilan(
+      bilan.id,
+      { facteur: 1.2 },
+      { base, depots, maintenant: MAINTENANT },
+    )
+
+    expect(resultat.applique).toBe(false)
+    if (resultat.applique) return
+    expect(resultat.raison).toMatch(/plus que le bilan ne propose/)
+    expect(await depots.programmes.compter()).toBe(1)
+    expect((await depots.bilans.parId(bilan.id))?.decision).toBe('en-attente')
+  })
+
+  it('refuse une réduction sous le plancher de la configuration', async () => {
+    const bilan = await bilanDAugmentation()
+
+    const resultat = await modifierBilan(
+      bilan.id,
+      { facteur: 0.3 },
+      { base, depots, maintenant: MAINTENANT },
+    )
+
+    expect(resultat.applique).toBe(false)
+    if (resultat.applique) return
+    expect(resultat.raison).toMatch(/ne descend pas sous/)
+  })
+
+  it('traite comme un refus une modification qui ne change rien', async () => {
+    const bilan = await bilanDAugmentation()
+
+    const resultat = await modifierBilan(
+      bilan.id,
+      { facteur: 1 },
+      { base, depots, maintenant: MAINTENANT },
+    )
+
+    expect(resultat.applique).toBe(true)
+    expect((await depots.bilans.parId(bilan.id))?.decision).toBe('refuse')
+    expect(await depots.programmes.compter()).toBe(1)
+
+    const actif = await depots.programmes.actif()
+    const semaine2 = await depots.seances.prevues.parSemaine(actif!.id, 2)
+    expect(semaine2.find((s) => s.type === 'marche')?.exercices[0]?.cibles.dureeMinutes).toBe(30)
+  })
+
+  it('n’échange pas un exercice dont le remplacement est refusé', async () => {
+    const programme = (await depots.programmes.actif())!
+    const semaine2 = await depots.seances.prevues.parSemaine(programme.id, 2)
+    const marche = semaine2.find((seance) => seance.type === 'marche')!
+    const exerciceId = marche.exercices[0]!.exerciceId
+    const explication = 'Douleur signalée deux fois.'
+
+    await depots.bilans.enregistrer(
+      unBilan({
+        id: 'bilan-a-la-main',
+        programmeId: programme.id,
+        ajustements: [
+          { regle: 'augmenter', levier: 'duree', facteur: 1.1, explication },
+          {
+            regle: 'douleur-repetee',
+            levier: 'duree',
+            facteur: 1,
+            exerciceId,
+            remplacementParId: 'variante-plus-douce',
+            explication,
+          },
+        ],
+      }),
+    )
+
+    const resultat = await modifierBilan(
+      'bilan-a-la-main',
+      { remplacementsRefusesIds: [exerciceId] },
+      { base, depots, maintenant: MAINTENANT },
+    )
+
+    expect(resultat.applique).toBe(true)
+    if (!resultat.applique) return
+    expect(resultat.bilan.ajustementsRetenus).toHaveLength(1)
+
+    const actif = await depots.programmes.actif()
+    const apres = await depots.seances.prevues.parSemaine(actif!.id, 2)
+    const marcheApres = apres.find((seance) => seance.type === 'marche')
+    // L'exercice garde son identité ; la durée, elle, a bien pris les 10 %.
+    expect(marcheApres?.exercices[0]?.exerciceId).toBe(exerciceId)
+    expect(marcheApres?.exercices[0]?.cibles.dureeMinutes).toBe(33)
+  })
+
+  it('refuse de modifier un bilan déjà décidé', async () => {
+    const bilan = await bilanDAugmentation()
+    await accepterBilan(bilan.id, { base, depots, maintenant: MAINTENANT })
+
+    const resultat = await modifierBilan(
+      bilan.id,
+      { facteur: 1.05 },
+      { base, depots, maintenant: MAINTENANT },
+    )
+
+    expect(resultat.applique).toBe(false)
+    if (resultat.applique) return
+    expect(resultat.raison).toMatch(/déjà été décidé/)
   })
 })

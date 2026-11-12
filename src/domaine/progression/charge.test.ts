@@ -5,7 +5,9 @@ import {
   ajusterMesures,
   ajusterValeur,
   chargeDe,
+  facteurEnMots,
   facteurPlafonne,
+  facteursRetenables,
   levierDe,
   variationRelative,
 } from './charge'
@@ -197,5 +199,50 @@ describe('variationRelative', () => {
     expect(
       variationRelative({ champ: 'dureeMinutes', valeur: 30 }, { champ: 'longueurs', valeur: 8 }),
     ).toBeUndefined()
+  })
+})
+
+describe('facteurEnMots', () => {
+  it('dit une augmentation avec son signe', () => {
+    expect(facteurEnMots(1.1)).toBe('+10 %')
+    expect(facteurEnMots(1.05)).toBe('+5 %')
+  })
+
+  it('dit une réduction avec son signe', () => {
+    // Le même signe que les explications du moteur : les deux textes se
+    // retrouvent côte à côte dans la carte du bilan.
+    expect(facteurEnMots(0.8)).toBe('-20 %')
+  })
+
+  it('dit « aucun changement » plutôt que « +0 % »', () => {
+    expect(facteurEnMots(1)).toBe('aucun changement')
+  })
+})
+
+describe('facteursRetenables', () => {
+  it('propose le facteur du moteur, la moitié du chemin, et rien', () => {
+    expect(facteursRetenables(1.1)).toEqual([1.1, 1.05, 1])
+  })
+
+  it('ne propose jamais plus que le facteur du moteur', () => {
+    // Le plafond du chapitre 10 ne se franchit pas par l'interface.
+    for (const propose of [1.1, 1.05, 0.8, 0.7, 0.5]) {
+      for (const candidat of facteursRetenables(propose)) {
+        expect(candidat).toBeLessThanOrEqual(Math.max(propose, 1))
+      }
+    }
+  })
+
+  it('adoucit une réduction vers l’absence de changement', () => {
+    expect(facteursRetenables(0.8)).toEqual([0.8, 0.9, 1])
+  })
+
+  it('ne propose qu’un choix quand le moteur ne change rien', () => {
+    expect(facteursRetenables(1)).toEqual([1])
+  })
+
+  it('ne répète pas un facteur quand la moitié tombe sur un bord', () => {
+    const choix = facteursRetenables(1.02)
+    expect(new Set(choix).size).toBe(choix.length)
   })
 })

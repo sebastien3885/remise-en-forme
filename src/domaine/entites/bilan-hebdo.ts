@@ -95,7 +95,16 @@ export interface BilanHebdo {
   /** Réponse de l'utilisateur à « Comment trouves-tu la charge ? ». */
   ressentiCharge: RessentiCharge | null
   reglesAppliquees: RegleAppliquee[]
+  /** Ce que le moteur propose. Il n'est jamais réécrit : c'est la proposition. */
   ajustements: Ajustement[]
+  /**
+   * Ce qui a réellement été appliqué quand la décision est `modifie`.
+   *
+   * Séparé de `ajustements` pour que le bilan garde les deux : ce que le
+   * moteur proposait, et ce que l'utilisateur a retenu. Écraser la proposition
+   * reviendrait à réécrire l'histoire (chapitre 7).
+   */
+  ajustementsRetenus?: Ajustement[]
   decision: DecisionBilan
   /** Version de programme créée quand les ajustements ont été acceptés. */
   programmeGenereId?: Id
