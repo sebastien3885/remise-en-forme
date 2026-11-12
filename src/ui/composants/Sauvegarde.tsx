@@ -26,18 +26,7 @@ import {
   importerTout,
 } from '../../stockage/sauvegarde'
 import { formaterDateLongue } from '../libelles'
-
-/** Propose le fichier au téléchargement, sans rien envoyer nulle part. */
-function telecharger(nom: string, contenu: string, type: string): void {
-  const url = URL.createObjectURL(new Blob([contenu], { type }))
-  const lien = document.createElement('a')
-  lien.href = url
-  lien.download = nom
-  document.body.append(lien)
-  lien.click()
-  lien.remove()
-  URL.revokeObjectURL(url)
-}
+import { telecharger } from '../telecharger'
 
 type Etat =
   | { phase: 'repos' }

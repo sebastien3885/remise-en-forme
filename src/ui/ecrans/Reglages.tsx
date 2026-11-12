@@ -15,6 +15,7 @@ import { AvertissementSante } from '../composants/AvertissementSante'
 import { GenerationProgramme } from '../composants/GenerationProgramme'
 import { ImportDePlan } from '../composants/ImportDePlan'
 import { PreferencesEtDonnees } from '../composants/PreferencesEtDonnees'
+import { Rappels } from '../composants/Rappels'
 import { Sauvegarde } from '../composants/Sauvegarde'
 
 export function Reglages() {
@@ -163,6 +164,8 @@ export function Reglages() {
       </section>
 
       <ImportDePlan />
+
+      <Rappels />
 
       <Sauvegarde />
 

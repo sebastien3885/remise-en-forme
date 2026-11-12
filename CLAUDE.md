@@ -32,6 +32,7 @@ npm run lint        # ESLint
 ```
 src/config/      progression.json (les règles du chapitre 5) + son schéma zod
 src/domaine/     métier pur : ni React, ni Dexie, ni DOM. Testable seul.
+  calendrier/    export iCalendar des séances à venir (les rappels)
   entites/       les neuf entités du chapitre 7
   exercices/     bibliothèque et choix de variantes
   plans/         format d'import, contrôle, aperçu, conversion
@@ -82,6 +83,13 @@ qu'une absence de séance.
 
 **Une activité improvisée ne remplace pas la séance du jour.** Les deux ont eu
 lieu ; les écrans affichent les deux.
+
+**Un rappel ne se promet pas s'il ne peut pas partir.** Une PWA sans serveur
+ne se réveille pas à une heure dite : pas de notification programmée, et rien
+dans l'interface ne doit laisser croire le contraire. Les séances à venir
+s'exportent vers l'agenda du téléphone (`src/domaine/calendrier/ics.ts`), qui
+sait notifier. Les jours de repos n'y vont pas — une alarme pour ne rien faire
+est du bruit — ni les séances faites, annulées ou remplacées.
 
 ## Langage visuel — « Grand geste »
 

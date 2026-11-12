@@ -1083,6 +1083,7 @@ a:focus-visible {
 }
 
 .champ input,
+.champ select,
 .champ textarea {
   min-height: var(--cible-tactile);
   width: 100%;
@@ -1102,6 +1103,7 @@ a:focus-visible {
 }
 
 .champ input:focus-visible,
+.champ select:focus-visible,
 .champ textarea:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 1px;

@@ -70,20 +70,30 @@ Dans **Réglages → Sauvegarde → Exporter mes données**, l'application produ
 un fichier JSON. Rangez-le ailleurs — Drive, un mail à vous-même, un câble USB
 — de temps en temps. Le même écran sait le relire pour tout restaurer.
 
-## Ce qui ne marche pas, et pourquoi
+## 6. Les rappels
 
-**Les rappels de séance à heure fixe.** Une application web installée ne peut
-pas se réveiller toute seule pour envoyer une notification : il lui faudrait
-un serveur qui la pousse, ou une application native. Le chapitre 9 du cahier
-des charges les mentionne ; ils ne sont pas faisables en l'état, et plutôt que
-de livrer un rappel qui ne partirait qu'une fois sur trois, l'application s'en
-tient à des rappels **à l'ouverture** : la séance du jour sur l'écran
-d'accueil, et le bandeau qui signale un bilan en attente.
+**L'application ne peut pas vous notifier à une heure fixe.** Installée, elle
+ne se réveille pas toute seule : il lui faudrait un serveur qui la pousse, ou
+une application native. Un rappel qui ne partirait qu'une fois sur trois serait
+pire que pas de rappel du tout — on finirait par compter dessus.
 
-Une alarme du téléphone, à l'heure où vous comptez vous entraîner, reste la
-solution la plus fiable. Si les notifications programmées deviennent
-indispensables, l'alternative citée par le chapitre 9 — un emballage natif
-avec Capacitor — les rendrait possibles.
+Elle confie donc les séances à l'outil du téléphone qui sait réveiller.
+Dans **Réglages → Rappels**, choisissez l'heure du rappel et appuyez sur
+« Envoyer vers mon agenda » : le fichier `.ics` qui en sort s'ouvre dans Google
+Agenda ou l'agenda d'Android, et chaque séance à venir devient une journée
+entière avec son rappel du matin.
+
+- Les séances déjà faites, annulées ou remplacées n'y sont pas.
+- Les jours de repos non plus : une alarme pour ne rien faire est du bruit.
+- Réexporter plus tard ne crée pas de doublons — chaque séance garde son
+  identifiant et l'agenda met l'événement à jour. Pensez-y après une révision
+  de programme.
+
+Dans l'application même, les rappels restent **à l'ouverture** : la séance du
+jour sur l'écran d'accueil, et le bandeau qui signale un bilan en attente.
+
+Si les notifications programmées devenaient indispensables, l'alternative citée
+par le chapitre 9 — un emballage natif avec Capacitor — les rendrait possibles.
 
 ## Mettre à jour plus tard
 
