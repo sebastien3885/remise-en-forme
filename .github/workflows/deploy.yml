@@ -1,23 +1,22 @@
 # Mise en ligne sur GitHub Pages (chapitre 9).
 #
-# Squelette prêt pour l'étape 5. Il ne se déclenche QUE à la main
-# (onglet Actions, bouton « Run workflow ») : tant que GitHub Pages n'est pas
-# activé sur le dépôt, un déclenchement automatique à chaque push échouerait
-# sans rien apprendre à personne.
+# Chaque poussée sur `main` reconstruit et republie l'application, après les
+# tests. Le bouton « Run workflow » de l'onglet Actions permet de republier à
+# la main sans rien changer au code.
 #
-# À l'étape 5, pour publier à chaque modification, ajouter sous `on` :
+# Avant la première poussée, deux choses doivent être faites une fois pour
+# toutes — elles sont détaillées dans docs/mise-en-ligne.md :
 #
-#   push:
-#     branches: [main]
+#   1. activer Pages : Réglages → Pages → Source : GitHub Actions ;
+#   2. vérifier `NOM_DEPOT` dans vite.config.ts, qui fixe le chemin public.
 #
-# et activer Pages dans Réglages → Pages → Source : GitHub Actions.
-#
-# Vérifier aussi que `NOM_DEPOT`, dans vite.config.ts, correspond bien au nom
-# du dépôt : c'est lui qui fixe le chemin des fichiers publiés.
+# Sans la première, le travail `deployer` échoue avec un message explicite.
 
 name: Déployer sur GitHub Pages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
