@@ -69,10 +69,19 @@ routage : c'est ce qui rend le bouton retour d'Android utile dans l'application
 installée. Les cinq onglets sont déclarés une fois dans
 `src/ui/navigation/onglets.ts`.
 
-**Une séance déjà saisie ne se déplace pas.** Son réalisé porte la date du jour
-où elle a eu lieu, et c'est lui qui fait foi : déplacer le prévu détacherait les
-deux. Déposer une séance sur un jour occupé **échange** les deux, ce qui préserve
+**Une séance déjà saisie ne se déplace pas**, ne s'annule pas et ne se remplace
+pas. Son réalisé porte la date du jour où elle a eu lieu, et c'est lui qui fait
+foi. Déposer une séance sur un jour occupé **échange** les deux, ce qui préserve
 tout seul le jour de repos hebdomadaire.
+
+**Une séance ne ment jamais sur son étiquette.** Les étirements ajoutés en fin de
+séance sont des *compléments* : si l'exercice principal est écarté par le
+matériel ou les précautions, la séance est refusée avec sa raison, jamais
+réduite à ses compléments. Une « marche » faite de trois étirements serait pire
+qu'une absence de séance.
+
+**Une activité improvisée ne remplace pas la séance du jour.** Les deux ont eu
+lieu ; les écrans affichent les deux.
 
 ## Langage visuel — « Grand geste »
 
