@@ -122,34 +122,42 @@ export function remplacementsProposes(bilan: BilanHebdo): Map<Id, Id> {
   return remplacements
 }
 
-export interface OptionsSemaineSuivante {
-  /** Décalage appliqué aux dates. Une semaine par défaut. */
+export interface OptionsAjustement {
+  /**
+   * Décalage appliqué aux dates, en jours. Zéro par défaut : les séances à
+   * venir sont déjà posées au calendrier, le bilan ne fait que les corriger.
+   * Sept pour construire une semaine à partir de la précédente.
+   */
   decalageJours?: number
+  /** Programme auquel rattacher les séances ajustées. Le leur par défaut. */
+  programmeId?: Id
   maintenant?: Date
   nouvelId?: FabriqueId
   config?: ConfigProgression
 }
 
 /**
- * Construit la semaine suivante à partir d'une semaine de séances et du bilan.
+ * Applique les ajustements d'un bilan à un ensemble de séances.
  *
  * Trois choses se produisent, et pas une de plus :
  *
- * - les dates avancent d'une semaine, et le numéro de semaine avec elles ;
  * - les cibles du **seul levier retenu** sont multipliées par le facteur ;
  * - les exercices visés par un remplacement sont échangés, en gardant leurs
- *   cibles — une variante plus douce est déjà un allègement en soi.
+ *   cibles — une variante plus douce est déjà un allègement en soi ;
+ * - les dates se décalent, si on le demande.
  *
- * Les jours de repos sont recopiés tels quels : la semaine proposée garde donc
- * autant de jours de repos que celle dont elle est issue.
+ * Les jours de repos sont recopiés tels quels : la semaine ajustée garde donc
+ * autant de jours de repos que celle dont elle est issue. Les séances
+ * annulées ou déjà remplacées sont laissées de côté.
  */
-export function proposerSemaineSuivante(
+export function appliquerAjustements(
   seances: readonly SeancePrevue[],
   bilan: BilanHebdo,
-  options: OptionsSemaineSuivante = {},
+  options: OptionsAjustement = {},
 ): SeancePrevue[] {
   const config = options.config ?? CONFIG_PROGRESSION
-  const decalage = options.decalageJours ?? JOURS_PAR_SEMAINE
+  const decalage = options.decalageJours ?? 0
+  const decalageSemaines = Math.round(decalage / JOURS_PAR_SEMAINE)
   const fabrique = options.nouvelId ?? nouvelIdParDefaut
   const creeLe = maintenantIso(options.maintenant ?? new Date())
 
@@ -162,9 +170,9 @@ export function proposerSemaineSuivante(
     .filter((seance) => seance.statut !== 'annulee' && seance.statut !== 'remplacee')
     .map((seance) => ({
       id: fabrique(),
-      programmeId: seance.programmeId,
-      date: ajouterJours(seance.date, decalage),
-      semaine: seance.semaine + 1,
+      programmeId: options.programmeId ?? seance.programmeId,
+      date: decalage === 0 ? seance.date : ajouterJours(seance.date, decalage),
+      semaine: seance.semaine + decalageSemaines,
       type: seance.type,
       titre: seance.titre,
       exercices: seance.exercices.map((exercice) => {

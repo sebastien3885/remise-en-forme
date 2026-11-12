@@ -6,6 +6,7 @@
  * de ce dossier bougent.
  */
 import { db, type BaseForme } from './db'
+import { depotBilans } from './depots/depot-bilans'
 import { depotExercices } from './depots/depot-exercices'
 import { depotHydratation } from './depots/depot-hydratation'
 import { depotProfil } from './depots/depot-profil'
@@ -13,6 +14,7 @@ import { depotProgrammes } from './depots/depot-programmes'
 import { depotSeances } from './depots/depot-seances'
 
 export { BaseForme, NOM_BASE, db } from './db'
+export { depotBilans, type DepotBilans } from './depots/depot-bilans'
 export { depotExercices, type DepotExercices } from './depots/depot-exercices'
 export { depotHydratation, type DepotHydratation } from './depots/depot-hydratation'
 export { depotProfil, type DepotProfil } from './depots/depot-profil'
@@ -27,6 +29,7 @@ export function creerDepots(base: BaseForme = db) {
     programmes: depotProgrammes(base),
     seances: depotSeances(base),
     hydratation: depotHydratation(base),
+    bilans: depotBilans(base),
   }
 }
 

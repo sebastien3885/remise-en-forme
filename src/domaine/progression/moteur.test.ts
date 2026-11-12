@@ -8,9 +8,9 @@ import { contexteDepuisProfil } from '../profil/precautions'
 import { profilParDefaut } from '../profil/profil-par-defaut'
 import {
   ajustementGlobal,
+  appliquerAjustements,
   genererBilan,
   joursDeReposSuffisants,
-  proposerSemaineSuivante,
   remplacementsProposes,
   type EntreeMoteur,
 } from './moteur'
@@ -167,11 +167,35 @@ describe('genererBilan', () => {
   })
 })
 
-describe('proposerSemaineSuivante', () => {
+describe('appliquerAjustements', () => {
   const bilanAugmente = () => genererBilan(entree())
 
-  it('décale toutes les dates d’une semaine et avance le numéro', () => {
-    const suivante = proposerSemaineSuivante(semaineType(), bilanAugmente(), {
+  it('laisse les dates en place par défaut : les séances sont déjà posées', () => {
+    const suivante = appliquerAjustements(semaineType(), bilanAugmente(), {
+      maintenant: MAINTENANT,
+    })
+
+    expect(suivante.map((seance) => seance.date)).toEqual([
+      '2026-11-16',
+      '2026-11-17',
+      '2026-11-19',
+      '2026-11-22',
+    ])
+    expect(suivante.every((seance) => seance.semaine === 1)).toBe(true)
+  })
+
+  it('rattache les séances au programme demandé', () => {
+    const suivante = appliquerAjustements(semaineType(), bilanAugmente(), {
+      maintenant: MAINTENANT,
+      programmeId: 'programme-2',
+    })
+
+    expect(suivante.every((seance) => seance.programmeId === 'programme-2')).toBe(true)
+  })
+
+  it('décale les dates et le numéro de semaine quand on le demande', () => {
+    const suivante = appliquerAjustements(semaineType(), bilanAugmente(), {
+      decalageJours: 7,
       maintenant: MAINTENANT,
       nouvelId: (() => {
         let compteur = 0
@@ -190,7 +214,7 @@ describe('proposerSemaineSuivante', () => {
 
   it('n’augmente que les cibles du levier retenu', () => {
     // Premier bilan : le levier est la durée.
-    const suivante = proposerSemaineSuivante(semaineType(), bilanAugmente(), {
+    const suivante = appliquerAjustements(semaineType(), bilanAugmente(), {
       maintenant: MAINTENANT,
     })
 
@@ -211,7 +235,7 @@ describe('proposerSemaineSuivante', () => {
   })
 
   it('ne touche pas aux temps de repos', () => {
-    const suivante = proposerSemaineSuivante(semaineType(), bilanAugmente(), {
+    const suivante = appliquerAjustements(semaineType(), bilanAugmente(), {
       maintenant: MAINTENANT,
     })
 
@@ -221,7 +245,7 @@ describe('proposerSemaineSuivante', () => {
   })
 
   it('recopie le jour de repos, donc la semaine proposée en garde un', () => {
-    const suivante = proposerSemaineSuivante(semaineType(), bilanAugmente(), {
+    const suivante = appliquerAjustements(semaineType(), bilanAugmente(), {
       maintenant: MAINTENANT,
     })
 
@@ -230,7 +254,7 @@ describe('proposerSemaineSuivante', () => {
   })
 
   it('remet toutes les séances à faire', () => {
-    const suivante = proposerSemaineSuivante(semaineType(), bilanAugmente(), {
+    const suivante = appliquerAjustements(semaineType(), bilanAugmente(), {
       maintenant: MAINTENANT,
     })
 
@@ -283,7 +307,7 @@ describe('proposerSemaineSuivante', () => {
         ],
       }),
     ]
-    const suivante = proposerSemaineSuivante(semaine, bilan, { maintenant: MAINTENANT })
+    const suivante = appliquerAjustements(semaine, bilan, { maintenant: MAINTENANT })
 
     expect(suivante[0]?.exercices[0]?.exerciceId).toBe('squat-sur-chaise')
     // Les cibles suivent l'exercice : une variante plus douce est déjà un allègement.
@@ -301,7 +325,7 @@ describe('proposerSemaineSuivante', () => {
 
     expect(ajustementGlobal(bilan)?.facteur).toBe(0.8)
 
-    const suivante = proposerSemaineSuivante(semaineType(), bilan, { maintenant: MAINTENANT })
+    const suivante = appliquerAjustements(semaineType(), bilan, { maintenant: MAINTENANT })
     const marche = suivante.find((seance) => seance.type === 'marche')
 
     expect(marche?.exercices[0]?.cibles.dureeMinutes).toBe(24)
@@ -314,7 +338,7 @@ describe('proposerSemaineSuivante', () => {
       ],
     })
 
-    const suivante = proposerSemaineSuivante(semaineType(), bilan, { maintenant: MAINTENANT })
+    const suivante = appliquerAjustements(semaineType(), bilan, { maintenant: MAINTENANT })
     const marche = suivante.find((seance) => seance.type === 'marche')
 
     expect(marche?.exercices[0]?.cibles.dureeMinutes).toBe(30)
@@ -327,7 +351,7 @@ describe('proposerSemaineSuivante', () => {
       uneSeancePrevue({ id: 'p3', date: '2026-11-18', statut: 'remplacee' }),
     ]
 
-    const suivante = proposerSemaineSuivante(semaine, bilanAugmente(), { maintenant: MAINTENANT })
+    const suivante = appliquerAjustements(semaine, bilanAugmente(), { maintenant: MAINTENANT })
 
     expect(suivante).toHaveLength(1)
   })
@@ -341,7 +365,7 @@ describe('proposerSemaineSuivante', () => {
       ],
     })
 
-    const suivante = proposerSemaineSuivante(semaineType(), bilanTordu, {
+    const suivante = appliquerAjustements(semaineType(), bilanTordu, {
       maintenant: MAINTENANT,
     })
     const marche = suivante.find((seance) => seance.type === 'marche')

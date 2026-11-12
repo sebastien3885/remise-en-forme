@@ -29,10 +29,10 @@ export {
 
 export {
   ajustementGlobal,
+  appliquerAjustements,
   genererBilan,
   joursDeReposSuffisants,
-  proposerSemaineSuivante,
   remplacementsProposes,
   type EntreeMoteur,
-  type OptionsSemaineSuivante,
+  type OptionsAjustement,
 } from './moteur'
