@@ -175,7 +175,7 @@ describe('matériel déclaré', () => {
   it('nomme le matériel qui manque', () => {
     const verdict = evaluerExercice(exercice('velo-souple'), contexte({}, ['aucun']))
 
-    expect(verdict.exclusions[0]?.explication).toMatch(/velo/)
+    expect(verdict.exclusions[0]?.explication).toMatch(/vélo/)
   })
 })
 

@@ -14,6 +14,8 @@
  * de lever la précaution sous sa responsabilité.
  */
 import {
+  LIBELLE_IMPACT_GENOU,
+  LIBELLE_MATERIEL,
   ORDRE_IMPACT_GENOU,
   type Exercice,
   type Materiel,
@@ -82,9 +84,9 @@ export function evaluerExercice(
       raison: 'impact-genou',
       explication:
         'Impact ' +
-        exercice.impactGenou +
+        LIBELLE_IMPACT_GENOU[exercice.impactGenou] +
         ' sur le genou, au-delà du plafond « ' +
-        precautions.impactGenouMaximal +
+        LIBELLE_IMPACT_GENOU[precautions.impactGenouMaximal] +
         ' » fixé dans le profil.',
     })
   }
@@ -101,7 +103,10 @@ export function evaluerExercice(
   if (manquant.length > 0) {
     exclusions.push({
       raison: 'materiel-absent',
-      explication: 'Demande du matériel non déclaré : ' + manquant.join(', ') + '.',
+      explication:
+        'Demande du matériel non déclaré : ' +
+        manquant.map((materiel) => LIBELLE_MATERIEL[materiel]).join(', ') +
+        '.',
     })
   }
 

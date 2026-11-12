@@ -512,7 +512,7 @@ describe('apercuDuPlan', () => {
     expect(apercu.applicable).toBe(true)
     expect(apercu.exercicesMisAJour).toEqual(['Marche rapide'])
     expect(apercu.avertissements.map((a) => a.message).join(' ')).toMatch(
-      /change d’impact genou : faible → modere/,
+      /change d’impact genou : faible → modéré/,
     )
   })
 

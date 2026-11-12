@@ -19,13 +19,14 @@
 import { z } from 'zod'
 
 import { joursEntre, lundiDeLaSemaine, maintenantIso, numeroDeSemaineProgramme } from '../dates'
-import type {
-  DateIso,
-  Exercice,
-  Id,
-  Programme,
-  SeancePrevue,
-  TypeSeance,
+import {
+  LIBELLE_IMPACT_GENOU,
+  type DateIso,
+  type Exercice,
+  type Id,
+  type Programme,
+  type SeancePrevue,
+  type TypeSeance,
 } from '../entites'
 import { nouvelId as nouvelIdParDefaut, type FabriqueId, versSlug } from '../identifiants'
 import { evaluerExercice, type ContexteExercices } from '../profil/precautions'
@@ -331,9 +332,9 @@ export function apercuDuPlan(plan: PlanImporte, contexte: ContexteApercu): Aperc
           '« ' +
           definition.nom +
           ' » change d’impact genou : ' +
-          existant.impactGenou +
+          LIBELLE_IMPACT_GENOU[existant.impactGenou] +
           ' → ' +
-          definition.impactGenou,
+          LIBELLE_IMPACT_GENOU[definition.impactGenou],
       })
     }
   }

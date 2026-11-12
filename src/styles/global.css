@@ -1,17 +1,19 @@
 /*
  * Bases d'interface du chapitre 8 : lisible en plein soleil, gros boutons
- * utilisables a une main, mode sombre. Le theme complet arrive a l'etape 5.
+ * utilisables à une main, mode sombre. Le thème complet arrive à l'étape 5.
  */
 :root {
   /* Couleurs */
   --fond: #0f1115;
   --fond-carte: #181b22;
+  --fond-alerte: #2a1c1c;
   --trait: #2a2f3a;
   --texte: #f3f5f8;
   --texte-discret: #a3acbb;
   --accent: #4ade80;
   --accent-texte: #07120b;
   --alerte: #f87171;
+  --attention: #fbbf24;
 
   /* Rythme */
   --marge: 16px;
@@ -21,7 +23,7 @@
 
   color-scheme: dark;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  /* Contraste eleve plutot que gris sur gris : lisibilite en exterieur */
+  /* Contraste élevé plutôt que gris sur gris : lisibilité en extérieur */
   font-size: 17px;
   line-height: 1.5;
 }
@@ -40,7 +42,7 @@ body {
 }
 
 body {
-  /* Marges de securite des telephones a encoche */
+  /* Marges de sécurité des téléphones à encoche */
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
     env(safe-area-inset-left);
   -webkit-text-size-adjust: 100%;
@@ -50,19 +52,182 @@ body {
   max-width: 640px;
   margin: 0 auto;
   padding: var(--marge);
+  display: flex;
+  flex-direction: column;
+  gap: var(--marge);
 }
 
 h1 {
   font-size: 1.5rem;
-  margin: 0 0 var(--marge);
+  margin: 0 0 8px;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 0 0 12px;
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 16px 0 8px;
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+p:last-child {
+  margin-bottom: 0;
 }
 
 .discret {
   color: var(--texte-discret);
 }
 
-button {
+code {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.85em;
+  background: #0b0d11;
+  border: 1px solid var(--trait);
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+
+/* ------------------------------------------------------------- cartes */
+
+.carte {
+  background: var(--fond-carte);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  padding: var(--marge);
+}
+
+.carte--alerte {
+  background: var(--fond-alerte);
+  border-color: var(--alerte);
+}
+
+/* ------------------------------------------------------------ boutons */
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: var(--cible-tactile);
+  padding: 0 20px;
+  border: none;
+  border-radius: var(--rayon);
+  background: var(--accent);
+  color: var(--accent-texte);
   font: inherit;
+  font-weight: 600;
   cursor: pointer;
+}
+
+.bouton--secondaire {
+  background: transparent;
+  color: var(--texte);
+  border: 1px solid var(--trait);
+}
+
+/* Le vrai champ fichier est masqué : c'est l'étiquette qui fait bouton. */
+.bouton--fichier input[type='file'] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rangee-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 12px;
+}
+
+.rangee-boutons .bouton {
+  flex: 1 1 auto;
+}
+
+/* ------------------------------------------------------------ données */
+
+.donnees {
+  display: grid;
+  grid-template-columns: minmax(8rem, auto) 1fr;
+  gap: 6px 16px;
+  margin: 0;
+}
+
+.donnees dt {
+  color: var(--texte-discret);
+  font-size: 0.9rem;
+}
+
+.donnees dd {
+  margin: 0;
+}
+
+/* Sur un écran étroit, l'étiquette passe au-dessus de la valeur. */
+@media (max-width: 24rem) {
+  .donnees {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .donnees dd {
+    margin-bottom: 8px;
+  }
+}
+
+/* -------------------------------------------- erreurs et avertissements */
+
+.bloc-erreurs,
+.bloc-apercu {
+  margin-top: var(--marge);
+  padding-top: var(--marge);
+  border-top: 1px solid var(--trait);
+}
+
+.bloc-erreurs ul,
+.avertissements,
+.liste-ecartes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bloc-erreurs li {
+  color: var(--alerte);
+  font-size: 0.95rem;
+}
+
+.avertissements {
+  margin-top: 12px;
+}
+
+.avertissements li {
+  color: var(--attention);
+  font-size: 0.95rem;
+}
+
+.liste-ecartes li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.95rem;
+}
+
+.succes {
+  margin-top: var(--marge);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.pied {
+  font-size: 0.9rem;
+  padding: 0 4px var(--marge);
 }

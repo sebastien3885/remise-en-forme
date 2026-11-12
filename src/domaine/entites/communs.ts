@@ -54,9 +54,27 @@ export const ORDRE_IMPACT_GENOU: Record<ImpactGenou, number> = {
   eleve: 2,
 }
 
+/**
+ * Libellés affichables. Les identifiants restent sans accent — ils servent de
+ * clés et voyagent dans les fichiers JSON — mais rien de ce que lit
+ * l'utilisateur ne doit afficher « modere » ou « eleve ».
+ */
+export const LIBELLE_IMPACT_GENOU: Record<ImpactGenou, string> = {
+  faible: 'faible',
+  modere: 'modéré',
+  eleve: 'élevé',
+}
+
 /** Matériel disponible, demandé au questionnaire de départ (chapitre 3). */
 export const MATERIELS = ['aucun', 'tapis', 'velo', 'piscine'] as const
 export type Materiel = (typeof MATERIELS)[number]
+
+export const LIBELLE_MATERIEL: Record<Materiel, string> = {
+  aucun: 'aucun',
+  tapis: 'un tapis',
+  velo: 'un vélo',
+  piscine: 'un accès à une piscine',
+}
 
 /** Statut d'une séance réalisée (chapitre 4). */
 export const STATUTS_REALISATION = ['faite', 'partielle', 'sautee'] as const
