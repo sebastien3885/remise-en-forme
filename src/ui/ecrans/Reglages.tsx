@@ -41,15 +41,31 @@ export function Reglages() {
 
   return (
     <main className="page">
-      <header>
+      <header className="page__entete">
+        <p className="surtitre">Étape 1 · socle</p>
         <h1>Remise en forme</h1>
         <p className="discret">
-          Étape 1 : socle, stockage local, bibliothèque, profil et import de plans. Les écrans
-          Aujourd’hui, Semaine, Progrès et Alimentation arrivent ensuite.
+          Stockage local, bibliothèque, profil et import de plans. Les écrans Aujourd’hui,
+          Semaine, Progrès et Alimentation arrivent ensuite.
         </p>
       </header>
 
       {profil && !profil.avertissementSanteAccepte && <AvertissementSante />}
+
+      <div className="rangee-chiffres">
+        <div>
+          <p className="chiffre">{nombreExercices ?? 0}</p>
+          <p className="etiquette">exercices</p>
+        </div>
+        <div>
+          <p className="chiffre">{nombreSeances ?? 0}</p>
+          <p className="etiquette">séances prévues</p>
+        </div>
+        <div>
+          <p className="chiffre">{programme ? programme.version : '—'}</p>
+          <p className="etiquette">version du programme</p>
+        </div>
+      </div>
 
       <section className="carte">
         <h2>Profil</h2>
@@ -59,9 +75,7 @@ export function Reglages() {
             <dd>{profil.dateDebut}</dd>
 
             <dt>Matériel</dt>
-            <dd>
-              {profil.materiel.map((materiel) => LIBELLE_MATERIEL[materiel]).join(', ')}
-            </dd>
+            <dd>{profil.materiel.map((materiel) => LIBELLE_MATERIEL[materiel]).join(', ')}</dd>
 
             <dt>Antécédents</dt>
             <dd>
@@ -85,7 +99,12 @@ export function Reglages() {
                 : profil.objectifs
                     .map(
                       (objectif) =>
-                        objectif.libelle + ' (' + String(objectif.cible) + ' ' + objectif.unite + ')',
+                        objectif.libelle +
+                        ' (' +
+                        String(objectif.cible) +
+                        ' ' +
+                        objectif.unite +
+                        ')',
                     )
                     .join(' · ')}
             </dd>
@@ -95,41 +114,33 @@ export function Reglages() {
         )}
       </section>
 
-      <section className="carte">
-        <h2>Bibliothèque</h2>
-        <p>
-          <strong>{nombreExercices ?? 0}</strong> exercices enregistrés sur l’appareil.
-        </p>
-
-        {ecartes && ecartes.length > 0 && (
-          <>
-            <h3>Écartés par les précautions</h3>
-            <ul className="liste-ecartes">
-              {ecartes.map((ecarte) => (
-                <li key={ecarte.id}>
-                  <strong>{ecarte.nom}</strong>
-                  <span className="discret">{ecarte.raisons}</span>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </section>
+      {ecartes && ecartes.length > 0 && (
+        <section className="carte">
+          <h2>Exercices écartés</h2>
+          <p className="discret" style={{ fontSize: '0.92rem' }}>
+            Ce sont des précautions, pas un avis médical. Elles se lèvent dans le profil.
+          </p>
+          <ul className="liste-nue liste-ecartes" style={{ marginTop: 16 }}>
+            {ecartes.map((ecarte) => (
+              <li key={ecarte.id}>
+                <strong>{ecarte.nom}</strong>
+                <span className="discret">{ecarte.raisons}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="carte">
         <h2>Programme</h2>
         {programme ? (
           <dl className="donnees">
-            <dt>Version</dt>
-            <dd>{programme.version}</dd>
             <dt>Période</dt>
             <dd>
               du {programme.dateDebut} au {programme.dateFin}
             </dd>
             <dt>Motif</dt>
             <dd>{programme.motifRevision}</dd>
-            <dt>Séances prévues</dt>
-            <dd>{nombreSeances ?? 0}</dd>
           </dl>
         ) : (
           <p className="discret">

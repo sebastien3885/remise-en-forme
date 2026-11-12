@@ -20,14 +20,16 @@ export function AvertissementSante({ onLu }: { onLu?: () => void }) {
         reprendre. Cette application accompagne la reprise, elle ne remplace pas un avis
         médical et ne pose aucun diagnostic.
       </p>
-      <p>
+      <p className="discret">
         Pendant une séance, arrêtez-vous en cas de douleur à la poitrine, de vertige, de
         palpitations inhabituelles ou d’essoufflement anormal. À la piscine, jamais d’apnée
         ni d’hyperventilation, et jamais seul dans le bassin.
       </p>
-      <button className="bouton" type="button" onClick={() => void accepter()}>
-        J’ai lu
-      </button>
+      <div className="rangee-boutons" style={{ marginTop: 16 }}>
+        <button className="bouton" type="button" onClick={() => void accepter()}>
+          J’ai lu
+        </button>
+      </div>
     </section>
   )
 }

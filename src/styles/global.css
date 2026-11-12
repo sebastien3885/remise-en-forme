@@ -1,29 +1,48 @@
 /*
- * Bases d'interface du chapitre 8 : lisible en plein soleil, gros boutons
- * utilisables à une main, mode sombre. Le thème complet arrive à l'étape 5.
+ * Langage visuel « Grand geste ».
+ *
+ * Un fond presque noir, un seul accent très lumineux, des chiffres énormes et
+ * une action principale large comme un pouce. Les choix viennent du
+ * chapitre 8 — gros boutons utilisables à une main, mode sombre, textes
+ * lisibles en plein soleil — et de la contrainte des deux minutes du
+ * chapitre 4 : l'action qui compte doit être la plus grosse chose à l'écran.
+ *
+ * Le contraste est tenu partout : le texte discret monte à 6,8:1 sur les
+ * cartes, l'accent à plus de 14:1 sur le fond. C'est ce qui rend l'écran
+ * lisible dehors malgré le fond sombre.
  */
-:root {
-  /* Couleurs */
-  --fond: #0f1115;
-  --fond-carte: #181b22;
-  --fond-alerte: #2a1c1c;
-  --trait: #2a2f3a;
-  --texte: #f3f5f8;
-  --texte-discret: #a3acbb;
-  --accent: #4ade80;
-  --accent-texte: #07120b;
-  --alerte: #f87171;
-  --attention: #fbbf24;
 
-  /* Rythme */
+:root {
+  /* --- Surfaces, du plus bas au plus haut --- */
+  --fond: #0d1014;
+  --fond-carte: #171c22;
+  --fond-carte-haut: #1e242c;
+  --trait: #2b333c;
+
+  /* --- Encre --- */
+  --texte: #f2f5f8;
+  --texte-discret: #9aa5b1;
+
+  /* --- Accent unique --- */
+  --accent: #c8f751;
+  --accent-texte: #121807;
+  --accent-sourd: #22301a;
+
+  /* --- États. Jamais seuls : toujours doublés d'un mot. --- */
+  --alerte: #ff8a80;
+  --alerte-fond: #2a1715;
+  --attention: #ffc266;
+
+  /* --- Rythme --- */
   --marge: 16px;
   --rayon: 14px;
-  /* Cible tactile minimale : un doigt, une main (chapitre 8) */
+  --rayon-grand: 22px;
+  /* Cible tactile minimale, et taille de l'action principale. */
   --cible-tactile: 48px;
+  --cible-principale: 76px;
 
   color-scheme: dark;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  /* Contraste élevé plutôt que gris sur gris : lisibilité en extérieur */
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 17px;
   line-height: 1.5;
 }
@@ -42,34 +61,50 @@ body {
 }
 
 body {
-  /* Marges de sécurité des téléphones à encoche */
+  /* Marges de sécurité des téléphones à encoche. */
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
     env(safe-area-inset-left);
   -webkit-text-size-adjust: 100%;
 }
 
+/* --------------------------------------------------------------- page */
+
 .page {
   max-width: 640px;
   margin: 0 auto;
-  padding: var(--marge);
+  padding: 30px var(--marge) 32px;
   display: flex;
   flex-direction: column;
   gap: var(--marge);
 }
 
+.page__entete {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 h1 {
-  font-size: 1.5rem;
-  margin: 0 0 8px;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 h2 {
-  font-size: 1.15rem;
   margin: 0 0 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
 }
 
 h3 {
-  font-size: 1rem;
-  margin: 16px 0 8px;
+  margin: 20px 0 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texte-discret);
 }
 
 p {
@@ -84,30 +119,56 @@ p:last-child {
   color: var(--texte-discret);
 }
 
+.surtitre {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Les chiffres sont la matière première de l'application : tabulaires, pour
+   qu'ils ne sautent pas d'un rendu à l'autre. */
+.chiffre {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.chiffre--geant {
+  font-size: 3.4rem;
+  line-height: 0.95;
+}
+
 code {
   font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
   font-size: 0.85em;
-  background: #0b0d11;
+  background: #0a0d11;
   border: 1px solid var(--trait);
   border-radius: 6px;
-  padding: 1px 5px;
+  padding: 1px 6px;
+  /* Un chemin de fichier coupé en deux garde son fond et ses bords sur les
+     deux fragments, au lieu d'un cadre ouvert au milieu de la phrase. */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  overflow-wrap: anywhere;
 }
 
-/* ------------------------------------------------------------- cartes */
+/* -------------------------------------------------------------- cartes */
 
 .carte {
   background: var(--fond-carte);
-  border: 1px solid var(--trait);
-  border-radius: var(--rayon);
-  padding: var(--marge);
+  border-radius: var(--rayon-grand);
+  padding: 18px;
 }
 
 .carte--alerte {
-  background: var(--fond-alerte);
-  border-color: var(--alerte);
+  background: var(--alerte-fond);
+  border: 1px solid var(--alerte);
 }
 
-/* ------------------------------------------------------------ boutons */
+/* ------------------------------------------------------------- boutons */
 
 .bouton {
   display: inline-flex;
@@ -115,22 +176,44 @@ code {
   justify-content: center;
   min-height: var(--cible-tactile);
   padding: 0 20px;
-  border: none;
+  border: 0;
   border-radius: var(--rayon);
   background: var(--accent);
   color: var(--accent-texte);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+}
+
+/* L'action qui doit se faire en un geste, gant ou pouce mouillé compris. */
+.bouton--principal {
+  width: 100%;
+  min-height: var(--cible-principale);
+  border-radius: var(--rayon-grand);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .bouton--secondaire {
   background: transparent;
   color: var(--texte);
   border: 1px solid var(--trait);
+  font-weight: 500;
 }
 
-/* Le vrai champ fichier est masqué : c'est l'étiquette qui fait bouton. */
+.bouton--icone {
+  min-height: 44px;
+  width: 44px;
+  padding: 0;
+  border-radius: 12px;
+  background: var(--fond-carte-haut);
+  color: var(--texte);
+  font-size: 1.3rem;
+}
+
+/* Le vrai champ fichier est masqué : c'est l'étiquette qui fait bouton.
+   Masqué sans `display: none`, pour rester accessible au clavier. */
 .bouton--fichier input[type='file'] {
   position: absolute;
   width: 1px;
@@ -139,29 +222,34 @@ code {
   pointer-events: none;
 }
 
+.bouton:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .rangee-boutons {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 16px 0 12px;
 }
 
-.rangee-boutons .bouton {
-  flex: 1 1 auto;
+.rangee-boutons > * {
+  flex: 1 1 140px;
 }
 
-/* ------------------------------------------------------------ données */
+/* ------------------------------------------------------------- données */
 
 .donnees {
   display: grid;
-  grid-template-columns: minmax(8rem, auto) 1fr;
-  gap: 6px 16px;
+  grid-template-columns: minmax(8.5rem, auto) 1fr;
+  gap: 10px 16px;
   margin: 0;
 }
 
 .donnees dt {
   color: var(--texte-discret);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .donnees dd {
@@ -176,22 +264,63 @@ code {
   }
 
   .donnees dd {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
 }
 
-/* -------------------------------------------- erreurs et avertissements */
-
-.bloc-erreurs,
-.bloc-apercu {
-  margin-top: var(--marge);
-  padding-top: var(--marge);
-  border-top: 1px solid var(--trait);
+/* Rangée de chiffres façon « Overview » : trois mesures, deux filets. */
+.rangee-chiffres {
+  display: flex;
+  background: var(--fond-carte);
+  border-radius: var(--rayon-grand);
+  padding: 16px 4px;
 }
 
-.bloc-erreurs ul,
-.avertissements,
-.liste-ecartes {
+.rangee-chiffres > div {
+  flex: 1 1 0;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.rangee-chiffres > div + div {
+  border-left: 1px solid var(--trait);
+}
+
+.rangee-chiffres p {
+  margin: 0;
+}
+
+.rangee-chiffres .chiffre {
+  font-size: 1.5rem;
+}
+
+.rangee-chiffres .etiquette {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--texte-discret);
+}
+
+/* --------------------------------------------------------- ligne plate */
+
+/* Une information et son action, sur une ligne : le motif le plus courant
+   de l'application (eau, repas, poids). */
+.ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--fond-carte);
+  border-radius: var(--rayon);
+  padding: 12px 16px;
+}
+
+.ligne__texte {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ------------------------------------------------- erreurs et messages */
+
+.liste-nue {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -200,24 +329,19 @@ code {
   gap: 10px;
 }
 
-.bloc-erreurs li {
+.bloc {
+  margin-top: var(--marge);
+  padding-top: var(--marge);
+  border-top: 1px solid var(--trait);
+}
+
+.erreurs li {
   color: var(--alerte);
   font-size: 0.95rem;
 }
 
-.avertissements {
-  margin-top: 12px;
-}
-
 .avertissements li {
   color: var(--attention);
-  font-size: 0.95rem;
-}
-
-.liste-ecartes li {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
   font-size: 0.95rem;
 }
 
@@ -227,7 +351,14 @@ code {
   font-weight: 600;
 }
 
+.liste-ecartes li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.95rem;
+}
+
 .pied {
   font-size: 0.9rem;
-  padding: 0 4px var(--marge);
+  padding: 0 4px;
 }

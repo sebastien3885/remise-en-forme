@@ -11,7 +11,12 @@
  */
 import { useState } from 'react'
 
-import { analyserTextePlan, type ApercuPlan, type PlanImporte, type ProblemePlan } from '../../domaine/plans'
+import {
+  analyserTextePlan,
+  type ApercuPlan,
+  type PlanImporte,
+  type ProblemePlan,
+} from '../../domaine/plans'
 import { appliquerPlan, preparerApercu } from '../../stockage/appliquer-plan'
 
 type Etat =
@@ -66,11 +71,11 @@ export function ImportDePlan() {
     <section className="carte">
       <h2>Importer un plan</h2>
       <p className="discret">
-        Un fichier JSON préparé sur l’ordinateur. Le format est décrit dans
-        <code> docs/format-plan.md</code>.
+        Un fichier JSON préparé sur l’ordinateur. Le format est décrit dans{' '}
+        <code>docs/format-plan.md</code>.
       </p>
 
-      <label className="bouton bouton--fichier">
+      <label className="bouton bouton--principal bouton--fichier" style={{ marginTop: 16 }}>
         Choisir un fichier
         <input
           type="file"
@@ -84,12 +89,16 @@ export function ImportDePlan() {
         />
       </label>
 
-      {etat.phase === 'lecture' && <p className="discret">Lecture du fichier…</p>}
+      {etat.phase === 'lecture' && (
+        <p className="discret" style={{ marginTop: 14 }}>
+          Lecture du fichier…
+        </p>
+      )}
 
       {etat.phase === 'erreurs' && (
-        <div className="bloc-erreurs">
-          <h3>Le plan n’a pas été importé</h3>
-          <ul>
+        <div className="bloc">
+          <h3 style={{ marginTop: 0 }}>Le plan n’a pas été importé</h3>
+          <ul className="liste-nue erreurs">
             {etat.erreurs.map((erreur, index) => (
               <li key={String(index) + erreur.chemin}>
                 <code>{erreur.chemin}</code> — {erreur.message}
@@ -100,21 +109,34 @@ export function ImportDePlan() {
       )}
 
       {etat.phase === 'apercu' && (
-        <div className="bloc-apercu">
-          <h3>{etat.apercu.nom}</h3>
+        <div className="bloc">
+          <p className="surtitre">Aperçu</p>
+          <h3 style={{ marginTop: 6, textTransform: 'none', letterSpacing: 0, fontSize: '1.05rem', color: 'var(--texte)' }}>
+            {etat.apercu.nom}
+          </h3>
           {etat.apercu.description && <p className="discret">{etat.apercu.description}</p>}
+
+          <div className="rangee-chiffres" style={{ margin: '14px 0' }}>
+            <div>
+              <p className="chiffre">{etat.apercu.nombreSeances}</p>
+              <p className="etiquette">séances</p>
+            </div>
+            <div>
+              <p className="chiffre">{etat.apercu.nombreSemaines}</p>
+              <p className="etiquette">semaines</p>
+            </div>
+            <div>
+              <p className="chiffre">{etat.apercu.nombreJoursDeRepos}</p>
+              <p className="etiquette">
+                jour{etat.apercu.nombreJoursDeRepos > 1 ? 's' : ''} de repos
+              </p>
+            </div>
+          </div>
 
           <dl className="donnees">
             <dt>Période</dt>
             <dd>
               du {etat.apercu.dateDebut} au {etat.apercu.dateFin}
-            </dd>
-            <dt>Semaines</dt>
-            <dd>{etat.apercu.nombreSemaines}</dd>
-            <dt>Séances</dt>
-            <dd>
-              {etat.apercu.nombreSeances} ({etat.apercu.nombreJoursDeRepos} jour
-              {etat.apercu.nombreJoursDeRepos > 1 ? 's' : ''} de repos)
             </dd>
             {etat.apercu.exercicesNouveaux.length > 0 && (
               <>
@@ -131,14 +153,14 @@ export function ImportDePlan() {
           </dl>
 
           {etat.apercu.avertissements.length > 0 && (
-            <ul className="avertissements">
+            <ul className="liste-nue avertissements" style={{ marginTop: 14 }}>
               {etat.apercu.avertissements.map((avertissement, index) => (
                 <li key={String(index)}>{avertissement.message}</li>
               ))}
             </ul>
           )}
 
-          <div className="rangee-boutons">
+          <div className="rangee-boutons" style={{ margin: '16px 0 12px' }}>
             <button
               className="bouton"
               type="button"
@@ -154,7 +176,7 @@ export function ImportDePlan() {
               Fusionner
             </button>
           </div>
-          <p className="discret">
+          <p className="discret" style={{ fontSize: '0.9rem' }}>
             Remplacer crée une nouvelle version du programme ; l’ancienne et ses séances sont
             conservées.
           </p>

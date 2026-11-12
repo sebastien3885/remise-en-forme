@@ -64,6 +64,43 @@ base sur les séances réalisées, jamais sur le programme théorique.
 **Jamais d'écrasement** (chapitre 7). Une révision de programme crée une nouvelle
 version ; l'historique est conservé.
 
+## Langage visuel — « Grand geste »
+
+Direction retenue parmi six maquettes. Fond presque noir, **un seul accent**
+très lumineux, chiffres énormes, et une action principale large comme un
+pouce : c'est la traduction visuelle de la contrainte des deux minutes du
+chapitre 4 — l'action qui compte est la plus grosse chose à l'écran.
+
+Tous les jetons sont dans `src/styles/global.css`, en variables CSS. **Aucune
+couleur ni aucun rayon en dur dans un composant** : si une valeur manque,
+ajouter un jeton plutôt qu'un littéral.
+
+| Jeton | Valeur | Emploi |
+| --- | --- | --- |
+| `--fond` | `#0d1014` | fond d'écran |
+| `--fond-carte` | `#171c22` | cartes et lignes |
+| `--texte` / `--texte-discret` | `#f2f5f8` / `#9aa5b1` | encre (6,8:1 sur les cartes) |
+| `--accent` / `--accent-texte` | `#c8f751` / `#121807` | l'action, et elle seule |
+| `--cible-tactile` | 48 px | toute cible cliquable |
+| `--cible-principale` | 76 px | `.bouton--principal`, un par écran |
+
+Classes utiles : `.page`, `.carte`, `.bouton` (+ `--principal`, `--secondaire`,
+`--icone`, `--fichier`), `.rangee-chiffres`, `.ligne`, `.donnees`, `.chiffre`,
+`.surtitre`, `.liste-nue` (+ `.erreurs`, `.avertissements`, `.liste-ecartes`).
+
+Trois règles qui ne se voient pas mais qui tiennent l'ensemble :
+
+- **Un seul `.bouton--principal` par écran.** S'il y en a deux, l'écran n'a
+  plus d'action principale.
+- **L'accent ne sert jamais à décorer**, seulement à désigner ce sur quoi on
+  appuie, ou le chiffre qui compte.
+- **La couleur ne porte jamais seule une information.** Une erreur, un
+  avertissement ou un état s'accompagne toujours d'un mot.
+
+Le fond sombre est un choix de l'utilisateur, fait en connaissance du
+compromis : un fond clair se lit mieux en plein soleil. L'accent est donc
+volontairement très lumineux pour compenser.
+
 ## Règles de santé et de sécurité à respecter dans le code (chapitre 10)
 
 Ces règles ne sont pas des suggestions d'interface : elles sont codées et testées.

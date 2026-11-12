@@ -31,6 +31,7 @@ export function App() {
   if (demarrage.phase === 'en-cours') {
     return (
       <main className="page">
+        <p className="surtitre">Remise en forme</p>
         <p className="discret">Ouverture des données locales…</p>
       </main>
     )
