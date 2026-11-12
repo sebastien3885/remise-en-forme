@@ -1,0 +1,63 @@
+# Mise en ligne sur GitHub Pages (chapitre 9).
+#
+# Squelette prêt pour l'étape 5. Il ne se déclenche QUE à la main
+# (onglet Actions, bouton « Run workflow ») : tant que GitHub Pages n'est pas
+# activé sur le dépôt, un déclenchement automatique à chaque push échouerait
+# sans rien apprendre à personne.
+#
+# À l'étape 5, pour publier à chaque modification, ajouter sous `on` :
+#
+#   push:
+#     branches: [main]
+#
+# et activer Pages dans Réglages → Pages → Source : GitHub Actions.
+#
+# Vérifier aussi que `NOM_DEPOT`, dans vite.config.ts, correspond bien au nom
+# du dépôt : c'est lui qui fixe le chemin des fichiers publiés.
+
+name: Déployer sur GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une mise en ligne à la fois, sans annuler celle qui est en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Le build lance déjà le typecheck ; les tests restent un garde-fou
+      # avant de publier quoi que ce soit.
+      - run: npm test
+      - run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deployer:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v4
