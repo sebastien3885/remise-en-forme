@@ -11,9 +11,11 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { LIBELLE_IMPACT_GENOU, LIBELLE_MATERIEL } from '../../domaine/entites'
 import { contexteDepuisProfil, exercicesEcartes } from '../../domaine/profil/precautions'
 import { depots } from '../../stockage'
+import { libelleZone } from '../libelles'
 import { AvertissementSante } from '../composants/AvertissementSante'
 import { GenerationProgramme } from '../composants/GenerationProgramme'
 import { ImportDePlan } from '../composants/ImportDePlan'
+import { MonProfil } from '../composants/MonProfil'
 import { Installation } from '../composants/Installation'
 import { PreferencesEtDonnees } from '../composants/PreferencesEtDonnees'
 import { Rappels } from '../composants/Rappels'
@@ -22,6 +24,7 @@ import { Sauvegarde } from '../composants/Sauvegarde'
 export function Reglages() {
   const profil = useLiveQuery(() => depots.profil.lire())
   const nombreExercices = useLiveQuery(() => depots.exercices.compter())
+  const bibliotheque = useLiveQuery(() => depots.exercices.tous())
   const programme = useLiveQuery(() => depots.programmes.actif())
 
   // Les séances traversent les versions de programme : une révision en crée
@@ -82,40 +85,50 @@ export function Reglages() {
       <section className="carte">
         <h2>Profil</h2>
         {profil ? (
-          <dl className="donnees">
-            <dt>Début du programme</dt>
-            <dd>{profil.dateDebut}</dd>
+          <>
+            <dl className="donnees">
+              <dt>Début du programme</dt>
+              <dd>{profil.dateDebut}</dd>
 
-            <dt>Matériel</dt>
-            <dd>{profil.materiel.map((materiel) => LIBELLE_MATERIEL[materiel]).join(', ')}</dd>
+              <dt>Matériel</dt>
+              <dd>{profil.materiel.map((materiel) => LIBELLE_MATERIEL[materiel]).join(', ')}</dd>
 
-            <dt>Antécédents</dt>
-            <dd>
-              {profil.antecedents.length === 0
-                ? 'aucun'
-                : profil.antecedents.map((antecedent) => antecedent.description).join(' ')}
-            </dd>
+              <dt>Antécédents</dt>
+              <dd>
+                {profil.antecedents.length === 0
+                  ? 'aucun'
+                  : profil.antecedents
+                      .map((antecedent) =>
+                        antecedent.description
+                          ? libelleZone(antecedent.zone) + ' · ' + antecedent.description
+                          : libelleZone(antecedent.zone),
+                      )
+                      .join(' · ')}
+              </dd>
 
-            <dt>Impact genou toléré</dt>
-            <dd>
-              au plus « {LIBELLE_IMPACT_GENOU[profil.precautions.impactGenouMaximal]} »
-              {profil.precautions.exclureFlexionMarquee
-                ? ', flexions marquées exclues'
-                : ', flexions marquées signalées'}
-            </dd>
+              <dt>Impact genou toléré</dt>
+              <dd>
+                au plus « {LIBELLE_IMPACT_GENOU[profil.precautions.impactGenouMaximal]} »
+                {profil.precautions.exclureFlexionMarquee
+                  ? ', flexions marquées exclues'
+                  : ', flexions marquées signalées'}
+              </dd>
 
-            {/* Les objectifs vivent dans l'onglet Progrès, avec leur jauge et
-                leur éditeur. En recopier la liste ici donnerait deux endroits
-                à tenir à jour, et un doute sur lequel fait foi. */}
-            <dt>Objectifs</dt>
-            <dd>
-              {profil.objectifs.length === 0
-                ? 'aucun · à définir dans l’onglet Progrès'
-                : String(profil.objectifs.length) +
-                  (profil.objectifs.length > 1 ? ' objectifs' : ' objectif') +
-                  ' · avancement et modification dans l’onglet Progrès'}
-            </dd>
-          </dl>
+              {/* Les objectifs vivent dans l'onglet Progrès, avec leur jauge et
+                  leur éditeur. En recopier la liste ici donnerait deux endroits
+                  à tenir à jour, et un doute sur lequel fait foi. */}
+              <dt>Objectifs</dt>
+              <dd>
+                {profil.objectifs.length === 0
+                  ? 'aucun · à définir dans l’onglet Progrès'
+                  : String(profil.objectifs.length) +
+                    (profil.objectifs.length > 1 ? ' objectifs' : ' objectif') +
+                    ' · avancement et modification dans l’onglet Progrès'}
+              </dd>
+            </dl>
+
+            <MonProfil profil={profil} bibliotheque={bibliotheque ?? []} />
+          </>
         ) : (
           <p className="discret">Profil en cours de création…</p>
         )}

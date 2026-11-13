@@ -10,6 +10,7 @@
  * Seul le motif est proposé, et il reste facultatif.
  */
 import { useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 
 import { MOTIFS_ABANDON } from '../../domaine/entites'
 import type {
@@ -23,6 +24,7 @@ import type {
   StatutRealisation,
   TypeSeance,
 } from '../../domaine/entites'
+import { depots } from '../../stockage'
 import { validerSeance } from '../../stockage/valider-seance'
 import type { ExerciceDuJour } from '../hooks/useEtatDuJour'
 import {
@@ -83,6 +85,10 @@ export function PanneauValidation({
   const [note, setNote] = useState(realisee?.note ?? '')
   const [enCours, setEnCours] = useState(false)
 
+  // Le profil, pour les zones déclarées. `useLiveQuery` rend `undefined` le
+  // temps de la lecture : les chips généraux suffisent d'ici là.
+  const profil = useLiveQuery(() => depots.profil.lire())
+
   const [zoneDouleur, setZoneDouleur] = useState<string>(
     realisee?.douleurs[0]?.zone ?? SANS_DOULEUR,
   )
@@ -93,16 +99,32 @@ export function PanneauValidation({
     realisee?.exercices.find((exercice) => (exercice.douleur ?? 0) > 0)?.exerciceId,
   )
 
-  // Les zones proposées d'un tap, plus celle d'une douleur déjà notée si elle
-  // n'y figure pas : rouvrir une séance ancienne, ou importée d'une
-  // sauvegarde, ne doit pas lui faire perdre son étiquette en silence.
+  // Les zones proposées d'un tap : la liste générale, plus celles que
+  // l'utilisateur a déclarées dans son profil — c'est tout l'intérêt de les
+  // déclarer —, plus celle d'une douleur déjà notée si elle n'y figure pas.
+  // Rouvrir une séance ancienne, ou importée d'une sauvegarde, ne doit pas
+  // lui faire perdre son étiquette en silence.
+  // Les zones déclarées passent devant : ce sont celles qu'on a le plus de
+  // chances de toucher, et ce sont les siennes.
+  const zonesConnues: { zone: string; libelle: string }[] = []
+  for (const antecedent of profil?.antecedents ?? []) {
+    if (!zonesConnues.some((candidate) => candidate.zone === antecedent.zone)) {
+      zonesConnues.push({ zone: antecedent.zone, libelle: libelleZone(antecedent.zone) })
+    }
+  }
+  for (const generale of ZONES_DOULEUR) {
+    if (!zonesConnues.some((candidate) => candidate.zone === generale.zone)) {
+      zonesConnues.push(generale)
+    }
+  }
+
   const zoneConnue =
     zoneDouleur === SANS_DOULEUR ||
     zoneDouleur === AILLEURS ||
-    ZONES_DOULEUR.some((candidate) => candidate.zone === zoneDouleur)
+    zonesConnues.some((candidate) => candidate.zone === zoneDouleur)
   const zonesProposees = zoneConnue
-    ? ZONES_DOULEUR
-    : [...ZONES_DOULEUR, { zone: zoneDouleur, libelle: libelleZone(zoneDouleur) }]
+    ? zonesConnues
+    : [...zonesConnues, { zone: zoneDouleur, libelle: libelleZone(zoneDouleur) }]
 
   const [valeurs, setValeurs] = useState<Record<string, Mesures>>(() => {
     const depart: Record<string, Mesures> = {}

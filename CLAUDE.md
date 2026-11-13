@@ -165,7 +165,10 @@ Ces règles ne sont pas des suggestions d'interface : elles sont codées et test
   n'écarte jamais un exercice par lui-même — ce sont les `precautions` qui le
   font, pour qu'effacer une ligne d'historique ne retire pas une protection en
   silence. L'application est écrite pour quiconque l'installe, pas pour le
-  corps de celui qui l'a commandée.
+  corps de celui qui l'a commandée. Matériel, précautions et antécédents se
+  déclarent dans les réglages (`src/ui/composants/MonProfil.tsx`) ; une zone
+  déclarée devient un choix d'un tap quand une douleur se signale, et c'est
+  tout ce qu'un antécédent fait.
 - **Douleur signalée deux fois sur le même exercice** : proposer une variante plus
   douce et suggérer un avis médical.
 - **Aucune cible calorique restrictive générée automatiquement.** Toute valeur
