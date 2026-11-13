@@ -23,6 +23,21 @@ const NOM_DEPOT = 'remise-en-forme'
 C'est elle qui fixe le chemin public des fichiers. Un nom qui ne correspond
 pas donne une page blanche : le navigateur cherche le code au mauvais endroit.
 
+Le dépôt doit être **vide** : ne cochez ni README, ni .gitignore, ni licence à
+la création. L'historique est déjà complet ici, et un dépôt prérempli oblige à
+le réconcilier avant la première poussée.
+
+### Deux pièges de première fois
+
+- **Double authentification.** GitHub la demande aux comptes qui publient du
+  code. Si l'invitation apparaît, faites-la tout de suite, et gardez les codes
+  de secours ailleurs que sur le téléphone qui sert à se connecter.
+- **« Block command line pushes that expose my email ».** Cette option des
+  réglages du compte (Settings → Emails) refuse toute poussée dont les commits
+  portent votre adresse réelle. Si vous la cochez, il faut signer les commits
+  avec l'adresse de redirection `…@users.noreply.github.com` — sinon la
+  poussée est rejetée avec le message `GH007`.
+
 ## 2. Activer GitHub Pages
 
 Dans le dépôt : **Settings → Pages → Build and deployment → Source :
@@ -38,8 +53,15 @@ git remote add origin https://github.com/<votre-compte>/remise-en-forme.git
 git push -u origin main
 ```
 
+À la première poussée, Windows ouvre une fenêtre de navigateur pour se
+connecter à GitHub, et retient l'autorisation pour les fois suivantes. Elle
+s'ouvre parfois **derrière** les autres fenêtres : si la commande semble
+figée, cherchez-la dans la barre des tâches.
+
 L'onglet **Actions** montre la construction : les tests tournent, puis
-l'application est publiée. Comptez une à deux minutes.
+l'application est publiée. Comptez une à deux minutes. Deux travaux s'y
+suivent, `construire` puis `deployer` ; si le premier échoue, rien n'est
+publié — c'est voulu.
 
 L'adresse est alors :
 
