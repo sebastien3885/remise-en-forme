@@ -111,6 +111,24 @@ describe('validerSeance', () => {
     expect(realisee.exercices[0]?.douleur).toBe(3)
   })
 
+  it('garde le sommeil déclaré, et n’en invente pas', async () => {
+    const avec = await validerSeance(saisieFaite({ heuresSommeil: 7 }), {
+      base,
+      depots,
+      maintenant: MAINTENANT,
+    })
+    expect(avec.heuresSommeil).toBe(7)
+
+    // Facultatif : une nuit qu'on ne sait pas chiffrer reste absente, elle ne
+    // devient pas un zéro que le journal prendrait pour une nuit blanche.
+    const sans = await validerSeance(saisieFaite({}), {
+      base,
+      depots,
+      maintenant: MAINTENANT,
+    })
+    expect(sans.heuresSommeil).toBeUndefined()
+  })
+
   it('n’invente ni effort ni énergie pour une séance sautée', async () => {
     const realisee = await validerSeance(
       {

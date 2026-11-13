@@ -106,6 +106,14 @@ describe('export des séances', () => {
     expect(lignes(csvDesSeances([sautee], BIBLIOTHEQUE))[1]).toContain(';;')
   })
 
+  it('exporte le sommeil de la nuit précédente', () => {
+    const dormie = uneSeanceRealisee({ id: 'r3', heuresSommeil: 7, exercices: [] })
+    const sortie = lignes(csvDesSeances([dormie], BIBLIOTHEQUE))
+
+    expect(sortie[0]).toContain('sommeil_heures')
+    expect(sortie[1]).toContain(';7;')
+  })
+
   it('protège un texte qui contient un point-virgule', () => {
     const avecPointVirgule = uneSeanceRealisee({
       id: 'r3',

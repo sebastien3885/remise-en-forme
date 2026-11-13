@@ -152,6 +152,12 @@ export function Aujourdhui() {
                 <dd>{realisee.energie}/10</dd>
               </>
             )}
+            {realisee.heuresSommeil !== undefined && (
+              <>
+                <dt>Sommeil</dt>
+                <dd>{realisee.heuresSommeil} h</dd>
+              </>
+            )}
             {realisee.motif && (
               <>
                 <dt>Motif</dt>

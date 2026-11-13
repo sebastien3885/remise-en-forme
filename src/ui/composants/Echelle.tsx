@@ -14,10 +14,27 @@ export interface ProprietesEchelle {
   onChoisir: (valeur: number) => void
   /** Commence à 0 pour la douleur, à 1 pour l'effort et l'énergie. */
   depuis?: number
+  /** Dernière valeur proposée. 10 par défaut. */
+  jusqua?: number
+  /**
+   * Comment lire une valeur à voix haute. « 7 sur 10 » par défaut.
+   *
+   * Le sommeil se compte en heures : « Sommeil 7 sur 10 » annoncerait une
+   * note, pas une nuit.
+   */
+  valeurEnMots?: (choix: number) => string
 }
 
-export function Echelle({ libelle, repere, valeur, onChoisir, depuis = 1 }: ProprietesEchelle) {
-  const valeurs = Array.from({ length: 11 - depuis }, (_, index) => depuis + index)
+export function Echelle({
+  libelle,
+  repere,
+  valeur,
+  onChoisir,
+  depuis = 1,
+  jusqua = 10,
+  valeurEnMots,
+}: ProprietesEchelle) {
+  const valeurs = Array.from({ length: jusqua + 1 - depuis }, (_, index) => depuis + index)
 
   return (
     <fieldset className="echelle">
@@ -31,7 +48,11 @@ export function Echelle({ libelle, repere, valeur, onChoisir, depuis = 1 }: Prop
             key={choix}
             type="button"
             aria-pressed={valeur === choix}
-            aria-label={libelle + ' ' + String(choix) + ' sur 10'}
+            aria-label={
+              libelle +
+              ' ' +
+              (valeurEnMots ? valeurEnMots(choix) : String(choix) + ' sur 10')
+            }
             onClick={() => onChoisir(choix)}
           >
             {choix}

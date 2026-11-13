@@ -66,6 +66,7 @@ export function csvDesSeances(
       seance.motif,
       seance.effort,
       seance.energie,
+      seance.heuresSommeil,
       seance.douleurs.map((douleur) => douleur.zone + ' ' + String(douleur.intensite)).join(', '),
       seance.note,
     ]
@@ -96,6 +97,7 @@ export function csvDesSeances(
       'motif',
       'effort',
       'energie',
+      'sommeil_heures',
       'douleurs',
       'note',
       'exercice',

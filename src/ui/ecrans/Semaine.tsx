@@ -291,6 +291,9 @@ function Jour({
             <p className="jour__ressenti discret">
               {realisee.effort !== undefined && <>effort {realisee.effort}/10</>}
               {realisee.energie !== undefined && <> · énergie {realisee.energie}/10</>}
+              {realisee.heuresSommeil !== undefined && (
+                <> · sommeil {realisee.heuresSommeil} h</>
+              )}
               {realisee.douleurs.map((douleur) => (
                 <span key={douleur.zone}>
                   {' · douleur '}

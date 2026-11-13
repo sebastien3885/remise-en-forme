@@ -95,6 +95,9 @@ export function PanneauValidation({
   const [intensiteDouleur, setIntensiteDouleur] = useState<number | undefined>(
     realisee?.douleurs[0]?.intensite,
   )
+  const [heuresSommeil, setHeuresSommeil] = useState<number | undefined>(
+    realisee?.heuresSommeil,
+  )
   const [exerciceDouloureux, setExerciceDouloureux] = useState<string | undefined>(
     realisee?.exercices.find((exercice) => (exercice.douleur ?? 0) > 0)?.exerciceId,
   )
@@ -190,6 +193,9 @@ export function PanneauValidation({
       douleurs,
       ...(motif ? { motif } : {}),
       ...(seanceSautee ? {} : { effort, energie }),
+      // Facultatif, et il le reste : une nuit qu'on ne sait pas chiffrer ne
+      // doit pas empêcher d'enregistrer la séance.
+      ...(heuresSommeil !== undefined ? { heuresSommeil } : {}),
       ...(note.trim() ? { note: note.trim() } : {}),
     })
 
@@ -289,6 +295,18 @@ export function PanneauValidation({
             repere="1 épuisé, 10 en pleine forme"
             valeur={energie}
             onChoisir={setEnergie}
+          />
+
+          <Echelle
+            libelle="Sommeil"
+            repere="heures de la nuit précédente · facultatif"
+            depuis={4}
+            jusqua={10}
+            valeur={heuresSommeil}
+            valeurEnMots={(choix) =>
+              choix === 10 ? '10 heures ou plus' : String(choix) + ' heures'
+            }
+            onChoisir={setHeuresSommeil}
           />
         </>
       )}
