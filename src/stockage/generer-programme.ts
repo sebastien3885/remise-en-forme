@@ -40,9 +40,18 @@ export async function genererEtInstallerProgramme(
     return { genere: false, raison: 'La bibliothèque d’exercices est vide.' }
   }
 
+  // Une regénération n'écrase pas la précédente (chapitre 7) : elle en est la
+  // version suivante, et le motif dit d'où elle vient. Sans ce numéro, deux
+  // programmes porteraient le même « version 1 » et les réglages
+  // afficheraient toujours 1, quoi qu'on fasse.
+  const version = await depots.programmes.prochaineVersion()
+
   const resultat = genererProgrammeInitial({
     profil,
     bibliotheque,
+    version,
+    motifRevision:
+      version === 1 ? 'programme initial' : 'programme régénéré depuis le profil',
     ...(options.nombreSemaines !== undefined ? { nombreSemaines: options.nombreSemaines } : {}),
     ...(options.maintenant ? { maintenant: options.maintenant } : {}),
   })

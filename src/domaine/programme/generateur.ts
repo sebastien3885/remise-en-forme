@@ -305,6 +305,16 @@ export interface OptionsGeneration {
   bibliotheque: readonly Exercice[]
   /** 12 par défaut (chapitre 3). */
   nombreSemaines?: number
+  /**
+   * Numéro de version du programme produit. 1 par défaut.
+   *
+   * Le générateur est pur : il ne sait pas ce qui existe déjà en base. C'est
+   * l'appelant qui compte, sinon une deuxième génération rendrait un second
+   * « programme version 1 » et l'historique ne saurait plus les distinguer.
+   */
+  version?: number
+  /** Motif inscrit sur le programme. « programme initial » par défaut. */
+  motifRevision?: string
   maintenant?: Date
   nouvelId?: FabriqueId
 }
@@ -371,10 +381,10 @@ export function genererProgrammeInitial(options: OptionsGeneration): ProgrammeGe
 
   const programme: Programme = {
     id: programmeId,
-    version: 1,
+    version: options.version ?? 1,
     dateDebut: profil.dateDebut,
     dateFin: derniereDate,
-    motifRevision: 'programme initial',
+    motifRevision: options.motifRevision ?? 'programme initial',
     actif: true,
     creeLe,
   }
