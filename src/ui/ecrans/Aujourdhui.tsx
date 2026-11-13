@@ -12,7 +12,7 @@
 import { useState } from 'react'
 
 import { aujourdhui } from '../../domaine/dates'
-import type { SeanceRealisee, StatutRealisation } from '../../domaine/entites'
+import type { MomentRepas, SeanceRealisee, StatutRealisation } from '../../domaine/entites'
 import { sequenceDeSeance } from '../../domaine/minuterie/sequence'
 import { depots } from '../../stockage'
 import { Icone } from '../composants/Icone'
@@ -198,7 +198,7 @@ export function Aujourdhui() {
             </button>
           </div>
         </section>
-        <LigneEau etat={etat} />
+        <LignesDuJour etat={etat} />
         <ListeImprovisees seances={etat.improvisees} />
         <BoutonSeanceLibre onOuvrir={() => setVue({ mode: 'libre' })} />
       </main>
@@ -239,7 +239,7 @@ export function Aujourdhui() {
             possible.
           </p>
         </section>
-        <LigneEau etat={etat} />
+        <LignesDuJour etat={etat} />
         <ListeImprovisees seances={etat.improvisees} />
         <BoutonSeanceLibre onOuvrir={() => setVue({ mode: 'libre' })} />
       </main>
@@ -270,7 +270,7 @@ export function Aujourdhui() {
             </a>
           </div>
         </section>
-        <LigneEau etat={etat} />
+        <LignesDuJour etat={etat} />
         <ListeImprovisees seances={etat.improvisees} />
       </main>
     )
@@ -306,7 +306,7 @@ export function Aujourdhui() {
         ))}
       </ul>
 
-      <LigneEau etat={etat} />
+      <LignesDuJour etat={etat} />
       <ListeImprovisees seances={etat.improvisees} />
 
       <button
@@ -381,6 +381,53 @@ function BoutonSeanceLibre({ onOuvrir }: { onOuvrir: () => void }) {
       <Icone nom="plus" taille={17} />
       <span>Noter une séance non prévue</span>
     </button>
+  )
+}
+
+/**
+ * Les deux lignes du quotidien, sous la séance (chapitre 8) : l'eau et les
+ * repas. Groupées ici parce que les quatre états de l'écran les affichent
+ * toutes les deux, et qu'elles ne se séparent jamais.
+ */
+function LignesDuJour({ etat }: { etat: EtatDuJour }) {
+  return (
+    <>
+      <LigneEau etat={etat} />
+      <LigneRepas etat={etat} />
+    </>
+  )
+}
+
+/** Les trois repas que le journal attend chaque jour ; la collation est libre. */
+const REPAS_ATTENDUS: readonly MomentRepas[] = ['petit-dejeuner', 'dejeuner', 'diner']
+
+/**
+ * Où en est le journal du jour, sur une ligne.
+ *
+ * Elle compte, elle ne reproche pas : un repas non noté est hors jeu, ni tenu
+ * ni manqué (chapitre 10). D'où « 1 sur 3 noté » plutôt qu'un rappel de ce
+ * qui manque — le détail est dans le journal, à un tap.
+ */
+function LigneRepas({ etat }: { etat: EtatDuJour }) {
+  const notes = new Set(etat.repasDuJour.map((repas) => repas.moment))
+  const faits = REPAS_ATTENDUS.filter((moment) => notes.has(moment)).length
+
+  return (
+    <div className="ligne">
+      <span className="ligne__texte">
+        Repas · <strong className="chiffre">{faits}</strong>{' '}
+        <span className="discret">
+          sur {REPAS_ATTENDUS.length} not{faits > 1 ? 'és' : 'é'}
+        </span>
+      </span>
+      <a
+        className="bouton bouton--icone"
+        href={lienOnglet('alimentation')}
+        aria-label="Noter un repas"
+      >
+        <Icone nom="plus" taille={20} />
+      </a>
+    </div>
   )
 }
 

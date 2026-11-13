@@ -16,6 +16,7 @@ import type {
   ExercicePrevu,
   Hydratation,
   Programme,
+  Repas,
   SeancePrevue,
   SeanceRealisee,
 } from '../../domaine/entites'
@@ -44,6 +45,8 @@ export interface EtatDuJour {
   semaine: EtatSemaine
   hydratation: Hydratation | undefined
   objectifVerres: number
+  /** Les repas déjà notés aujourd'hui (chapitre 8 : « repas à saisir »). */
+  repasDuJour: Repas[]
   /** Rappel du bilan (chapitre 8) : un bilan attend une décision. */
   bilanEnAttente: BilanHebdo | undefined
 }
@@ -101,6 +104,7 @@ export function useEtatDuJour(date: DateIso = aujourdhui()): EtatDuJour | undefi
         ).length,
       },
       hydratation: await depots.hydratation.duJour(date),
+      repasDuJour: await depots.repas.duJour(date),
       objectifVerres: profil?.objectifVerresEau ?? 8,
       bilanEnAttente: (await depots.bilans.historique()).find(
         (bilan) => bilan.decision === 'en-attente',

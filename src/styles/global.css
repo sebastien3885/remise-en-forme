@@ -183,6 +183,7 @@ code {
   color: var(--accent-texte);
   font: inherit;
   font-weight: 700;
+  text-decoration: none;
   cursor: pointer;
 }
 
