@@ -1,10 +1,15 @@
 /**
- * Écran Réglages (chapitre 8), réduit à ce dont l'étape 1 a besoin.
+ * Écran Réglages (chapitre 8) : tout ce qui se règle une fois et se consulte
+ * rarement.
  *
- * Il sert à vérifier à la main le critère d'acceptation de l'étape 1 : les
- * données survivent à un rechargement, et l'application fonctionne hors ligne.
- * Les quatre autres écrans — Aujourd'hui, Semaine, Progrès, Alimentation —
- * arrivent aux étapes suivantes, avec la barre de navigation du bas.
+ * Profil, programme, import de plans, rappels, installation, sauvegarde,
+ * confort et vie privée. C'est aussi là qu'on vérifie à la main le critère du
+ * chapitre 1 : les données survivent à un rechargement et l'application
+ * fonctionne hors ligne.
+ *
+ * Les objectifs personnels, eux, vivent dans l'onglet Progrès, avec leur
+ * jauge : les régler là où on lit leur avancement évite d'avoir à tenir deux
+ * écrans à jour.
  */
 import { useLiveQuery } from 'dexie-react-hooks'
 

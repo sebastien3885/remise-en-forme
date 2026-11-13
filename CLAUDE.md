@@ -13,7 +13,7 @@ de chapitre cités dans le code y renvoient.
 | Stockage | IndexedDB via Dexie — aucun serveur, aucun compte |
 | Validation des fichiers importés | zod |
 | Hors ligne | `vite-plugin-pwa` (service worker, `registerType: autoUpdate`) |
-| Tests | Vitest (Playwright arrive à l'étape 5) |
+| Tests | Vitest, sur le domaine et le stockage. Pas de test de bout en bout : les parcours d'interface se vérifient dans le navigateur, à la main |
 | Hébergement | GitHub Pages, `base` défini dans `vite.config.ts` (`NOM_DEPOT`) |
 
 ## Commandes
