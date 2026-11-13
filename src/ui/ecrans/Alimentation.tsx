@@ -14,6 +14,7 @@ import { ajouterJours, aujourdhui, maintenantIso } from '../../domaine/dates'
 import type { MomentRepas, Repas } from '../../domaine/entites'
 import { depots } from '../../stockage'
 import { Courbe } from '../composants/Courbe'
+import { Regularite } from '../composants/Regularite'
 import { Icone } from '../composants/Icone'
 import { PanneauMesure } from '../composants/PanneauMesure'
 import { PanneauRepas } from '../composants/PanneauRepas'
@@ -169,34 +170,7 @@ export function Alimentation() {
         </ul>
       </section>
 
-      <section className="carte">
-        <h2>Régularité de la semaine</h2>
-        <div className="rangee-chiffres" style={{ background: 'transparent', padding: 0 }}>
-          <div>
-            <p className="chiffre">
-              {vue.score.joursRenseignes}
-              <span className="discret">/7</span>
-            </p>
-            <p className="etiquette">jours notés</p>
-          </div>
-          <div>
-            <p className="chiffre">{vue.score.joursTenus}</p>
-            <p className="etiquette">
-              jour{vue.score.joursTenus > 1 ? 's' : ''} tenu
-              {vue.score.joursTenus > 1 ? 's' : ''}
-            </p>
-          </div>
-        </div>
-        <p className="discret" style={{ marginTop: 14, fontSize: '0.9rem' }}>
-          {vue.score.atteint
-            ? 'Objectif de régularité atteint : le journal est tenu ' +
-              String(vue.score.objectifJours) +
-              ' jours ou plus.'
-            : 'Objectif : noter le journal au moins ' +
-              String(vue.score.objectifJours) +
-              ' jours par semaine.'}
-        </p>
-      </section>
+      <Regularite score={vue.score} />
 
       <FicheDeLaSemaine vue={vue} />
 

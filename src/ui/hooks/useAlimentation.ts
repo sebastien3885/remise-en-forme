@@ -9,7 +9,6 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import {
   evaluerJour,
   jourTenu,
-  scoreDeRegularite,
   type EtatRepere,
   type ScoreRegularite,
 } from '../../domaine/alimentation/reperes'
@@ -19,11 +18,7 @@ import {
   type Tendance,
 } from '../../domaine/alimentation/tendance'
 import { ficheDeLaSemaine, type Fiche } from '../../domaine/alimentation/fiches'
-import {
-  joursDeLaSemaine,
-  numeroDeSemaineProgramme,
-  plageDeSemaine,
-} from '../../domaine/dates'
+import { numeroDeSemaineProgramme, plageDeSemaine } from '../../domaine/dates'
 import type {
   DateIso,
   DefiChoisi,
@@ -32,6 +27,7 @@ import type {
   Repas,
 } from '../../domaine/entites'
 import { depots } from '../../stockage'
+import { scoreAlimentaireDeLaSemaine } from '../../stockage/score-alimentaire'
 
 export interface VueAlimentation {
   date: DateIso
@@ -56,34 +52,19 @@ export interface VueAlimentation {
 
 export function useAlimentation(date: DateIso): VueAlimentation | undefined {
   return useLiveQuery(async (): Promise<VueAlimentation> => {
-    const { debut, fin } = plageDeSemaine(date)
+    const { debut } = plageDeSemaine(date)
 
-    const [profil, programme, repas, hydratation, repasDeLaSemaine, mesures] =
-      await Promise.all([
-        depots.profil.lire(),
-        depots.programmes.actif(),
-        depots.repas.duJour(date),
-        depots.hydratation.duJour(date),
-        depots.repas.parPlage(debut, fin),
-        depots.mesures.toutes(),
-      ])
+    const [profil, programme, repas, hydratation, mesures] = await Promise.all([
+      depots.profil.lire(),
+      depots.programmes.actif(),
+      depots.repas.duJour(date),
+      depots.hydratation.duJour(date),
+      depots.mesures.toutes(),
+    ])
 
     // Sans programme, on commence quand même par la première fiche.
     const semaine = programme ? numeroDeSemaineProgramme(programme.dateDebut, date) : 1
     const defi = profil?.defiEnCours
-
-    const hydratationsDeLaSemaine = await Promise.all(
-      joursDeLaSemaine(date).map(async (jour) => ({
-        jour,
-        hydratation: await depots.hydratation.duJour(jour),
-      })),
-    )
-
-    const joursAlimentaires = hydratationsDeLaSemaine.map(({ jour, hydratation: eau }) => ({
-      date: jour,
-      repas: repasDeLaSemaine.filter((candidat) => candidat.date === jour),
-      hydratation: eau,
-    }))
 
     const reperes = evaluerJour({ date, repas, hydratation })
 
@@ -94,7 +75,7 @@ export function useAlimentation(date: DateIso): VueAlimentation | undefined {
       objectifVerres: profil?.objectifVerresEau ?? 8,
       reperes,
       tenu: jourTenu(reperes),
-      score: scoreDeRegularite(joursAlimentaires),
+      score: await scoreAlimentaireDeLaSemaine(date),
       tendancePoids: tendanceDuPoids(mesures),
       tendanceTaille: tendanceDuTourDeTaille(mesures),
       derniereMesure: mesures[mesures.length - 1],

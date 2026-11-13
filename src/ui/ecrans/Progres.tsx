@@ -18,6 +18,7 @@ import {
 } from '../../stockage/bilan-hebdo'
 import { Courbe } from '../composants/Courbe'
 import { Objectifs } from '../composants/Objectifs'
+import { Regularite } from '../composants/Regularite'
 import { PanneauModification } from '../composants/PanneauModification'
 import { useHistorique } from '../hooks/useHistorique'
 import { useProgres, type VueProgres } from '../hooks/useProgres'
@@ -265,6 +266,10 @@ export function Progres() {
           )}
         </section>
       )}
+
+      {/* Le chapitre 6 veut la régularité du journal « à côté du bilan
+          sportif » : les deux côtés de la même semaine, au même endroit. */}
+      <Regularite score={vue.scoreAlimentaire} />
 
       <Objectifs />
 

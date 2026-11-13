@@ -14,8 +14,10 @@ import type {
   Programme,
   StatistiquesSemaine,
 } from '../../domaine/entites'
+import type { ScoreRegularite } from '../../domaine/alimentation/reperes'
 import { statistiquesDeLaSemaine } from '../../domaine/progression/bilan'
 import { depots } from '../../stockage'
+import { scoreAlimentaireDeLaSemaine } from '../../stockage/score-alimentaire'
 
 export interface VueProgres {
   debut: DateIso
@@ -30,6 +32,11 @@ export interface VueProgres {
   semaineTerminee: boolean
   /** Un bilan d'une autre semaine attend une décision. */
   bilanEnAttenteAilleurs: BilanHebdo | undefined
+  /**
+   * La régularité du journal alimentaire sur la même semaine (chapitre 6 :
+   * « affiché à côté du bilan sportif »).
+   */
+  scoreAlimentaire: ScoreRegularite
 }
 
 export function useProgres(reference: DateIso): VueProgres | undefined {
@@ -46,12 +53,15 @@ export function useProgres(reference: DateIso): VueProgres | undefined {
     const numero = programme ? numeroDeSemaineProgramme(programme.dateDebut, reference) : 0
     const bilan = bilans.find((candidat) => candidat.debut === debut)
 
+    const scoreAlimentaire = await scoreAlimentaireDeLaSemaine(debut)
+
     return {
       debut,
       fin,
       numero,
       programme,
       bilan,
+      scoreAlimentaire,
       statistiques: statistiquesDeLaSemaine({
         semaine: numero,
         debut,
