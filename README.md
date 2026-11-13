@@ -190,6 +190,11 @@ plutôt que de passer inaperçues.
 
 ## Licence
 
-Aucune licence n'est attachée à ce dépôt pour l'instant : le code est public à
-lire, mais tous les droits restent réservés par défaut. Si vous souhaitez le
-réutiliser, demandez.
+[MIT](LICENSE). Réutilisez, modifiez, redistribuez — y compris
+commercialement — à deux conditions : garder la mention de droit d'auteur et
+le texte de la licence, et accepter que le logiciel soit fourni **sans aucune
+garantie**. Cette seconde clause n'est pas une formalité ici : voir la section
+*Santé* plus haut.
+
+Les fiches d'éducation alimentaire reformulent des sources publiques, citées
+avec leur lien. La licence porte sur ce dépôt, pas sur ces sources.

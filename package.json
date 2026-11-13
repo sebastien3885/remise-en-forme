@@ -2,6 +2,7 @@
   "name": "remise-en-forme",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Suivi personnel de forme et dalimentation (PWA hors ligne, donnees locales)",
   "scripts": {
