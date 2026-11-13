@@ -27,6 +27,7 @@ import {
   type Exercice,
   type ImpactGenou,
   type Materiel,
+  type NiveauDepart,
   type Precautions,
   type Profil,
 } from '../../domaine/entites'
@@ -38,7 +39,21 @@ interface Brouillon {
   materiel: Materiel[]
   precautions: Precautions
   antecedents: Antecedent[]
+  niveauDepart: NiveauDepart
 }
+
+/** Les quatre mesures du questionnaire de départ (chapitre 3). */
+const MESURES_DE_DEPART: readonly {
+  champ: keyof NiveauDepart
+  libelle: string
+  unite: string
+  pas: number
+}[] = [
+  { champ: 'marcheConfortableMetres', libelle: 'Marche confortable', unite: 'm', pas: 100 },
+  { champ: 'longueursNageables', libelle: 'Longueurs d’affilée', unite: '', pas: 1 },
+  { champ: 'pompesPossibles', libelle: 'Pompes d’affilée', unite: '', pas: 1 },
+  { champ: 'squatsPossibles', libelle: 'Squats d’affilée', unite: '', pas: 1 },
+]
 
 export interface ProprietesMonProfil {
   profil: Profil
@@ -58,6 +73,7 @@ export function MonProfil({ profil, bibliotheque }: ProprietesMonProfil) {
     materiel: profil.materiel,
     precautions: profil.precautions,
     antecedents: profil.antecedents,
+    niveauDepart: profil.niveauDepart,
   }
 
   function changer(changements: Partial<Brouillon>) {
@@ -77,6 +93,23 @@ export function MonProfil({ profil, bibliotheque }: ProprietesMonProfil) {
       ? sansAucun.filter((materiel) => materiel !== choisi)
       : [...sansAucun, choisi]
     changer({ materiel: suivant.length === 0 ? ['aucun'] : suivant })
+  }
+
+  /**
+   * Une mesure vidée disparaît du profil ; un zéro, lui, est une réponse.
+   * « Je ne fais pas une seule pompe » n'est pas « je n'ai pas répondu », et
+   * le générateur ne doit pas les confondre.
+   */
+  function changerNiveau(champ: keyof NiveauDepart, saisie: string) {
+    const niveau = { ...courant.niveauDepart }
+    if (saisie.trim() === '') {
+      delete niveau[champ]
+    } else {
+      const nombre = Number(saisie)
+      if (!Number.isFinite(nombre) || nombre < 0) return
+      niveau[champ] = nombre
+    }
+    changer({ niveauDepart: niveau })
   }
 
   function basculerExclusion(exerciceId: string) {
@@ -127,6 +160,7 @@ export function MonProfil({ profil, bibliotheque }: ProprietesMonProfil) {
       materiel: courant.materiel,
       precautions: courant.precautions,
       antecedents: courant.antecedents,
+      niveauDepart: courant.niveauDepart,
     })
     setEnCours(false)
     setBrouillon(null)
@@ -234,6 +268,43 @@ export function MonProfil({ profil, bibliotheque }: ProprietesMonProfil) {
             </div>
           </div>
         </details>
+
+        <fieldset className="echelle" style={{ marginTop: 20 }}>
+          <legend>Mon niveau de départ</legend>
+          <p className="discret" style={{ fontSize: '0.85rem' }}>
+            Ce qui est à votre portée aujourd’hui, pas ce que vous visez. Laissez vide ce
+            que vous ne savez pas : le programme prendra une valeur moyenne.
+          </p>
+
+          <div className="champs" style={{ marginTop: 14 }}>
+            {MESURES_DE_DEPART.map((mesure) => (
+              <label className="champ" key={mesure.champ}>
+                <span className="discret">
+                  {mesure.libelle}
+                  {mesure.unite ? ' · ' + mesure.unite : ''}
+                </span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  step={mesure.pas}
+                  value={courant.niveauDepart[mesure.champ] ?? ''}
+                  onChange={(evenement) =>
+                    changerNiveau(mesure.champ, evenement.target.value)
+                  }
+                />
+              </label>
+            ))}
+          </div>
+
+          <p className="discret" style={{ marginTop: 12, fontSize: '0.85rem' }}>
+            La marche, les pompes et les squats dimensionnent les séances générées — une
+            marche confortable de 1 600 m donne des séances de 20 minutes, pas de 30. Les
+            longueurs sont notées comme repère de départ : la séance de natation part déjà
+            du format le plus doux, une longueur à la fois. Le programme s’adapte au moment
+            où il est généré : après coup, il faut en générer une nouvelle version.
+          </p>
+        </fieldset>
 
         <fieldset className="echelle" style={{ marginTop: 20 }}>
           <legend>Mes antécédents</legend>

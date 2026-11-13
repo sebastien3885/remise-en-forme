@@ -174,7 +174,14 @@ export function Reglages() {
           </p>
         )}
 
-        <GenerationProgramme aDejaUnProgramme={programme !== undefined} />
+        <GenerationProgramme
+          aDejaUnProgramme={programme !== undefined}
+          niveauRenseigne={
+            profil !== undefined && Object.values(profil.niveauDepart).some(
+              (mesure) => mesure !== undefined,
+            )
+          }
+        />
       </section>
 
       <ImportDePlan />
