@@ -17,7 +17,12 @@ import type {
 export const ID_PROFIL = 'profil' as const
 
 /**
- * Antécédent médical déclaré. Il est déclaré par l’utilisateur.
+ * Antécédent déclaré par l'utilisateur : une articulation opérée, une blessure
+ * ancienne, ce qu'il juge utile de garder en tête.
+ *
+ * Purement descriptif. **Ce ne sont jamais les antécédents qui écartent un
+ * exercice**, ce sont les `precautions` : sans cette séparation, effacer une
+ * ligne d'historique retirerait une protection sans prévenir.
  */
 export interface Antecedent {
   id: Id

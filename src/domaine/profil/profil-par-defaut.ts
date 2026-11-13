@@ -3,27 +3,19 @@
  *
  * Il est prérempli avec ce que le cahier des charges énonce déjà, pour que
  * l'application soit utilisable avant même d'avoir rempli le questionnaire :
- * les antécédents du genou, les précautions du chapitre 10 et les deux
- * objectifs chiffrés des indicateurs de réussite à 12 semaines.
+ * les précautions du chapitre 10 et les deux objectifs chiffrés des
+ * indicateurs de réussite à 12 semaines.
+ *
+ * **Aucun antécédent médical n'est écrit ici.** Un profil de départ ne
+ * suppose rien du corps de qui l'installe : les antécédents se déclarent, et
+ * la prudence par défaut ne vient pas d'eux mais des précautions ci-dessous.
  *
  * Ce qui relève d'une mesure — distance de marche confortable, longueurs
  * nageables, nombre de pompes — reste vide : ce sont des valeurs à constater,
  * pas à deviner. Le questionnaire de l'étape 2 les renseignera.
  */
 import { aujourdhui, maintenantIso } from '../dates'
-import { ID_PROFIL, type Antecedent, type Profil } from '../entites'
-
-/**
- * l'antécédent articulaire, tel que le décrit le cahier des charges :
- * antécédent articulaire déclaré.
- */
-export const ANTECEDENT_GENOU: Antecedent = {
-  id: 'genou',
-  zone: 'genou',
-  description:
-    'Antécédent articulaire déclaré par l’utilisateur.',
-  depuis: 2020,
-}
+import { ID_PROFIL, type Profil } from '../entites'
 
 /**
  * Objectif d'hydratation par défaut, en verres. Un repère courant, pas une
@@ -54,14 +46,19 @@ export function profilParDefaut(options: OptionsProfilParDefaut = {}): Profil {
      */
     materiel: ['tapis', 'piscine'],
 
-    antecedents: [ANTECEDENT_GENOU],
+    /** À déclarer par l'utilisateur ; rien n'est supposé de son corps. */
+    antecedents: [],
 
     /**
      * Précautions du chapitre 10, à la lettre : sont exclus la course, les
      * sauts et les squats profonds — c'est-à-dire les exercices à impact
      * `eleve`. Les mouvements à flexion marquée sont *signalés*, pas exclus,
-     * donc `exclureFlexionMarquee` reste à faux. L'utilisateur peut resserrer
-     * le plafond à `faible` si le genou se plaint.
+     * donc `exclureFlexionMarquee` reste à faux.
+     *
+     * Ce plafond ne suppose aucune blessure : il vaut pour une reprise après
+     * une longue interruption, où les articulations encaissent mal l'impact.
+     * L'utilisateur le resserre à `faible` si un genou se plaint, ou l'ouvre
+     * sous sa responsabilité.
      */
     precautions: {
       impactGenouMaximal: 'modere',

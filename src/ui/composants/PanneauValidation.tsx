@@ -31,6 +31,8 @@ import {
   LIBELLE_STATUT,
   LIBELLE_TYPE_SEANCE,
   TYPES_PROPOSABLES,
+  ZONES_DOULEUR,
+  libelleZone,
 } from '../libelles'
 import { Echelle } from './Echelle'
 
@@ -90,6 +92,17 @@ export function PanneauValidation({
   const [exerciceDouloureux, setExerciceDouloureux] = useState<string | undefined>(
     realisee?.exercices.find((exercice) => (exercice.douleur ?? 0) > 0)?.exerciceId,
   )
+
+  // Les zones proposées d'un tap, plus celle d'une douleur déjà notée si elle
+  // n'y figure pas : rouvrir une séance ancienne, ou importée d'une
+  // sauvegarde, ne doit pas lui faire perdre son étiquette en silence.
+  const zoneConnue =
+    zoneDouleur === SANS_DOULEUR ||
+    zoneDouleur === AILLEURS ||
+    ZONES_DOULEUR.some((candidate) => candidate.zone === zoneDouleur)
+  const zonesProposees = zoneConnue
+    ? ZONES_DOULEUR
+    : [...ZONES_DOULEUR, { zone: zoneDouleur, libelle: libelleZone(zoneDouleur) }]
 
   const [valeurs, setValeurs] = useState<Record<string, Mesures>>(() => {
     const depart: Record<string, Mesures> = {}
@@ -272,13 +285,16 @@ export function PanneauValidation({
           >
             Aucune
           </button>
-          <button
-            type="button"
-            aria-pressed={zoneDouleur === 'genou'}
-            onClick={() => setZoneDouleur('genou')}
-          >
-            Genou
-          </button>
+          {zonesProposees.map((zone) => (
+            <button
+              key={zone.zone}
+              type="button"
+              aria-pressed={zoneDouleur === zone.zone}
+              onClick={() => setZoneDouleur(zone.zone)}
+            >
+              {zone.libelle}
+            </button>
+          ))}
           <button
             type="button"
             aria-pressed={zoneDouleur === AILLEURS}
@@ -324,10 +340,12 @@ export function PanneauValidation({
             </fieldset>
           )}
 
-          {zoneDouleur === 'genou' && (intensiteDouleur ?? 0) >= 5 && (
+          {/* L'avertissement ne vise plus une articulation en particulier :
+              une douleur marquée mérite la même phrase où qu'elle soit. */}
+          {(intensiteDouleur ?? 0) >= 5 && (
             <p className="avertissement-sante">
-              Douleur marquée au genou opéré : arrêtez la séance et parlez-en à un médecin si
-              elle revient ou s’accompagne d’un gonflement ou d’une instabilité.
+              Douleur marquée : arrêtez la séance et parlez-en à un médecin si elle revient,
+              ou si elle s’accompagne d’un gonflement ou d’une sensation d’instabilité.
             </p>
           )}
         </>

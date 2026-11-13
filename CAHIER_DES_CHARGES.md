@@ -2,11 +2,15 @@
 
 Nov 12, 2026
 
+> Ce document décrit l'application, pas son utilisateur. Les antécédents, le
+> matériel et le niveau de départ se déclarent dans l'application : ils ne sont
+> inscrits ni ici, ni dans le code.
+
 ## 1. Contexte et objectifs
 
 L'application aide une seule personne à reprendre une activité physique régulière, à mesurer ce qu'elle fait vraiment et à ajuster son programme au fil des semaines, avec un suivi alimentaire simple en complément.
 
-**Point de départ.** Une condition physique basse, après une longue interruption. Le but n'est pas la performance mais de se sentir à l'aise au quotidien et en bonne santé (la piscine reste un simple repère).
+**Point de départ.** Une condition physique basse, après une longue interruption. Le but n'est pas la performance mais de se sentir à l'aise au quotidien et en bonne santé.
 
 **Objectifs de l'application**
 
@@ -51,7 +55,7 @@ L'application propose un programme précis de 12 semaines, jour par jour, que l'
 
 - Disponibilités : pas de créneaux fixes à déclarer ; l'utilisateur place lui-même ses séances dans le calendrier, à l'avance ou après coup (voir Planification libre).
 - Matériel disponible (aucun, tapis, vélo, accès à une piscine).
-- Antécédents articulaires éventuels, déclarés par l’utilisateur ; les exercices à fort impact ou à risque pour le genou sont exclus par défaut.
+- Antécédents articulaires éventuels, déclarés par l'utilisateur ; les exercices à fort impact ou à risque pour le genou sont exclus par défaut, qu'un antécédent soit déclaré ou non.
 - Niveau de départ : distance de marche confortable, nombre de longueurs nageables, nombre de pompes ou squats possibles.
 
 **Types de séances du programme initial**
@@ -161,7 +165,7 @@ L'application repose sur neuf entités ; le programme prévu et le réalisé son
 
 | Entité | Rôle | Champs principaux |
 | --- | --- | --- |
-| Profil | Paramètres de l'utilisateur | date de début, matériel, antécédents (genou), objectifs, unités |
+| Profil | Paramètres de l'utilisateur | date de début, matériel, antécédents déclarés, objectifs, unités |
 | Exercice | Bibliothèque | nom, catégorie (marche, natation, renforcement, mobilité), variantes facile et difficile, contre-indications |
 | Programme | Plan en cours | dates, numéro de version, motif de la révision |
 | Séance prévue | Ce qui est planifié | date, type, liste d'exercices avec cibles (durée, séries, répétitions, repos), semaine |
@@ -185,7 +189,7 @@ Cinq écrans suffisent, accessibles par une barre de navigation en bas de l'écr
 | Semaine | Calendrier des séances prévues et réalisées, ajout de séances futures, glisser-déposer pour les déplacer | Déplacer ou remplacer une séance |
 | Progrès | Courbes, records, série en cours, bilans hebdomadaires | Ouvrir un bilan et accepter les ajustements |
 | Alimentation | Journal du jour, hydratation, poids et tour de taille | Ajouter un repas ou un verre d'eau |
-| Réglages | Profil, antécédents (genou), règles de progression, import de plans, export, sauvegarde | Modifier ses paramètres |
+| Réglages | Profil, antécédents déclarés, règles de progression, import de plans, export, sauvegarde | Modifier ses paramètres |
 
 **Parcours clés**
 
@@ -252,9 +256,9 @@ L'application accompagne la reprise d'activité mais ne remplace pas un avis mé
 - Natation : rappel de ne jamais faire d'apnée ou d'hyperventilation seul.
 - Alimentation : aucune recommandation restrictive automatique (voir module 4).
 
-**Genou (antécédent articulaire déclaré)**
+**Articulations : le genou**
 
-- Les antécédents sont enregistrés dans le profil ; chaque exercice de la bibliothèque porte un niveau d'impact sur le genou.
+- Les antécédents déclarés sont enregistrés dans le profil, à titre descriptif ; chaque exercice de la bibliothèque porte, lui, un niveau d'impact sur le genou, et c'est ce niveau qui décide.
 - Par défaut, la v1 privilégie la marche, le vélo et la nage en crawl, et exclut course, sauts et squats profonds ; les mouvements demandant une flexion marquée (ex. battement de brasse) sont signalés.
 - Ces réglages sont des précautions, pas un avis médical ; l'utilisateur reste libre d'adapter la liste des exercices sous sa responsabilité.
 - Douleur, gonflement ou sensation d'instabilité au genou : l'application propose d'arrêter la séance et suggère un avis médical.
@@ -291,7 +295,7 @@ Toutes les questions de départ sont tranchées, y compris le format JSON des pl
 **Décisions prises**
 
 - Disponibilités : l'utilisateur prévoit ses séances lui-même dans le calendrier et note ce qu'il a réalisé.
-- Genou (antécédent articulaire déclaré) : exercices à faible impact par défaut, liste modifiable par l'utilisateur, sans validation médicale exigée par l'application.
+- Genou : exercices à faible impact par défaut, liste modifiable par l'utilisateur, sans validation médicale exigée par l'application.
 - Plateforme : PWA hébergée gratuitement sur GitHub Pages et installée sur le téléphone Android pour le suivi ; l'ordinateur sert à préparer les plans, importés par fichier JSON.
 - Alimentation : repères simples en v1, avec une éducation alimentaire progressive.
 
@@ -306,7 +310,7 @@ Tu vas développer une application web personnelle (PWA installable sur Android,
 Commence par l'étape 1 (socle) :
 1. Initialise un projet TypeScript + React + Vite avec Vitest.
 2. Mets en place le stockage local (IndexedDB) et les entités du chapitre 7.
-3. Crée la bibliothèque d'exercices, le profil (antécédents au genou) et l'import de plans d'exercice au format JSON.
+3. Crée la bibliothèque d'exercices, le profil (matériel, précautions, antécédents déclarés) et l'import de plans d'exercice au format JSON.
 4. Écris le moteur de progression comme un module pur et testé, avec les règles du chapitre 5 dans un fichier de configuration.
 Avant de coder, propose-moi l'arborescence du projet et attends ma validation. Travaille par petits commits et explique chaque étape.
 ```

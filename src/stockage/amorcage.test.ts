@@ -34,7 +34,10 @@ describe('amorcerSiNecessaire', () => {
 
     const profil = await depots.profil.lire()
     expect(profil?.dateDebut).toBe('2026-11-12')
-    expect(profil?.antecedents[0]?.zone).toBe('genou')
+    // Le profil amorcé ne suppose aucun antécédent : il porte les
+    // précautions du chapitre 10, qui elles ne dépendent de personne.
+    expect(profil?.antecedents).toEqual([])
+    expect(profil?.precautions.impactGenouMaximal).toBe('modere')
     expect(await depots.exercices.compter()).toBe(TAILLE_BIBLIOTHEQUE_INITIALE)
   })
 

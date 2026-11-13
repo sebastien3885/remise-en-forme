@@ -38,6 +38,27 @@ export const LIBELLE_CHAMP_CHARGE: Record<ChampCharge, string> = {
   series: 'Séries',
 }
 
+/**
+ * Zones de douleur proposées d'un tap, à la validation d'une séance.
+ *
+ * Une liste courte et générale, pas le dossier médical de qui installe
+ * l'application : ce qui n'y figure pas se note « Ailleurs ». Aucune règle de
+ * progression ne lit la zone — c'est la douleur **par exercice** qui déclenche
+ * la proposition de variante (chapitre 10) — donc la précision d'un côté ou
+ * de l'autre ne change rien au programme, seulement au souvenir qu'on en garde.
+ */
+export const ZONES_DOULEUR: readonly { zone: string; libelle: string }[] = [
+  { zone: 'genou', libelle: 'Genou' },
+  { zone: 'epaule', libelle: 'Épaule' },
+  { zone: 'dos', libelle: 'Dos' },
+]
+
+/** « cheville-gauche » devient « Cheville gauche » : de quoi afficher une zone venue d'ailleurs. */
+export function libelleZone(zone: string): string {
+  const mots = zone.split('-').join(' ')
+  return mots.charAt(0).toUpperCase() + mots.slice(1)
+}
+
 export interface ChampMesure {
   champ: keyof Mesures
   libelle: string

@@ -166,7 +166,7 @@ const DEFINITIONS: DefinitionExercice[] = [
     flexionMarquee: true,
     materielRequis: ['piscine'],
     consigneSecurite:
-      'Signalé pour le genou : préférer le crawl ou le dos. En brasse, garder l’amplitude de jambes réduite et arrêter à la moindre gêne.',
+      'Signalé en cas de genou sensible : préférer le crawl ou le dos. En brasse, garder l’amplitude de jambes réduite et arrêter à la moindre gêne.',
   },
 
   // ----------------------------------------------------------- renforcement
@@ -211,7 +211,7 @@ const DEFINITIONS: DefinitionExercice[] = [
     flexionMarquee: true,
     materielRequis: ['aucun'],
     consigneSecurite:
-      'Exclu par défaut pour le genou. À ne réintroduire qu’avec un avis médical.',
+      'Exclu par défaut en cas d’antécédent au genou. À ne réintroduire qu’avec un avis médical.',
   },
   {
     id: 'pont-fessier',
@@ -345,7 +345,7 @@ const DEFINITIONS: DefinitionExercice[] = [
     impactGenou: 'eleve',
     flexionMarquee: true,
     materielRequis: ['aucun'],
-    consigneSecurite: 'Exclu par défaut pour le genou.',
+    consigneSecurite: 'Exclu par défaut en cas d’antécédent au genou.',
   },
 
   // ---------------------------------------------- exercices à fort impact
@@ -357,7 +357,7 @@ const DEFINITIONS: DefinitionExercice[] = [
     musclesTravailles: ['jambes', 'endurance'],
     varianteFacileId: 'marche-avec-denivele',
     contreIndications: [
-      'Écartée par défaut : impacts répétés sur un genou fragile ou opéré.',
+      'Écartée par défaut : impacts répétés, mal tolérés par un genou fragile ou opéré.',
     ],
     impactGenou: 'eleve',
     flexionMarquee: false,
@@ -375,7 +375,7 @@ const DEFINITIONS: DefinitionExercice[] = [
     impactGenou: 'eleve',
     flexionMarquee: true,
     materielRequis: ['aucun'],
-    consigneSecurite: 'Exclus par défaut pour le genou.',
+    consigneSecurite: 'Exclus par défaut en cas d’antécédent au genou.',
   },
   {
     id: 'corde-a-sauter',
@@ -387,7 +387,7 @@ const DEFINITIONS: DefinitionExercice[] = [
     impactGenou: 'eleve',
     flexionMarquee: false,
     materielRequis: ['aucun'],
-    consigneSecurite: 'Exclue par défaut pour le genou.',
+    consigneSecurite: 'Exclue par défaut en cas d’antécédent au genou.',
   },
 
   // --------------------------------------------------------- activité libre
@@ -438,7 +438,7 @@ const DEFINITIONS: DefinitionExercice[] = [
     flexionMarquee: true,
     materielRequis: ['aucun'],
     consigneSecurite:
-      'Signalé pour le genou : ne jamais tirer sur la cheville, s’arrêter à la première tension.',
+      'Signalé en cas de genou sensible : ne jamais tirer sur la cheville, s’arrêter à la première tension.',
   },
   {
     id: 'mobilite-hanches',

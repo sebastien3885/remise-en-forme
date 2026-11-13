@@ -43,7 +43,7 @@ describe('survie à un rechargement', () => {
           {
             id: 'genou',
             zone: 'genou',
-            description: 'antécédent articulaire déclaré',
+            description: 'Entorse du genou, rééduquée',
             depuis: 2020,
           },
         ],

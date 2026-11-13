@@ -2,11 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { unProfil } from '../../tests/fixtures'
 import { ID_PROFIL } from '../entites'
-import {
-  ANTECEDENT_GENOU,
-  avisMedicalConseille,
-  profilParDefaut,
-} from './profil-par-defaut'
+import { avisMedicalConseille, profilParDefaut } from './profil-par-defaut'
 
 const MAINTENANT = new Date(2026, 10, 12, 9, 0) // jeudi 12 novembre 2026, heure locale
 
@@ -22,12 +18,11 @@ describe('profilParDefaut', () => {
     )
   })
 
-  it('enregistre l'antécédent articulaire', () => {
-    const profil = profilParDefaut({ maintenant: MAINTENANT })
-
-    expect(profil.antecedents).toEqual([ANTECEDENT_GENOU])
-    expect(ANTECEDENT_GENOU.description).toMatch(/antécédent articulaire/i)
-    expect(ANTECEDENT_GENOU.description).toMatch(/déclaré/i)
+  it('ne suppose aucun antécédent médical', () => {
+    // Un profil de départ ne sait rien du corps de qui l'installe. Les
+    // antécédents se déclarent ; ils ne se devinent pas, et ils ne sont pas
+    // ce qui protège — ce sont les précautions ci-dessous.
+    expect(profilParDefaut({ maintenant: MAINTENANT }).antecedents).toEqual([])
   })
 
   it('exclut le fort impact et se contente de signaler la flexion marquée', () => {

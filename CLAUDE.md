@@ -155,10 +155,17 @@ Ces règles ne sont pas des suggestions d'interface : elles sont codées et test
   Sinon le plafond de +10 % se franchirait par l'interface.
 - **Un seul levier à la fois :** durée, ou intensité, ou fréquence. Pas deux.
 - **Au moins un jour de repos complet par semaine**, imposé par l'application.
-- **Genou** (antécédent articulaire déclaré) : chaque exercice
-  porte un niveau d'impact sur le genou. Par défaut la v1 exclut course, sauts et
-  squats profonds, et signale les mouvements à flexion marquée. Ce sont des
-  précautions, pas un avis médical : l'utilisateur peut les lever lui-même.
+- **Impact sur le genou :** chaque exercice porte un niveau d'impact. Par défaut
+  la v1 exclut course, sauts et squats profonds, et signale les mouvements à
+  flexion marquée. Ce plafond vaut pour une reprise après une longue
+  interruption, pas pour une blessure supposée. Ce sont des précautions, pas un
+  avis médical : l'utilisateur peut les lever lui-même.
+- **Rien n'est supposé du corps de l'utilisateur.** Le profil de départ ne
+  contient aucun antécédent médical : ils se déclarent. Et un antécédent
+  n'écarte jamais un exercice par lui-même — ce sont les `precautions` qui le
+  font, pour qu'effacer une ligne d'historique ne retire pas une protection en
+  silence. L'application est écrite pour quiconque l'installe, pas pour le
+  corps de celui qui l'a commandée.
 - **Douleur signalée deux fois sur le même exercice** : proposer une variante plus
   douce et suggérer un avis médical.
 - **Aucune cible calorique restrictive générée automatiquement.** Toute valeur
